@@ -4,7 +4,7 @@ services:
   django:
     build: ./
     #command: sh -c "gunicorn --reload --bind 0.0.0.0:8000 home_f.wsgi:application"
-    command: sh -c "gunicorn --reload --bind 0.0.0.0:8000 home_f.home_f.wsgi:application"
+    command: sh -c "gunicorn --reload --bind 0.0.0.0:8000 home_f.wsgi:application"
     volumes:
       - ./:/src
       - static_data:/src/static
