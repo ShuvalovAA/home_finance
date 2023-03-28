@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_ITEMS = os.environ
 
@@ -38,6 +39,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "analytics",
+    "custom_tools",
+    "expenses",
+    "fonds",
+    "general",
+    "income",
+    "integrations",
+    "reports",
+    "transactions",
+    "user",
 ]
 
 MIDDLEWARE = [
@@ -68,27 +79,22 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "home_f.wsgi.application"
+WSGI_APPLICATION = "wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DB_NAME = 'postgres'
+DB_NAME = 'home_f'
 DATABASES = {
     "default": {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': DB_NAME,
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'localhost',
+        'HOST': 'pg',
         'PORT': '5432',
-        'TEST': {
-            'NAME': 'skazka_db_default_test',
-            'CHARSET': 'utf8',
-        },
         'AUTOCOMMIT': True,
-        'CONN_MAX_AGE': 5,
     },
 }
 #ENV_ITEMS.get('db')
