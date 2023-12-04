@@ -1,0 +1,18 @@
+---
+{{- if ne .Values.deployment "production" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "service.fullname" . }}-postgresql
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: {{ .Values.postgresql.port }}
+      targetPort: {{ .Values.postgresql.port }}
+  selector:
+    app.kubernetes.io/name: {{ .Values.postgresql.host }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

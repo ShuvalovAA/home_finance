@@ -1,0 +1,46 @@
+---
+{{- if eq .Values.deployment "staging" }}
+apiVersion: networking.k8s.io/v1
+{{- else }}
+apiVersion: networking.k8s.io/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ include "service.fullname" . }}
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+spec:
+  {{- if ne .Values.deployment "local" }}
+  tls:
+    - hosts:
+      {{- if eq .Values.deployment "production" }}
+        - {{ include "service.fullname" . }}.asgard.k8s.internal.sailplay.org
+      secretName: asgard-tls
+      {{- else if eq .Values.deployment "staging" }}
+        - {{ include "service.fullname" . }}.midgard.k8s.internal.sailplay.org
+      secretName: midgard-tls
+      {{- end }}
+  {{- end }}
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+        - path: {{ .Values.app.root }}/
+          pathType: Prefix
+          backend:
+            {{- if le (int .Capabilities.KubeVersion.Minor) 18 }}
+            serviceName: {{ include "service.fullname" . }}
+            servicePort: 80
+            {{- else if ge (int .Capabilities.KubeVersion.Minor) 19 }}
+            service:
+              name: {{ include "service.fullname" . }}
+              port:
+                number: 80
+            {{- end }}
+      {{- if eq .Values.deployment "production" }}
+      host: {{ include "service.fullname" . }}.asgard.k8s.internal.sailplay.org
+      {{- else if eq .Values.deployment "staging" }}
+      host: {{ include "service.fullname" . }}.midgard.k8s.internal.sailplay.org
+      {{- else if eq .Values.deployment "local" }}
+      host: local.k8s.internal.sailplay.org
+      {{- end }}

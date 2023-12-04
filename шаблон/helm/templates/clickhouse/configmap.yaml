@@ -1,0 +1,15 @@
+{{- if ne .Values.deployment "production" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "service.fullname" . }}-clickhouse-env
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+data:
+  # CLICKHOUSE settings
+  CHANGESET_CLICKHOUSE_HOST: "{{ .Values.clickhouse.host }}"
+  CHANGESET_CLICKHOUSE_PORT: "{{ .Values.clickhouse.port }}"
+  CHANGESET_CLICKHOUSE_DATABASE: "{{ .Values.clickhouse.db.name }}"
+  CHANGESET_CLICKHOUSE_USER: "{{ .Values.clickhouse.user.name }}"
+  CHANGESET_CLICKHOUSE_PASSWORD: "{{ .Values.clickhouse.user.password }}"
+{{- end }}
