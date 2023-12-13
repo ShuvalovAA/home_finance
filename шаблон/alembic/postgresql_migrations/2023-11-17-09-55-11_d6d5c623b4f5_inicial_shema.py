@@ -49,14 +49,17 @@ def upgrade_postgresql_migrations():
                 period_start timestamp WITH TIME ZONE NOT NULL,
                 period_end timestamp WITH TIME ZONE NOT NULL,
                 parts_count int,
-                file_url text
+                storage_key text,
+                multipart_id text,
+                msg_abort text
             );
             CREATE TABLE uploading_parts(
                 id serial,
                 process_id int NOT NULL,
                 status int NOT NULL,
                 start_date timestamp WITH TIME ZONE NOT NULL,
-                part_position int NOT NULL
+                part_position int NOT NULL,
+                etag text
             );
         """
         connection.execute(text(query))

@@ -31,10 +31,10 @@ def upgrade_clickhouse_migrations():
         id Int32,
         partner_id Int32,
         table String,
-        ts_ms DateTime,
+        operation_date DateTime,
         after_data String,
         before_data String,
-        op TEXT
+        operation_type TEXT
     )
     ENGINE = MergeTree
     ORDER BY id

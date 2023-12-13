@@ -6,6 +6,8 @@ metadata:
     {{- include "service.labels" . | nindent 4 }}
 data:
   # APPLICATION settings
+  APP_NAME: "{{ .Values.app.name }}"
+  TMP_DIR: "/tmp/{{ .Values.app.name }}"
   APPLICATION_ENVIRONMENT:  "{{ .Values.deployment }}"
   APPLICATION_ROOT: "{{ .Values.app.root }}"
   APPLICATION_VERSION: "{{ .Values.app.version | default .Chart.AppVersion }}"
@@ -14,11 +16,14 @@ data:
   CHANGESET_POSTGRESQL_PASSWORD: "{{ .Values.postgresql.user.password }}"
   CHANGESET_POSTGRESQL_USER: "{{ .Values.postgresql.user.name }}"
   CHANGESET_POSTGRESQL_DATABASE: "{{ .Values.postgresql.db.name }}"
+  CHANGESET_CLICKHOUSE_USER: "{{ .Values.clickhouse.user.name }}"
+  CHANGESET_CLICKHOUSE_PASSWORD: "{{ .Values.clickhouse.user.password }}"
   CHANGESET_CLICKHOUSE_HOST: "{{ .Values.clickhouse.host }}"
   CHANGESET_CLICKHOUSE_PORT: "{{ .Values.clickhouse.port }}"
   CHANGESET_REDIS_HOST: "{{ .Values.redis.host }}"
   CHANGESET_REDIS_PORT: "{{ .Values.redis.port }}"
 
-  # CELERY settings
-  CELERY_BROKER_URL: redis://redis:6379/0
-  CELERY_RESULT_BACKEND: redis://redis:6379/0
+  # YandexS3 settings
+  BUCKET_NAME: "{{ .Values.yandexos3.bucket_name }}"
+  AWS_ACCESS_KEY_ID: "{{ .Values.yandexos3.aws_access_key_id }}"
+  AWS_SECRET_ACCESS_KEY: "{{ .Values.yandexos3.aws_secret_access_key }}"

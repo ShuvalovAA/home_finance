@@ -1,12 +1,12 @@
 """Сервис миграции логов DML."""
-import fastapi_pg as pg
 import fastapi_clickhouse as clickhouse
+import fastapi_pg as pg
 import fastapi_redis as redis
 from fastapi import FastAPI
 from fastapi_application import ApplicationBuilder
 
-from changeset.views import common as common_views
 from changeset.settings import APP_NAME
+from changeset.views import common as common_views
 
 
 def get_application() -> FastAPI:
@@ -18,5 +18,4 @@ def get_application() -> FastAPI:
     builder.apply(redis.register, APP_NAME)
 
     common_views.register(builder)
-
     return builder.build()

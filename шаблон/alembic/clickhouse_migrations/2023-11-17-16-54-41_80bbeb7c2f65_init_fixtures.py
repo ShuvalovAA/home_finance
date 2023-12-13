@@ -26,38 +26,23 @@ def downgrade():
 
 
 def upgrade_clickhouse_migrations():
-
-    rows = [
-        (1,
-         2014,
-         'table_name1',
-         '2023-03-01',
-         json.dumps({"id": 1, "first_name": "Foo1"}),
-         json.dumps({"id": 1, "first_name": "Bar1"}),
-         'u'
-         ),
-        (2,
-         2014,
-         'table_name1',
-         '2023-03-01',
-         json.dumps({"id": 2, "first_name": "Foo2"}),
-         json.dumps({"id": 2, "first_name": "Bar2"}),
-         'u'
-         ),
-        (3,
-         2014,
-         'table_name1',
-         '2023-03-01',
-         json.dumps({"id": 3, "first_name": "Foo3"}),
-         json.dumps({"id": 3, "first_name": "Bar3"}),
-         'u'
-         )
-    ]
+    rows = []
+    for i in range(1, 150001, 1):
+        row = (
+            i,
+           3000,
+           "table_name1",
+           "2023-03-01",
+           json.dumps({"id": i, "first_name": f"Foo{i}"}),
+           json.dumps({"id": i, "first_name": f"Bar{i}"}),
+           "u"
+        )
+        rows.append(row)
 
     rows_str = ','.join([str(r) for r in rows])
     query = """
-        insert test_logs
-          test (id, table, ts_ms, after_data, before_data, op)
+        insert into 
+        test_logs (id, partner_id, table, operation_date, after_data, before_data, operation_type)
         VALUES
           {rows}
           ;

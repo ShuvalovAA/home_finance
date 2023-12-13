@@ -3,6 +3,7 @@ deployment: staging
 replicaCount: 1
 
 app:
+  name: changeset
   root: /services/changeset
   version: latest
   log_level: debug
@@ -18,7 +19,7 @@ app:
 
 clickhouse:
   host: changeset-clickhouse
-  port: 9000
+  port: 8123
   db:
     name: default
   user:
@@ -47,6 +48,10 @@ postgresql:
     name: postgres
     password: postgres
 
+yandexos3:
+  bucket_name: sp-test-app
+  aws_access_key_id: YCAJEE2KeOBAiW9QcokRuufC_
+  aws_secret_access_key: YCNdpu6ExIQlEopWtivZslxcRNfouX1IV7uFjaSF
 
 autoscaling:
   enabled: false

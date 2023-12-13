@@ -24,4 +24,5 @@ RUN poetry config http-basic.sailplay-pypi $pypi_user $pypi_pass \
 
 RUN poetry install --no-root --only=main
 
+RUN mkdir -p /tmp/changeset
 COPY ./src /app/
