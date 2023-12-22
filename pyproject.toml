@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "default"
+version = "0.1.0"
+description = ""
+authors = ["Artemiy_Shuvalov <shuvalovartal@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^5.0"
+pandas = "^2.1.4"
+aiochclient = "^2.5.1"
+drf-yasg = "^1.21.7"
+rest-framework-simplejwt = "^0.0.2"
+djangorestframework-simplejwt = "^5.3.1"
+django-admin = "^2.0.2"
+uvicorn = "^0.25.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

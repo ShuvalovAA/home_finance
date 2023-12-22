@@ -1,0 +1,21 @@
+[flake8]
+ignore =
+        # Missing docstring in public module
+        D100,
+        # Missing docstring in public package
+        D104,
+        # Missing docstring in magic method
+        D105,
+        # Missing docstring in __init__
+        D107,
+        # First line should be in imperative mood
+        D401,
+        # class attribute "id" is shadowing a Python builtin
+        A003 
+        
+per-file-ignores = */migrations/*: Q000, D101
+
+docstring-quotes = double
+inline-quotes = single
+multiline-quotes = single
+max-line-length = 110

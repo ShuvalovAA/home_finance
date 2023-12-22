@@ -1,14 +1,15 @@
-FROM python:3.9-alpine
+FROM python:3.10
 
-WORKDIR /src
+RUN mkdir /app
+WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1\
-    PYTHONUNBUFFERED=1
+COPY ./pyproject.toml /app/
+COPY ./poetry.lock /app/
 
-COPY . .
+RUN pip install --upgrade pip \
+    && pip install poetry
 
-RUN apk add --update \
-    gcc libc-dev linux-headers postgresql-dev && \
-    pip install --no-cache-dir -r requirements.txt
 
-#--no-cache --virtual .tmp-build-deps 
+RUN poetry install --no-root --only=main
+
+COPY ./hfin /app/

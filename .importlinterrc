@@ -1,0 +1,11 @@
+[importlinter]
+root_package = changeset
+include_external_packages=True
+
+[importlinter:contract:1]
+name = Логика зависимостей корректна
+type = layers
+layers =
+    handlers
+containers =
+    changeset
