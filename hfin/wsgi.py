@@ -13,5 +13,5 @@ from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'root.settings')
 
-# poetry run uvicorn --reload wsgi:application --host 0.0.0.0 --port 9393
+# poetry run gunicorn --reload wsgi:application  --bind=127.0.0.1:8081
 application = get_wsgi_application()

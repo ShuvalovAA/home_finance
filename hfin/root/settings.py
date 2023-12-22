@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'drf_yasg',
     'income',
+    'expense',
+    'transaction',
+    'user',
     'common_utils'
 ]
 
@@ -75,6 +78,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'wsgi.application'
+ASGI_APPLICATION = 'asgi.application'
 
 
 # Database

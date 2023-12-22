@@ -1,0 +1,103 @@
+from rest_framework import serializers
+
+from .models import Expense
+
+
+class CreateExpenseSerializer(serializers.ModelSerializer):
+    """Сериалайзер для создания модели расхода."""
+
+    class Meta:
+        """Метаданные сериалайзера."""
+
+        model = Expense
+        fields = '__all__'
+
+
+class UpdateExpenseSerializer(serializers.ModelSerializer):
+    """Сериалайзер для обновления модели расхода."""
+
+    id = serializers.IntegerField(source='expense.id')
+
+    class Meta:
+        """Метаданные сериалайзера."""
+
+        model = Expense
+        fields = '__all__'
+
+
+class UpdateExpenseBulkSerializer(serializers.Serializer):
+    """Сериалайзер для массового обновления модели расхода."""
+
+    items = serializers.ListField(
+        child=UpdateExpenseSerializer(),
+        allow_empty=False,
+        max_length=50
+    )
+
+
+class DeleteExpenseSerializer(serializers.ModelSerializer):
+    """Сериалайзер для удаления модели расхода."""
+
+    id = serializers.IntegerField(source='expense.id')
+
+    class Meta:
+        """Метаданные сериалайзера."""
+
+        model = Expense
+        fields = ['id']
+
+
+class DeleteExpenseBulkSerializer(serializers.Serializer):
+    """Сериалайзер для массового удаления модели расхода."""
+
+    items = serializers.ListField(
+        child=serializers.IntegerField(),
+        allow_empty=False,
+        max_length=50
+    )
+
+
+class GetExpenseSerializer(serializers.ModelSerializer):
+    """Сериалайзер для получения модели расхода."""
+
+    id = serializers.IntegerField(source='expense.id')
+
+    class Meta:
+        """Метаданные сериалайзера."""
+
+        model = Expense
+        fields = ['id']
+
+
+class GetExpenseBulkSerializer(serializers.Serializer):
+    """Сериалайзер для массового получения модели расхода."""
+
+    page = serializers.IntegerField()
+
+
+class CopyExpenseSerializer(serializers.ModelSerializer):
+    """Сериалайзер для копирования модели расхода."""
+
+    id = serializers.IntegerField(source='expense.id')
+
+    class Meta:
+        """Метаданные сериалайзера."""
+
+        model = Expense
+        fields = ['id']
+
+
+class CopyExpenseBulkSerializer(serializers.Serializer):
+    """Сериалайзер для массового копирования модели расхода."""
+
+    items = serializers.ListField(
+        child=serializers.IntegerField(),
+        allow_empty=False,
+        max_length=50
+    )
+
+
+class CreateBulkExpenseSerializer(serializers.Serializer):
+    """Сериалайзер для массового создания модели расхода."""
+
+    file = serializers.FileField(max_length=100, allow_empty_file=False)

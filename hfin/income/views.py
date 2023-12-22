@@ -20,7 +20,7 @@ from .serializers import (
 )
 
 
-@swagger_auto_schema(method='POST', request_body=CreateIncomeSerializer)
+@swagger_auto_schema(method='POST', request_body=CreateIncomeSerializer, tags=['Income'])
 @api_view(['POST'])
 def create(request):
     """Создать запись о доходе.
@@ -47,7 +47,7 @@ def create(request):
     return Response(data, status=status.HTTP_201_CREATED)
 
 
-@swagger_auto_schema(method='PATCH', request_body=UpdateIncomeSerializer)
+@swagger_auto_schema(method='PATCH', request_body=UpdateIncomeSerializer, tags=['Income'])
 @api_view(['PATCH'])
 def update(request):
     """Обновить запись о доходе.
@@ -75,7 +75,7 @@ def update(request):
     return Response(update_income.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='PATCH', request_body=UpdateIncomeBulkSerializer)
+@swagger_auto_schema(method='PATCH', request_body=UpdateIncomeBulkSerializer, tags=['Income'])
 @api_view(['PATCH'])
 def update_bulk(request):
     """Массово обновить запись о доходе.
@@ -97,7 +97,7 @@ def update_bulk(request):
     return Response({'status': 'ok'}, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='DELETE', query_serializer=DeleteIncomeSerializer)
+@swagger_auto_schema(method='DELETE', query_serializer=DeleteIncomeSerializer, tags=['Income'])
 @api_view(['DELETE'])
 def delete(request):
     """Удалить запись о доходе.
@@ -119,7 +119,7 @@ def delete(request):
     return Response({'status_delete': 'ok'}, status=status.HTTP_204_NO_CONTENT)
 
 
-@swagger_auto_schema(method='DELETE', request_body=DeleteIncomeBulkSerializer)
+@swagger_auto_schema(method='DELETE', request_body=DeleteIncomeBulkSerializer, tags=['Income'])
 @api_view(['DELETE'])
 def delete_bulk(request):
     """Массово удалить запись о доходе.
@@ -139,13 +139,13 @@ def delete_bulk(request):
 
     incomes = Income.objects.filter(pk__in=ids)
     if not incomes:
-        return Response({'status': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
     incomes.delete()
 
     return Response({'status': 'ok'}, status=status.HTTP_204_NO_CONTENT)
 
 
-@swagger_auto_schema(method='get', query_serializer=GetIncomeSerializer)
+@swagger_auto_schema(method='get', query_serializer=GetIncomeSerializer, tags=['Income'])
 @api_view(['GET'])
 def get(request):
     """Получить запись о доходе.
@@ -166,7 +166,7 @@ def get(request):
     return Response(model_to_dict(income), status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='GET', query_serializer=GetIncomeBulkSerializer)
+@swagger_auto_schema(method='GET', query_serializer=GetIncomeBulkSerializer, tags=['Income'])
 @api_view(['GET'])
 def get_bulk(request):
     """Массово получить запись о доходе.
@@ -187,13 +187,13 @@ def get_bulk(request):
     offset = page * limit if (page > 1) else 1
     incomes = Income.objects.all()[offset:offset + limit]
     if not incomes:
-        return Response({'status': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
 
     items = [model_to_dict(obj) for obj in incomes]
     return Response({'items': items}, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='POST', query_serializer=CopyIncomeSerializer)
+@swagger_auto_schema(method='POST', query_serializer=CopyIncomeSerializer, tags=['Income'])
 @api_view(['POST'])
 def copy(request):
     """Копировать запись о доходе.
@@ -217,7 +217,7 @@ def copy(request):
     return Response(model_to_dict(coping_income), status=status.HTTP_201_CREATED)
 
 
-@swagger_auto_schema(method='POST', request_body=CopyIncomeBulkSerializer)
+@swagger_auto_schema(method='POST', request_body=CopyIncomeBulkSerializer, tags=['Income'])
 @api_view(['POST'])
 def copy_bulk(request):
     """Массово копировать запись о доходе.
@@ -237,7 +237,7 @@ def copy_bulk(request):
 
     incomes = Income.objects.filter(pk__in=ids)
     if not incomes:
-        return Response({'status': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
     obj_dicts = [model_to_dict(obj) for obj in incomes]
     [obj_dict.pop('id') for obj_dict in obj_dicts]
 
@@ -254,7 +254,9 @@ class CreateBulkIncomeView(GenericAPIView):
     parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.FileUploadParser)
     renderer_classes = (renderers.JSONRenderer,)
     serializer_class = CreateBulkIncomeSerializer
+    tags = ['Income']
 
+    @swagger_auto_schema(tags=['Income'])
     def post(self, request):
         """Массовое добавление записей о доходах файлом.
 
