@@ -176,6 +176,7 @@ def get_bulk(request):
     - page: номер страницы;
     *тротлинг:20 записей на страницу
     """
+    breakpoint()
     if not request.method == 'GET':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
