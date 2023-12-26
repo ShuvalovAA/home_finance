@@ -42,7 +42,9 @@ def create(request):
     name = create_expense.validated_data.get('name')
     date = create_expense.validated_data.get('date')
     amount = create_expense.validated_data.get('amount')
-    new_expense = Expense.objects.create(name=name, date=date, amount=amount)
+    done = create_expense.validated_data.get('done')
+    user_id = create_expense.validated_data.get('user_id')
+    new_expense = Expense.objects.create(name=name, date=date, amount=amount, done=done, user_id=user_id)
     data = model_to_dict(new_expense)
     return Response(data, status=status.HTTP_201_CREATED)
 
@@ -62,7 +64,7 @@ def update(request):
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     try:
-        old_expense = Expense.objects.get(pk=request.data.get('id'))
+        old_expense = Expense.objects.get(pk=request.data.get('id'), user_id=request.data.get('user_id'))
     except Expense.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 
@@ -110,8 +112,9 @@ def delete(request):
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     id_expense = request.GET.get('id')
+    user_id = request.GET.get('user_id')
     try:
-        expense = Expense.objects.get(pk=id_expense)
+        expense = Expense.objects.get(pk=id_expense, user_id=user_id)
     except Expense.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 
@@ -136,8 +139,9 @@ def delete_bulk(request):
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     ids = request.data['items']
+    user_id = request.data['user_id']
 
-    expenses = Expense.objects.filter(pk__in=ids)
+    expenses = Expense.objects.filter(pk__in=ids, user_id=user_id)
     if not expenses:
         return Response({'Error': 'Expenses not found.'}, status=status.HTTP_404_NOT_FOUND)
     expenses.delete()
@@ -158,8 +162,9 @@ def get(request):
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     id_expense = request.GET.get('id')
+    user_id = request.GET.get('user_id')
     try:
-        expense = Expense.objects.get(pk=id_expense)
+        expense = Expense.objects.get(pk=id_expense, user_id=user_id)
     except Expense.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 
@@ -182,10 +187,11 @@ def get_bulk(request):
     serialaizer = GetExpenseBulkSerializer(data=request.GET.dict())
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    user_id = request.GET.get('user_id')
     page = int(request.GET.get('page'))
     limit = 20
-    offset = page * limit if (page > 1) else 1
-    expenses = Expense.objects.all()[offset:offset + limit]
+    offset = page * limit if (page > 1) else 0
+    expenses = Expense.objects.filter(user_id=user_id)[offset:offset + limit]
     if not expenses:
         return Response({'Error': 'Expenses not found.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -206,8 +212,9 @@ def copy(request):
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     id_expense = request.GET.get('id')
+    user_id = request.GET.get('user_id')
     try:
-        expense = Expense.objects.get(pk=id_expense)
+        expense = Expense.objects.get(pk=id_expense, user_id=user_id)
     except Expense.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
     params = model_to_dict(expense)
@@ -234,8 +241,9 @@ def copy_bulk(request):
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     ids = request.data['items']
+    user_id = request.data['user_id']
 
-    expenses = Expense.objects.filter(pk__in=ids)
+    expenses = Expense.objects.filter(pk__in=ids, user_id=user_id)
     if not expenses:
         return Response({'Error': 'Expenses not found.'}, status=status.HTTP_404_NOT_FOUND)
     obj_dicts = [model_to_dict(obj) for obj in expenses]

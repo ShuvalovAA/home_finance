@@ -17,6 +17,7 @@ class UpdateIncomeSerializer(serializers.ModelSerializer):
     """Сериалайзер для обновления модели дохода."""
 
     id = serializers.IntegerField(source='income.id')
+    user_id = serializers.IntegerField(source='income.user_id')
 
     class Meta:
         """Метаданные сериалайзера."""
@@ -33,18 +34,20 @@ class UpdateIncomeBulkSerializer(serializers.Serializer):
         allow_empty=False,
         max_length=50
     )
+    user_id = serializers.IntegerField()
 
 
 class DeleteIncomeSerializer(serializers.ModelSerializer):
     """Сериалайзер для удаления модели дохода."""
 
     id = serializers.IntegerField(source='income.id')
+    user_id = serializers.IntegerField(source='income.user_id')
 
     class Meta:
         """Метаданные сериалайзера."""
 
         model = Income
-        fields = ['id']
+        fields = ['id', 'user_id']
 
 
 class DeleteIncomeBulkSerializer(serializers.Serializer):
@@ -55,36 +58,40 @@ class DeleteIncomeBulkSerializer(serializers.Serializer):
         allow_empty=False,
         max_length=50
     )
+    user_id = serializers.IntegerField()
 
 
 class GetIncomeSerializer(serializers.ModelSerializer):
     """Сериалайзер для получения модели дохода."""
 
     id = serializers.IntegerField(source='income.id')
+    user_id = serializers.IntegerField(source='income.user_id')
 
     class Meta:
         """Метаданные сериалайзера."""
 
         model = Income
-        fields = ['id']
+        fields = ['id', 'user_id']
 
 
 class GetIncomeBulkSerializer(serializers.Serializer):
     """Сериалайзер для массового получения модели дохода."""
 
     page = serializers.IntegerField()
+    user_id = serializers.IntegerField()
 
 
 class CopyIncomeSerializer(serializers.ModelSerializer):
     """Сериалайзер для копирования модели дохода."""
 
     id = serializers.IntegerField(source='income.id')
+    user_id = serializers.IntegerField(source='income.user_id')
 
     class Meta:
         """Метаданные сериалайзера."""
 
         model = Income
-        fields = ['id']
+        fields = ['id', 'user_id']
 
 
 class CopyIncomeBulkSerializer(serializers.Serializer):
@@ -95,9 +102,11 @@ class CopyIncomeBulkSerializer(serializers.Serializer):
         allow_empty=False,
         max_length=50
     )
+    user_id = serializers.IntegerField()
 
 
 class CreateBulkIncomeSerializer(serializers.Serializer):
     """Сериалайзер для массового создания модели дохода."""
 
     file = serializers.FileField(max_length=100, allow_empty_file=False)
+    user_id = serializers.IntegerField()

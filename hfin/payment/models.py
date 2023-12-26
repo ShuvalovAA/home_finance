@@ -1,5 +1,5 @@
 from django.db import models
-
+from root.settings import AUTH_USER_MODEL
 
 class Tariff(models.Model):
     """Модель тарифа."""
@@ -14,7 +14,7 @@ class Tariff(models.Model):
 class UsersPayments(models.Model):
     """Платежи пользователей."""
 
-    # user_id = models.ForeignKey(to=User, on_delete=models.CASCADE, null=False)
+    user_id = models.OneToOneField(AUTH_USER_MODEL, on_delete=models.CASCADE)
     date = models.DateTimeField()
     tariff = models.ForeignKey(to=Tariff, on_delete=models.CASCADE, null=False)
     done = models.BooleanField()

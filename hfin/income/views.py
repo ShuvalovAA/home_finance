@@ -5,6 +5,7 @@ from rest_framework import parsers, renderers, status
 from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+from root.decorators import check_premission
 
 from .serializers import (
     CopyIncomeBulkSerializer,
@@ -42,7 +43,9 @@ def create(request):
     name = create_income.validated_data.get('name')
     date = create_income.validated_data.get('date')
     amount = create_income.validated_data.get('amount')
-    new_income = Income.objects.create(name=name, date=date, amount=amount)
+    done = create_income.validated_data.get('done')
+    user_id = create_income.validated_data.get('user_id')
+    new_income = Income.objects.create(name=name, date=date, amount=amount, done=done, user_id=user_id)
     data = model_to_dict(new_income)
     return Response(data, status=status.HTTP_201_CREATED)
 
@@ -62,7 +65,7 @@ def update(request):
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     try:
-        old_income = Income.objects.get(pk=request.data.get('id'))
+        old_income = Income.objects.get(pk=request.data.get('id'), user_id=request.data.get('user_id'))
     except Income.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 
@@ -110,8 +113,9 @@ def delete(request):
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     id_income = request.GET.get('id')
+    user_id = request.GET.get('user_id')
     try:
-        income = Income.objects.get(pk=id_income)
+        income = Income.objects.get(pk=id_income, user_id=user_id)
     except Income.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 
@@ -136,8 +140,9 @@ def delete_bulk(request):
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     ids = request.data['items']
+    user_id = request.data['user_id']
 
-    incomes = Income.objects.filter(pk__in=ids)
+    incomes = Income.objects.filter(pk__in=ids, user_id=user_id)
     if not incomes:
         return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
     incomes.delete()
@@ -158,8 +163,9 @@ def get(request):
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     id_income = request.GET.get('id')
+    user_id = request.GET.get('user_id')
     try:
-        income = Income.objects.get(pk=id_income)
+        income = Income.objects.get(pk=id_income, user_id=user_id)
     except Income.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 
@@ -168,6 +174,7 @@ def get(request):
 
 @swagger_auto_schema(method='GET', query_serializer=GetIncomeBulkSerializer, tags=['Income'])
 @api_view(['GET'])
+@check_premission
 def get_bulk(request):
     """Массово получить запись о доходе.
 
@@ -176,7 +183,6 @@ def get_bulk(request):
     - page: номер страницы;
     *тротлинг:20 записей на страницу
     """
-    breakpoint()
     if not request.method == 'GET':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -184,9 +190,10 @@ def get_bulk(request):
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     page = int(request.GET.get('page'))
+    user_id = request.GET.get('user_id')
     limit = 20
-    offset = page * limit if (page > 1) else 1
-    incomes = Income.objects.all()[offset:offset + limit]
+    offset = page * limit if (page > 1) else 0
+    incomes = Income.objects.filter(user_id=user_id)[offset:offset + limit]
     if not incomes:
         return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -207,8 +214,9 @@ def copy(request):
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     id_income = request.GET.get('id')
+    user_id = request.GET.get('user_id')
     try:
-        income = Income.objects.get(pk=id_income)
+        income = Income.objects.get(pk=id_income, user_id=user_id)
     except Income.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
     params = model_to_dict(income)
@@ -235,8 +243,9 @@ def copy_bulk(request):
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     ids = request.data['items']
+    user_id = request.data['user_id']
 
-    incomes = Income.objects.filter(pk__in=ids)
+    incomes = Income.objects.filter(pk__in=ids, user_id=user_id)
     if not incomes:
         return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
     obj_dicts = [model_to_dict(obj) for obj in incomes]

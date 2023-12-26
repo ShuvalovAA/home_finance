@@ -17,6 +17,7 @@ class UpdateTransactionSerializer(serializers.ModelSerializer):
     """Сериалайзер для обновления модели транзакции."""
 
     id = serializers.IntegerField(source='transaction.id')
+    user_id = serializers.IntegerField(source='transaction.user_id')
 
     class Meta:
         """Метаданные сериалайзера."""
@@ -33,18 +34,20 @@ class UpdateTransactionBulkSerializer(serializers.Serializer):
         allow_empty=False,
         max_length=50
     )
+    user_id = serializers.IntegerField()
 
 
 class DeleteTransactionSerializer(serializers.ModelSerializer):
     """Сериалайзер для удаления модели транзакции."""
 
     id = serializers.IntegerField(source='transaction.id')
+    user_id = serializers.IntegerField(source='transaction.user_id')
 
     class Meta:
         """Метаданные сериалайзера."""
 
         model = Transaction
-        fields = ['id']
+        fields = ['id', 'user_id']
 
 
 class DeleteTransactionBulkSerializer(serializers.Serializer):
@@ -55,36 +58,40 @@ class DeleteTransactionBulkSerializer(serializers.Serializer):
         allow_empty=False,
         max_length=50
     )
+    user_id = serializers.IntegerField()
 
 
 class GetTransactionSerializer(serializers.ModelSerializer):
     """Сериалайзер для получения модели транзакции."""
 
     id = serializers.IntegerField(source='transaction.id')
+    user_id = serializers.IntegerField(source='transaction.user_id')
 
     class Meta:
         """Метаданные сериалайзера."""
 
         model = Transaction
-        fields = ['id']
+        fields = ['id', 'user_id']
 
 
 class GetTransactionBulkSerializer(serializers.Serializer):
     """Сериалайзер для массового получения модели транзакции."""
 
     page = serializers.IntegerField()
+    user_id = serializers.IntegerField()
 
 
 class CopyTransactionSerializer(serializers.ModelSerializer):
     """Сериалайзер для копирования модели транзакции."""
 
     id = serializers.IntegerField(source='transaction.id')
+    user_id = serializers.IntegerField(source='transaction.user_id')
 
     class Meta:
         """Метаданные сериалайзера."""
 
         model = Transaction
-        fields = ['id']
+        fields = ['id', 'user_id']
 
 
 class CopyTransactionBulkSerializer(serializers.Serializer):
@@ -95,3 +102,4 @@ class CopyTransactionBulkSerializer(serializers.Serializer):
         allow_empty=False,
         max_length=50
     )
+    user_id = serializers.IntegerField()

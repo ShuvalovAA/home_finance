@@ -2,12 +2,13 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
 from .models import User
+from phonenumber_field.formfields import PhoneNumberField
 
 
 class LoginForm(forms.Form):
     """Форма авторизации."""
 
-    username = forms.CharField(max_length=65)
+    phone = PhoneNumberField()
     password = forms.CharField(max_length=65, widget=forms.PasswordInput)
 
 
@@ -25,5 +26,6 @@ class RegisterForm(UserCreationForm):
             'email',
             'birth_date',
             'sms_subcribe',
-            'email_subcribe'
+            'email_subcribe',
+            'phone'
         ]

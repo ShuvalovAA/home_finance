@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'phonenumber_field',
     'drf_yasg',
     'income',
     'expense',
@@ -141,5 +142,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 25,
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     )
 }

@@ -6,9 +6,12 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.http import HttpResponse
+import json
 
 from .forms import LoginForm, RegisterForm
 from .models import User
+from .handlers import create_sms_confirm
 
 
 @swagger_auto_schema(method='PATCH', tags=['User'])
@@ -37,7 +40,7 @@ def sign_up(request):
         if form.is_valid():
             print('register_ok')
             user = form.save(commit=False)
-            user.username = user.email
+            user.username = user.phone
             user.register_date = localtime(now())
             user.is_active = True
             user.is_service_account = False
@@ -47,6 +50,8 @@ def sign_up(request):
                 username=user.username,
                 password=request.POST.get('password1')
             )
+            breakpoint()
+            create_sms_confirm(user)
             login(request, user)
             return redirect('/swagger/')
         else:
@@ -61,12 +66,13 @@ def sign_in(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
+            username = form.cleaned_data['phone']
             password = form.cleaned_data['password']
             user = authenticate(request=request, username=username, password=password)
             if user:
                 login(request, user)
                 return redirect('/swagger/')
+        return HttpResponse(json.dumps(form.errors), status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 
 def sign_out(request):
