@@ -23,6 +23,7 @@ from .serializers import (
 
 @swagger_auto_schema(method='POST', request_body=CreateIncomeSerializer, tags=['Income'])
 @api_view(['POST'])
+@check_premission
 def create(request):
     """Создать запись о доходе.
 
@@ -52,6 +53,7 @@ def create(request):
 
 @swagger_auto_schema(method='PATCH', request_body=UpdateIncomeSerializer, tags=['Income'])
 @api_view(['PATCH'])
+@check_premission
 def update(request):
     """Обновить запись о доходе.
 
@@ -80,6 +82,7 @@ def update(request):
 
 @swagger_auto_schema(method='PATCH', request_body=UpdateIncomeBulkSerializer, tags=['Income'])
 @api_view(['PATCH'])
+@check_premission
 def update_bulk(request):
     """Массово обновить запись о доходе.
 
@@ -102,6 +105,7 @@ def update_bulk(request):
 
 @swagger_auto_schema(method='DELETE', query_serializer=DeleteIncomeSerializer, tags=['Income'])
 @api_view(['DELETE'])
+@check_premission
 def delete(request):
     """Удалить запись о доходе.
 
@@ -125,6 +129,7 @@ def delete(request):
 
 @swagger_auto_schema(method='DELETE', request_body=DeleteIncomeBulkSerializer, tags=['Income'])
 @api_view(['DELETE'])
+@check_premission
 def delete_bulk(request):
     """Массово удалить запись о доходе.
 
@@ -152,6 +157,7 @@ def delete_bulk(request):
 
 @swagger_auto_schema(method='get', query_serializer=GetIncomeSerializer, tags=['Income'])
 @api_view(['GET'])
+@check_premission
 def get(request):
     """Получить запись о доходе.
 
@@ -203,6 +209,7 @@ def get_bulk(request):
 
 @swagger_auto_schema(method='POST', query_serializer=CopyIncomeSerializer, tags=['Income'])
 @api_view(['POST'])
+@check_premission
 def copy(request):
     """Копировать запись о доходе.
 
@@ -228,6 +235,7 @@ def copy(request):
 
 @swagger_auto_schema(method='POST', request_body=CopyIncomeBulkSerializer, tags=['Income'])
 @api_view(['POST'])
+@check_premission
 def copy_bulk(request):
     """Массово копировать запись о доходе.
 
@@ -267,6 +275,7 @@ class CreateBulkIncomeView(GenericAPIView):
     tags = ['Income']
 
     @swagger_auto_schema(tags=['Income'])
+    @check_premission
     def post(self, request):
         """Массовое добавление записей о доходах файлом.
 

@@ -1,5 +1,6 @@
-from user.models import User
 from django.core.exceptions import PermissionDenied
+from user.models import User
+
 
 def check_premission(method, *args, **kwargs):
     """Декоратор проверки доступа к функционалу API.
@@ -37,5 +38,4 @@ def check_premission(method, *args, **kwargs):
             raise PermissionDenied
         res = method(*args, **kwargs)
         return res
-    
     return wrapper

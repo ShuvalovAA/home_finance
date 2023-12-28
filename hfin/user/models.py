@@ -1,8 +1,9 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.timezone import now
-from datetime import timedelta
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class User(AbstractUser):
@@ -21,6 +22,7 @@ class User(AbstractUser):
     phone = PhoneNumberField(blank=True, null=False, unique=True)
     is_phone_confirm = models.BooleanField(blank=True, default=False)
     is_email_confirm = models.BooleanField(blank=True, default=False)
+    email_token = models.CharField(max_length=100, null=True)
 
     USERNAME_FIELD = 'phone'
 
@@ -34,5 +36,5 @@ class UserPhoneConfirmSMS(models.Model):
     NOW = now()
     number = models.IntegerField()
     user = models.ForeignKey(User, models.CASCADE)
-    create_date = models.DateField(default=NOW)
-    expare_date = models.DateField(default=NOW + timedelta(minutes=1))
+    create_date = models.DateTimeField(default=NOW)
+    expare_date = models.DateTimeField(default=NOW + timedelta(minutes=1))

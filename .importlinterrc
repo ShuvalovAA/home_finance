@@ -1,5 +1,5 @@
 [importlinter]
-root_package = changeset
+root_package = hfin
 include_external_packages=True
 
 [importlinter:contract:1]
@@ -8,4 +8,4 @@ type = layers
 layers =
     handlers
 containers =
-    changeset
+    hfin

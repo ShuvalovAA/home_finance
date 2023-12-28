@@ -13,7 +13,7 @@ ignore =
         # class attribute "id" is shadowing a Python builtin
         A003 
         
-per-file-ignores = */migrations/*: Q000, D101, Q001
+per-file-ignores = */migrations/*: Q000, D101, Q001, E501
 
 docstring-quotes = double
 inline-quotes = single

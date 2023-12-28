@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from phonenumber_field.formfields import PhoneNumberField
 
 from .models import User
-from phonenumber_field.formfields import PhoneNumberField
 
 
 class LoginForm(forms.Form):
@@ -10,6 +10,14 @@ class LoginForm(forms.Form):
 
     phone = PhoneNumberField()
     password = forms.CharField(max_length=65, widget=forms.PasswordInput)
+
+
+class ConfirmSMS(forms.Form):
+    """Форма подтверждения по sms."""
+
+    code = forms.CharField(max_length=6)
+    user_id = forms.IntegerField()
+    register = forms.IntegerField()
 
 
 class RegisterForm(UserCreationForm):

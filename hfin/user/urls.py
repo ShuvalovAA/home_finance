@@ -19,9 +19,12 @@ from django.urls import path
 from user import views
 
 urlpatterns = [
-    path('login/', views.sign_in, name='login'),
-    path('logout/', views.sign_out, name='logout'),
-    path('register/', views.sign_up, name='register'),
+    path('confirm_email/<auth_token>', views.confirm_email),
+    path('signin/confirm_sms/', views.confirm_sms),
+    path('signup/confirm_sms/', views.confirm_sms),
+    path('signin/', views.sign_in, name='login'),
+    path('signout/', views.sign_out, name='logout'),
+    path('signup/', views.sign_up, name='register'),
     path('update/', views.update),
     path('get/', views.get),
 ]

@@ -24,7 +24,7 @@ imports-lint:
 sort-imports:
 	isort --settings=.isort.cfg $(SOURCES)
 
-check-lint: lint lint-imports security-lint imports-lint
+check-lint: lint sort-imports lint-imports security-lint imports-lint
 
 test:
 	PYTHONPATH=$(SOURCES):$(PYTHONPATH) python -m pytest --cov=$(SOURCES) --cov-report=term --cov-report html --cov-config=.coveragerc $(TESTS)

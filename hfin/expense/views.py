@@ -5,6 +5,7 @@ from rest_framework import parsers, renderers, status
 from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+from root.decorators import check_premission
 
 from .serializers import (
     CopyExpenseBulkSerializer,
@@ -22,6 +23,7 @@ from .serializers import (
 
 @swagger_auto_schema(method='POST', request_body=CreateExpenseSerializer, tags=['Expense'])
 @api_view(['POST'])
+@check_premission
 def create(request):
     """Создать запись о расходе.
 
@@ -51,6 +53,7 @@ def create(request):
 
 @swagger_auto_schema(method='PATCH', request_body=UpdateExpenseSerializer, tags=['Expense'])
 @api_view(['PATCH'])
+@check_premission
 def update(request):
     """Обновить запись о расходе.
 
@@ -79,6 +82,7 @@ def update(request):
 
 @swagger_auto_schema(method='PATCH', request_body=UpdateExpenseBulkSerializer, tags=['Expense'])
 @api_view(['PATCH'])
+@check_premission
 def update_bulk(request):
     """Массово обновить запись о расходе.
 
@@ -101,6 +105,7 @@ def update_bulk(request):
 
 @swagger_auto_schema(method='DELETE', query_serializer=DeleteExpenseSerializer, tags=['Expense'])
 @api_view(['DELETE'])
+@check_premission
 def delete(request):
     """Удалить запись о расходе.
 
@@ -124,6 +129,7 @@ def delete(request):
 
 @swagger_auto_schema(method='DELETE', request_body=DeleteExpenseBulkSerializer, tags=['Expense'])
 @api_view(['DELETE'])
+@check_premission
 def delete_bulk(request):
     """Массово удалить запись о расходе.
 
@@ -151,6 +157,7 @@ def delete_bulk(request):
 
 @swagger_auto_schema(method='get', query_serializer=GetExpenseSerializer, tags=['Expense'])
 @api_view(['GET'])
+@check_premission
 def get(request):
     """Получить запись о расходе.
 
@@ -173,6 +180,7 @@ def get(request):
 
 @swagger_auto_schema(method='GET', query_serializer=GetExpenseBulkSerializer, tags=['Expense'])
 @api_view(['GET'])
+@check_premission
 def get_bulk(request):
     """Массово получить запись о расходе.
 
@@ -201,6 +209,7 @@ def get_bulk(request):
 
 @swagger_auto_schema(method='POST', query_serializer=CopyExpenseSerializer, tags=['Expense'])
 @api_view(['POST'])
+@check_premission
 def copy(request):
     """Копировать запись о расходе.
 
@@ -226,6 +235,7 @@ def copy(request):
 
 @swagger_auto_schema(method='POST', request_body=CopyExpenseBulkSerializer, tags=['Expense'])
 @api_view(['POST'])
+@check_premission
 def copy_bulk(request):
     """Массово копировать запись о расходе.
 
@@ -265,6 +275,7 @@ class CreateBulkExpenseView(GenericAPIView):
     tags = ['Expense']
 
     @swagger_auto_schema(tags=['Expense'])
+    @check_premission
     def post(self, request):
         """Массовое добавление записей о расходах файлом.
 

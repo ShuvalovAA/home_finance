@@ -3,6 +3,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from root.decorators import check_premission
 from transaction.models import Transaction
 
 from .serializers import (
@@ -20,6 +21,7 @@ from .serializers import (
 
 @swagger_auto_schema(method='POST', request_body=CreateTransactionSerializer, tags=['Transaction'])
 @api_view(['POST'])
+@check_premission
 def create(request):
     """Создать запись о транзакции.
 
@@ -42,13 +44,20 @@ def create(request):
     amount = create_transaction.validated_data.get('amount')
     done = create_transaction.validated_data.get('done')
     user_id = create_transaction.validated_data.get('user_id')
-    new_transaction = Transaction.objects.create(name=name, date=date, amount=amount, done=done, user_id=user_id)
+    new_transaction = Transaction.objects.create(
+        name=name,
+        date=date,
+        amount=amount,
+        done=done,
+        user_id=user_id
+    )
     data = model_to_dict(new_transaction)
     return Response(data, status=status.HTTP_201_CREATED)
 
 
 @swagger_auto_schema(method='PATCH', request_body=UpdateTransactionSerializer, tags=['Transaction'])
 @api_view(['PATCH'])
+@check_premission
 def update(request):
     """Обновить запись о транзакции.
 
@@ -62,7 +71,9 @@ def update(request):
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     try:
-        old_transaction = Transaction.objects.get(pk=request.data.get('id'), user_id=request.data.get('user_id'))
+        old_transaction = Transaction.objects.get(
+            pk=request.data.get('id'), user_id=request.data.get('user_id')
+        )
     except Transaction.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 
@@ -77,6 +88,7 @@ def update(request):
 
 @swagger_auto_schema(method='PATCH', request_body=UpdateTransactionBulkSerializer, tags=['Transaction'])
 @api_view(['PATCH'])
+@check_premission
 def update_bulk(request):
     """Массово обновить запись о транзакции.
 
@@ -99,6 +111,7 @@ def update_bulk(request):
 
 @swagger_auto_schema(method='DELETE', query_serializer=DeleteTransactionSerializer, tags=['Transaction'])
 @api_view(['DELETE'])
+@check_premission
 def delete(request):
     """Удалить запись о транзакции.
 
@@ -122,6 +135,7 @@ def delete(request):
 
 @swagger_auto_schema(method='DELETE', request_body=DeleteTransactionBulkSerializer, tags=['Transaction'])
 @api_view(['DELETE'])
+@check_premission
 def delete_bulk(request):
     """Массово удалить запись о транзакции.
 
@@ -149,6 +163,7 @@ def delete_bulk(request):
 
 @swagger_auto_schema(method='get', query_serializer=GetTransactionSerializer, tags=['Transaction'])
 @api_view(['GET'])
+@check_premission
 def get(request):
     """Получить запись о транзакции.
 
@@ -171,6 +186,7 @@ def get(request):
 
 @swagger_auto_schema(method='GET', query_serializer=GetTransactionBulkSerializer, tags=['Transaction'])
 @api_view(['GET'])
+@check_premission
 def get_bulk(request):
     """Массово получить запись о транзакции.
 
@@ -199,6 +215,7 @@ def get_bulk(request):
 
 @swagger_auto_schema(method='POST', query_serializer=CopyTransactionSerializer, tags=['Transaction'])
 @api_view(['POST'])
+@check_premission
 def copy(request):
     """Копировать запись о транзакции.
 
@@ -224,6 +241,7 @@ def copy(request):
 
 @swagger_auto_schema(method='POST', request_body=CopyTransactionBulkSerializer, tags=['Transaction'])
 @api_view(['POST'])
+@check_premission
 def copy_bulk(request):
     """Массово копировать запись о транзакции.
 
