@@ -16,6 +16,8 @@ djangorestframework-simplejwt = "^5.3.1"
 django-admin = "^2.0.2"
 uvicorn = "^0.25.0"
 django-phonenumber-field = {extras = ["phonenumbers"], version = "^7.2.0"}
+django-dynamic-fixture = "^4.0.1"
+tqdm = "^4.66.1"
 
 
 [build-system]

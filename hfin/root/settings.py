@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     'transaction',
     'user',
     'common_utils',
-    'payment'
+    'payment',
+    'funds_director',
+    'root'
 ]
 
 MIDDLEWARE = [
