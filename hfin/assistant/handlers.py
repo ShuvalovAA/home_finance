@@ -71,12 +71,21 @@ class MLLinearRegressionAmountExpense:
         else:
             print('good determination')
 
-        
-        predict_days_of_years = self.days_of_year.reshape((-1, 1))
-
+        predict_days_of_years = np.array([ z for z in set([i[0] for i in self.days_of_year])]).reshape((-1, 1))
         predict_result = self.work_model.predict(predict_days_of_years)
-        breakpoint()
-        data = [{"day_of_year": i, "amount": round(Decimal(predict_result[i]), 2)} for i in range(0, len(predict_result) - 1, 1)]
+        
+        days = [i[0] for i in predict_days_of_years]
+        amounts = [round(Decimal(i), 2) for i in predict_result]
+        data = []
+        for i in range(0, len(days)-1, 1):
+            data.append(
+                {
+                    "day_of_year": days[i],
+                    "month_of_year": int(days[i] / 30)+1,
+                    "amount": amounts[i]
+                }
+            )
+
         return data
 
 
