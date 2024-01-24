@@ -35,12 +35,18 @@ def predict_day_of_year(request):
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 
     try:
-        result = ml_linear_regression.get_prediction(user, expense_name.lower())
+        result, mode, deviation, median, monthly_amount_assumption = ml_linear_regression.get_prediction(
+            user, expense_name.lower()
+        )
     except Expense.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
     data = {
         "user_id": user_id,
         "expense_name": expense_name,
-        "predict_amounts_by_day_of_year": result
+        "mode": mode,
+        "deviation": deviation,
+        "median": median,
+        "monthly_amount_assumption": monthly_amount_assumption,
+        "predict_amounts_by_month_of_year": result
     }
     return Response(data, status=status.HTTP_201_CREATED)

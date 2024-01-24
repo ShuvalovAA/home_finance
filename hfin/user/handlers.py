@@ -23,7 +23,7 @@ def create_sms_confirm(user: User):
     print(f'CODE:\t {number}')
     expare_date = datetime.datetime.now() + relativedelta(minutes=1)
     UserPhoneConfirmSMS.objects.create(number=number, user=user, expare_date=expare_date)
-    sms_handler.send_sms(user=user, text=f'Ваш пароль:{number}')
+    #sms_handler.send_sms(user=user, text=f'Ваш пароль:{number}')
 
 
 def create_email_confirm(user: User):
