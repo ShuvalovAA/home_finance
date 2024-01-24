@@ -71,10 +71,11 @@ class MLLinearRegressionAmountExpense:
         else:
             print('good determination')
 
-        breakpoint()
+        
         predict_days_of_years = self.days_of_year.reshape((-1, 1))
 
         predict_result = self.work_model.predict(predict_days_of_years)
+        breakpoint()
         data = [{"day_of_year": i, "amount": round(Decimal(predict_result[i]), 2)} for i in range(0, len(predict_result) - 1, 1)]
         return data
 
