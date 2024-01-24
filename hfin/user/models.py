@@ -23,11 +23,20 @@ class User(AbstractUser):
     is_phone_confirm = models.BooleanField(blank=True, default=False)
     is_email_confirm = models.BooleanField(blank=True, default=False)
     email_token = models.CharField(max_length=100, null=True)
+    enable_subscription = models.BooleanField(blank=True, default=False)
 
     USERNAME_FIELD = 'phone'
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
+
+    def activate_subscription(self):
+        self.enable_subscription = True
+        self.save()
+
+    def deactivate_subscription(self):
+        self.enable_subscription = False
+        self.save()
 
 
 class UserPhoneConfirmSMS(models.Model):

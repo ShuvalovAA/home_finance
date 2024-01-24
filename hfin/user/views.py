@@ -13,21 +13,24 @@ from rest_framework.response import Response
 from .forms import ConfirmSMS, LoginForm, RegisterForm
 from .handlers import confirm_login, confirm_phone, create_email_confirm, create_sms_confirm
 from .models import User
+from .serialazers import GetUserSerializer, UpdateUserSerializer
 
 
-@swagger_auto_schema(method='PATCH', tags=['User'])
+@swagger_auto_schema(method='PATCH', query_serializer=UpdateUserSerializer, tags=['User'])
 @api_view(['PATCH'])
 def update(request):
     """Обновить данные пользователя."""
     pass
 
 
-@swagger_auto_schema(method='GET', tags=['User'])
+@swagger_auto_schema(method='GET', query_serializer=GetUserSerializer, tags=['User'])
 @api_view(['GET'])
 def get(request):
     """Получить данные пользователя."""
     user = User.objects.get(pk=request.GET['id'])
     user_dict = model_to_dict(user)
+    phone_field = user_dict.get('phone')
+    user_dict['phone'] = '' if phone_field.is_valid == False else phone_field.__str__()
     return Response(user_dict, status=status.HTTP_200_OK)
 
 

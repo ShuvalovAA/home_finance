@@ -4,6 +4,7 @@ from income.models import Income
 from expense.models import Expense
 from transaction.models import Transaction
 
+
 class Reporter:
     """Класс отчётов по доходам, расходам, транзакциям пользователя."""
 
@@ -28,7 +29,7 @@ class Reporter:
             date__gte=self.start_period,
             date__lte=self.end_period
         ).only('name', 'date', 'amount', 'done').values())
-        return {'expense': expense_list}
+        return {'expenses': expense_list}
 
     def get_transaction(self):
         "Получить словарь значений транзакций."
@@ -37,4 +38,4 @@ class Reporter:
             date__gte=self.start_period,
             date__lte=self.end_period
         ).only('name', 'date', 'amount').values())
-        return {'transaction': transaction_list}
+        return {'transactions': transaction_list}

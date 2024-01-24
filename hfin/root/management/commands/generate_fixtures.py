@@ -13,6 +13,11 @@ class Command(BaseCommand):
     python manage.py generate_fixtures <количество фикстур, которые необходимо создать.>
     """
     help = "Команда генерирует тестовые данные для пользовательских моделей."
+    INGNORE_APPS = [
+        'userphoneconfirmsms',
+        'user_user_permissions',
+        
+    ]
 
     def add_arguments(self, parser):
         "Добавление аргументов из треминальной строки"
@@ -27,6 +32,8 @@ class Command(BaseCommand):
             if application:
                 error_fixtures_count = 0
                 for model_name, model_class in application.items():
+                    if model_name in self.INGNORE_APPS:
+                        continue
                     for _ in tqdm(range(count_fixtures), desc=model_name):
                         try:
                             model_obj = G(model_class)

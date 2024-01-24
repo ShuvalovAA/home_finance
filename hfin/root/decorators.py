@@ -19,7 +19,7 @@ def check_premission(method, *args, **kwargs):
 
         params_get_user_id = request.GET.get('user_id')
         params_data_user_id = request.data.get('user_id')
-        params_user_id = params_get_user_id or params_data_user_id
+        params_user_id = params_get_user_id or params_data_user_id or request_user_id
 
         if not params_user_id:
             raise PermissionDenied

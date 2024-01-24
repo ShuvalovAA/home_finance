@@ -9,4 +9,4 @@ class Income(models.Model):
     date = models.fields.DateTimeField(null=False)
     amount = models.fields.DecimalField(null=False, max_digits=21, decimal_places=2)
     done = models.fields.BooleanField(null=False, blank=False)
-    user_id = models.BigIntegerField(null=False)
+    user = models.ForeignKey(AUTH_USER_MODEL, models.CASCADE)

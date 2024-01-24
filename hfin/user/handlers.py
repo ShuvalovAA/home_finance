@@ -1,10 +1,14 @@
 import random
 import os
 import struct
+import datetime
+from dateutil.relativedelta import relativedelta
 
 from django.utils.timezone import now
 
 from .models import User, UserPhoneConfirmSMS
+from clients.sms_handler import sms_handler
+from clients.email_handler import email_handler
 
 
 def create_sms_confirm(user: User):
@@ -17,7 +21,9 @@ def create_sms_confirm(user: User):
     number = f'{first_number}{suff}'
     number = int(number)
     print(f'CODE:\t {number}')
-    UserPhoneConfirmSMS.objects.create(number=number, user=user)
+    expare_date = datetime.datetime.now() + relativedelta(minutes=1)
+    UserPhoneConfirmSMS.objects.create(number=number, user=user, expare_date=expare_date)
+    sms_handler.send_sms(user=user, text=f'Ваш пароль:{number}')
 
 
 def create_email_confirm(user: User):
@@ -30,6 +36,7 @@ def create_email_confirm(user: User):
     # message = f'Hi paste your link to verify your account http://localhost:80/verify/{token}'
     # recipient_list = [user.email]
     # send_mail(subject, message , email_from ,recipient_list)
+    email_handler.send_email(user=user, text='Для подтверждения E-mail перейдите по ссылке.')
 
 
 def confirm_login(user: User, code: int):

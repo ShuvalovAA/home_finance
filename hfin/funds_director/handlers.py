@@ -53,8 +53,8 @@ class FundsDirector:
         transaction_funds_qs = Transaction.objects.filter(
             user_id=self.user_id
         ).values('name').annotate(sum_amount=Sum('amount'))
-        if not transaction__funds_qs:
-            raise Transaction.DoesNotExist
+        if not transaction_funds_qs:
+            return {}
 
         transaction_names = set(raw['name'] for raw in transaction_funds_qs)
         transaction_dict = {name: {'done': 0} for name in transaction_names}

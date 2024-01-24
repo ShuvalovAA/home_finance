@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-(7$ag!m$iq+c0k=mvifra#mauyu=2rg!gl!7pe3fi9km_m5*%&
 DEBUG = True
 AUTH_USER_MODEL = 'user.User'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['http://localhost']
 
 # 'rest_framework',
 # 'rest_framework_simplejwt',
@@ -132,6 +133,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static', )
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -146,4 +148,25 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     )
+}
+
+SMS_CONFIG = {
+    'login': 'login',
+    'password': 'password',
+    'secret_key': 'secret_key',
+    'url': 'url'
+}
+
+EMAIL_CONFIG = {
+    'login': 'login',
+    'password': 'password',
+    'secret_key': 'secret_key',
+    'url': 'https://www.yandex.ru'
+}
+
+PAYMENT_CONFIG = {
+    'login': 'login',
+    'password': 'password',
+    'secret_key': 'secret_key',
+    'url': 'url'
 }
