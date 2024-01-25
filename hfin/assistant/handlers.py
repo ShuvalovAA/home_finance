@@ -3,6 +3,7 @@ https://translated.turbopages.org/proxy_u/en-ru.ru.7055a0a8-65afae38-7e82c3e0-74
 """
 
 import numpy as np
+import datetime
 from scipy import stats
 from sklearn.linear_model import LinearRegression
 from django.db.models import Sum
@@ -35,20 +36,21 @@ class MLLinearRegressionAmountExpense:
         expenses = list(
                 Expense.objects.filter(
                 done=True, # True
-                name__iexact=expense_name
+                name__iexact=expense_name,
+                amount__gte=0
             ).values_list(
                 'date__year',
                 'date__month'
             ).annotate(
                 total_amount=Sum('amount')
-            ).values_list('date__month', 'total_amount')
+            ).values_list('date__year', 'date__month', 'total_amount')
         )
 
         if not expenses:
             raise Expense.DoesNotExist('Expense.DoesNotExist')
 
-        self.months_of_year = np.array([row[0] for row in expenses]).reshape((-1, 1))
-        self.amounts = np.array([row[1] for row in expenses])
+        self.months_of_year = np.array([(row[0]*100) + row[1] for row in expenses]).reshape((-1, 1))
+        self.amounts = np.array([row[2] for row in expenses])
 
         self.work_model = self.linear_model.fit(self.months_of_year, self.amounts)
         #self._save_model(models_name=expense_name)
@@ -73,39 +75,38 @@ class MLLinearRegressionAmountExpense:
         if determination < 0.5:
             print(f'bad determination: {determination} \n coef: {self.work_model.coef_}')
         else:
-            print('good determination')
+            print(f'good determination: {determination} \n coef: {self.work_model.coef_}')
 
-        predict_months_of_year = np.array([ z for z in set([i[0] for i in self.months_of_year])]).reshape((-1, 1))
-        predict_result = self.work_model.predict(predict_months_of_year)
-        days = [i[0] for i in predict_months_of_year]
+        year = datetime.datetime.now().year
+        months = []
+        for m in range(1, 13, 1):
+            months.append((year * 100) + m)
+        months = np.array(months).reshape((-1, 1))
+        predict_result = self.work_model.predict(months)
+        days = [i[0] for i in months]
         amounts = [round(Decimal(i), 2) for i in predict_result]
         data = []
 
+        mode_result = stats.mode([float(i) for i in self.amounts])
+        deviations = []
+        for i in amounts:
+            deviations.append(float(mode_result.mode) / float(i) )
+        deviation_mode = stats.mode(deviations).mode
+
         for i in range(0, len(days), 1):
+            amount = amounts[i]
+            if self.work_model.coef_[0] > 50:
+                amount = round(Decimal(float(amount) / self.work_model.coef_[0] * 100), 2)
             data.append(
                 {
-                    "month_of_year": days[i],
-                    "amount": amounts[i]
+                    "year": int(days[i] / 100),
+                    "month": days[i] % 100,
+                    "amount": amount
                 }
             )
         mode_result = stats.mode([float(i) for i in self.amounts])
-
-        deviations = []
-        for i in amounts:
-            deviations.append(float(mode_result.mode) / float(i))
-        deviation = stats.mode(deviations).mode
-
         median = np.median(self.amounts)
-        if mode_result.mode > median:
-            deviation += 1
-        monthly_amount_assumption = round(Decimal(mode_result.mode * deviation), 2)
-
-        if mode_result.mode > median:
-            for i in data:
-                amount_with_deviation = float(i["amount"]) * deviation
-                i["amount"] = round(Decimal(amount_with_deviation), 2)
-
-        return data, Decimal(mode_result.mode), deviation, median, monthly_amount_assumption
+        return data, Decimal(mode_result.mode), median
 
 
 ml_linear_regression = MLLinearRegressionAmountExpense()
