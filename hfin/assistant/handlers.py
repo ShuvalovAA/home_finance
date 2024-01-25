@@ -35,15 +35,15 @@ class MLLinearRegressionAmountExpense:
 
         expenses = list(
                 Expense.objects.filter(
-                done=True, # True
-                name__iexact=expense_name,
-                amount__gte=0
-            ).values_list(
-                'date__year',
-                'date__month'
-            ).annotate(
-                total_amount=Sum('amount')
-            ).values_list('date__year', 'date__month', 'total_amount')
+                    done=True,
+                    name__iexact=expense_name,
+                    amount__gte=0
+                ).values_list(
+                    'date__year',
+                    'date__month'
+                ).annotate(
+                    total_amount=Sum('amount')
+                ).values_list('date__year', 'date__month', 'total_amount')
         )
 
         if not expenses:
@@ -88,10 +88,10 @@ class MLLinearRegressionAmountExpense:
         data = []
 
         mode_result = stats.mode([float(i) for i in self.amounts])
-        deviations = []
-        for i in amounts:
-            deviations.append(float(mode_result.mode) / float(i) )
-        deviation_mode = stats.mode(deviations).mode
+        # deviations = []
+        # for i in amounts:
+        #     deviations.append(float(mode_result.mode) / float(i) )
+        # deviation_mode = stats.mode(deviations).mode
 
         for i in range(0, len(days), 1):
             amount = amounts[i]
