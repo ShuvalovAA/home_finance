@@ -1,3 +1,9 @@
+<script
+  src="https://code.jquery.com/jquery-3.6.3.js"
+  integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+  crossorigin="anonymous">
+</script>
+
 <form method="POST" novalidate>
 	{% csrf_token %}
 	<h2>Sign Up</h2>
@@ -17,3 +23,13 @@
 	<input type="submit" value="Register" />
     <p>Already has an account? <a href="{%url 'login' %}">Login</a></p>
 </form>
+
+
+<script>
+	$('.captcha').click(function () {
+		$.getJSON("/captcha/refresh/", function (result) {
+			$('.captcha').attr('src', result['image_url']);
+			$('#id_captcha_0').val(result['key'])
+		});
+	});
+</script>

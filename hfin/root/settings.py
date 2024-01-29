@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'captcha',
     'rest_framework',
     'rest_framework_simplejwt',
     'phonenumber_field',
@@ -52,7 +53,8 @@ INSTALLED_APPS = [
     'common_utils',
     'payment',
     'funds_director',
-    'root'
+    'root',
+    'tasks'
 ]
 
 MIDDLEWARE = [

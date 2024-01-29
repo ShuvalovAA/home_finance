@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from phonenumber_field.formfields import PhoneNumberField
+from captcha.fields import CaptchaField
 
 from .models import User
 
@@ -10,6 +11,7 @@ class LoginForm(forms.Form):
 
     phone = PhoneNumberField()
     password = forms.CharField(max_length=65, widget=forms.PasswordInput)
+    captcha = CaptchaField()
 
 
 class ConfirmSMS(forms.Form):
@@ -22,6 +24,8 @@ class ConfirmSMS(forms.Form):
 
 class RegisterForm(UserCreationForm):
     """Форма регистрации."""
+
+    captcha = CaptchaField()
 
     class Meta:
         """Метаданный формы регистрации."""
