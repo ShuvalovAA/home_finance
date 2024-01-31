@@ -1,0 +1,59 @@
+image: 838375350179/hf
+deployment: staging
+replicaCount: 1
+
+app:
+  name: hfin
+  root: /services/hfin
+  version: latest
+  log_level: debug
+  delay: 0
+  localhost: dev.hfin.local
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+clickhouse:
+  host: hfin-clickhouse
+  port: 8123
+  db:
+    name: default
+  user:
+    name: default
+    password: ''
+
+redis:
+  version: 7.0
+  host: hfin-redis
+  port: 6379
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+postgresql:
+  version: 15
+  host: hfin-postgresql
+  port: 5432
+  db:
+    name: postgres
+  user:
+    name: postgres
+    password: postgres
+
+autoscaling:
+  enabled: false
+
+sentry:
+  enabled: false
+
+statsd:
+  enabled: false

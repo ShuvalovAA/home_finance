@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "service.fullname" . }}-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "service.fullname" . }}-nginx
+  strategy:
+    rollingUpdate:
+      maxSurge: 30%
+      maxUnavailable: 30%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ include "service.fullname" . }}-nginx
+    spec:
+      containers:
+      - image: nginx:1.20
+        name: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - name: {{ include "service.fullname" . }}-nginx-conf
+            mountPath: /etc/nginx/conf.d/
+      volumes:
+      - name: {{ include "service.fullname" . }}-nginx-conf
+        configMap:
+          name: {{ include "service.fullname" . }}-nginx-conf

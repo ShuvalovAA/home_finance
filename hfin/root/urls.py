@@ -21,6 +21,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from django.conf.urls.static import static
 from django.conf import settings
+from .handlers import favicon_view
 
 
 schema_view = get_schema_view(
@@ -37,6 +38,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    re_path(r'^favicon.ico$', favicon_view),
     path('captcha/', include('captcha.urls')),
     path('admin/', admin.site.urls),
     re_path(

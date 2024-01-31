@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "service.fullname" . }}
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: 1
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "service.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers:
+      - name: {{ .Chart.Name }}-init-postgres
+        image: busybox:1.35
+        {{- if eq .Values.deployment "local" }}
+        imagePullPolicy: IfNotPresent
+        {{- else }}
+        imagePullPolicy: Always
+        {{- end }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "service.fullname" . }}-app-env
+        command: ['sh', '-c', 'echo -e "Checking PG"; while ! nc -z $(HFIN_POSTGRESQL_HOST) $(HFIN_POSTGRESQL_PORT); do sleep 1; printf "-"; done; echo -e "  >> PG OK";']
+      - name: {{ .Chart.Name }}-init-clickhouse
+        image: busybox:1.35
+        {{- if eq .Values.deployment "local" }}
+        imagePullPolicy: IfNotPresent
+        {{- else }}
+        imagePullPolicy: Always
+        {{- end }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "service.fullname" . }}-app-env
+        command: ['sh', '-c', 'echo -e "Checking CH"; while ! nc -z $(HFIN_CLICKHOUSE_HOST) $(HFIN_CLICKHOUSE_PORT); do sleep 1; printf "-"; done; echo -e "  >> CH OK";']
+      containers:
+        - name: {{ .Chart.Name }}
+          tty: true
+          stdin: true
+          image: "{{ .Values.image }}:{{ .Values.app.version | default .Chart.AppVersion }}"
+          {{- if eq .Values.deployment "local" }}
+          imagePullPolicy: IfNotPresent
+          {{- else }}
+          imagePullPolicy: Always
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "service.fullname" . }}-app-env
+          command:
+            - "poetry"
+          args:
+            - "run"
+            - "uvicorn"
+            - "asgi:application"
+            - "--host=0.0.0.0"
+            - "--port=8080"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: "{{ .Values.app.root }}/openapi.json"
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 300
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

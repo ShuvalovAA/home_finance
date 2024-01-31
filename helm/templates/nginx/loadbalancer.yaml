@@ -1,0 +1,26 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ include "service.fullname" . }}-nginx-loadbalancer
+  namespace: ingress-nginx
+  annotations:
+    metallb.universe.tf/address-pool: default
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 80
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443
+      nodePort: 443
+  selector:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+  type: LoadBalancer

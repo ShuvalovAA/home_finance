@@ -1,0 +1,16 @@
+{{- if ne .Values.deployment "production" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "service.fullname" . }}-postgresql-env
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+data:
+  # POSTGRESQL settings
+  POSTGRES_PASSWORD: "{{ .Values.postgresql.user.password }}"
+  HFIN_POSTGRESQL_PORT: "{{ .Values.postgresql.port }}"
+  HFIN_POSTGRESQL_HOST: "{{ .Values.postgresql.host }}"
+  HFIN_POSTGRESQL_PASSWORD: "{{ .Values.postgresql.user.password }}"
+  HFIN_POSTGRESQL_USER: "{{ .Values.postgresql.user.name }}"
+  HFIN_POSTGRESQL_DATABASE: "{{ .Values.postgresql.db.name }}"
+{{- end }}

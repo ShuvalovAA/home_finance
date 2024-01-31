@@ -1,16 +1,17 @@
-SOURCES=./hfin
+SOURCES=./src
 TESTS=./tests
 
 PYPI_USER = ${pypi_user}
 PYPI_PASS = ${pypi_pass}
 
-DOCKER_IMAGE_TAG = $(or ${VERSION}, $(shell poetry version -s))
-DOCKER_IMAGE = cr.yandex/crp0civq107m91j8p8a2/services/changeset:$(DOCKER_IMAGE_TAG)
-DOCKER_BUILD_ARGS = --build-arg pypi_pass='$(PYPI_PASS)' --build-arg pypi_user='$(PYPI_USER)'
+DOCKER_IMAGE = 838375350179/hf:latest
 
 
 lint:
 	flake8 --count --show-source --statistics --config=.flake8rc $(SOURCES)
+
+lint-tests:
+	flake8 --count --show-source --statistics --config=.flake8rc $(TESTS)
 
 lint-imports:
 	PYTHONPATH=$(SOURCES) lint-imports --config=.importlinterrc
@@ -22,12 +23,13 @@ imports-lint:
 	isort --settings=.isort.cfg --check $(SOURCES)
 
 sort-imports:
-	isort --settings=.isort.cfg $(SOURCES)
+	isort --settings=.isort.cfg $(SOURCES) && isort --settings=.isort.cfg $(TESTS)
 
-check-lint: lint sort-imports lint-imports security-lint imports-lint
+check-lint: lint lint-tests sort-imports lint-imports security-lint imports-lint
 
 test:
-	PYTHONPATH=$(SOURCES):$(PYTHONPATH) python -m pytest --cov=$(SOURCES) --cov-report=term --cov-report html --cov-config=.coveragerc $(TESTS)
+	PYTHONPATH=$(SOURCES):$(PYTHONPATH) python -m pytest --cov=$(SOURCES) --cov-report=term --cov-report term-missing --cov-config=.coveragerc $(TESTS)
+
 
 build: clean
 	poetry build
@@ -47,7 +49,7 @@ docker-build:
 ifneq ($(PYPI_PASS),)
 ifneq ($(PYPI_USER),)
 	poetry lock --no-update \
-	&& docker build  --tag $(DOCKER_IMAGE) $(DOCKER_BUILD_ARGS) .
+	&& docker build . -t 838375350179/hf:latest
 else
 	@echo 'pypi_user is not set. Use: "make docker-build pypi_user=some.user pypi_pass=***"'
 endif
@@ -59,12 +61,11 @@ docker-push:
 	docker push $(DOCKER_IMAGE)
 
 minikube-list-pods:
-	@minikube kubectl -- get pods -n changeset
+	@minikube kubectl -- get pods -n hfin
 
 minikube-run-local:
-	@helm install --create-namespace -n changeset changeset ./helm -f ./helm/values.local.yaml
+	@helm install --create-namespace -n hfin hfin ./helm -f ./helm/values.local.yaml
 
 minikube-stop-local:
-	@helm uninstall changeset -n changeset
-
+	@helm uninstall hfin -n hfin
 

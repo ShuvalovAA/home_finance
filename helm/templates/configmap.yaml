@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "service.fullname" . }}-app-env
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+data:
+  # APPLICATION settings
+  APPLICATION_ENVIRONMENT:  "{{ .Values.deployment }}"
+  APPLICATION_ROOT: "{{ .Values.app.root }}"
+  APPLICATION_VERSION: "{{ .Values.app.version | default .Chart.AppVersion }}"
+  HFIN_POSTGRESQL_PORT: "{{ .Values.postgresql.port }}"
+  HFIN_POSTGRESQL_HOST: "{{ .Values.postgresql.host }}"
+  HFIN_POSTGRESQL_PASSWORD: "{{ .Values.postgresql.user.password }}"
+  HFIN_POSTGRESQL_USER: "{{ .Values.postgresql.user.name }}"
+  HFIN_POSTGRESQL_DATABASE: "{{ .Values.postgresql.db.name }}"
+  HFIN_CLICKHOUSE_USER: "{{ .Values.clickhouse.user.name }}"
+  HFIN_CLICKHOUSE_PASSWORD: "{{ .Values.clickhouse.user.password }}"
+  HFIN_CLICKHOUSE_HOST: "{{ .Values.clickhouse.host }}"
+  HFIN_CLICKHOUSE_PORT: "{{ .Values.clickhouse.port }}"
+  HFIN_REDIS_HOST: "{{ .Values.redis.host }}"
+  HFIN_REDIS_PORT: "{{ .Values.redis.port }}"

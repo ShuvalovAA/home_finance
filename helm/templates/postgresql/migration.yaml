@@ -1,0 +1,43 @@
+---
+{{- if ne .Values.deployment "production" }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "service.fullname" . }}-migration-postgresql
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+spec:
+  restartPolicy: Never
+  initContainers:
+      - name: {{ .Chart.Name }}-init-postgres
+        image: busybox:1.35
+        {{- if eq .Values.deployment "local" }}
+        imagePullPolicy: IfNotPresent
+        {{- else }}
+        imagePullPolicy: Always
+        {{- end }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "service.fullname" . }}-postgresql-env
+        command: ['sh', '-c', 'await.sh $(HFIN_POSTGRESQL_HOST) $(HFIN_POSTGRESQL_PORT) 100000 10']
+  containers:
+    - name: {{ .Chart.Name }}
+      image: "{{ .Values.image }}:{{ .Values.app.version | default .Chart.AppVersion }}"
+      {{- if eq .Values.deployment "local" }}
+      imagePullPolicy: IfNotPresent
+      {{- else }}
+      imagePullPolicy: Always
+      {{- end }}
+      envFrom:
+        - configMapRef:
+            name: {{ include "service.fullname" . }}-postgresql-env
+      command:
+        - "poetry"
+      args:
+        - "run"
+        - "alembic"
+        - "-n"
+        - "postgresql_migrations"
+        - "upgrade"
+        - "head"
+{{- end }}

@@ -27,7 +27,8 @@ DEBUG = True
 AUTH_USER_MODEL = 'user.User'
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['http://localhost']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://dev.hfin.local']
+
 
 # 'rest_framework',
 # 'rest_framework_simplejwt',
