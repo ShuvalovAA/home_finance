@@ -4,11 +4,11 @@ replicaCount: 1
 
 app:
   name: hfin
-  root: /services/hfin
+  root: dev.hfin.local
   version: latest
   log_level: debug
   delay: 0
-  localhost: dev.hfin.local
+  devhost: dev.hfin.local
 
   resources:
     requests:
@@ -41,7 +41,7 @@ redis:
 
 postgresql:
   version: 15
-  host: hfin-postgresql
+  host: hfin-postgresql-master
   port: 5432
   db:
     name: postgres

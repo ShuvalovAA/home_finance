@@ -18,8 +18,8 @@ spec:
         {{- end }}
         envFrom:
           - configMapRef:
-              name: {{ include "service.fullname" . }}-postgresql-env
-        command: ['sh', '-c', 'await.sh $(HFIN_POSTGRESQL_HOST) $(HFIN_POSTGRESQL_PORT) 100000 10']
+              name: {{ include "service.fullname" . }}-postgresql-master-env
+        command: ['sh', '-c', 'echo -e "Checking PG"; while ! nc -z $(HFIN_POSTGRESQL_HOST) $(HFIN_POSTGRESQL_PORT); do sleep 1; printf "-"; done; echo -e "  >> PG OK";']
   containers:
     - name: {{ .Chart.Name }}
       image: "{{ .Values.image }}:{{ .Values.app.version | default .Chart.AppVersion }}"
@@ -30,14 +30,12 @@ spec:
       {{- end }}
       envFrom:
         - configMapRef:
-            name: {{ include "service.fullname" . }}-postgresql-env
-      command:
-        - "poetry"
+            name: {{ include "service.fullname" . }}-postgresql-master-env
+      command: ["sh", "-c"]
       args:
-        - "run"
-        - "alembic"
-        - "-n"
-        - "postgresql_migrations"
-        - "upgrade"
-        - "head"
+      - |
+        poetry run python manage.py makemigrations
+        poetry run python manage.py migrate
+        poetry run python manage.py custom_createsuperuser +79999999999 example@example.com test
+        poetry run python manage.py generate_fixtures 100
 {{- end }}

@@ -10,9 +10,11 @@
 ### Создать пространство имён
 `kubectl create namespace hfin`
 
+### Дождаться когда под ingress-nginx-controller-* будет в статусе RUNNING
+`kubectl -n ingress-nginx get pods`
+
 ### Внутри директории проекта вызвать сборку с помощью утилиты Helm
 helm install <namespace> <project dir> -n <namespace> -f <values config file path>
-
 `helm install hfin ./helm -n hfin -f ./helm/values.staging.yaml`
 
 ### Проверить, что все поды в namespace запущены
@@ -27,3 +29,6 @@ echo '<ingress address> <ingress host>' | sudo tee -a /etc/hosts
 
 ### Проверить порт для LoadBalancer(ожидается 80:80/TCP,443:443/TCP)
 `kubectl -n ingress-nginx get svc | grep 'LoadBalancer'`
+
+### Проверить резолв http://dev.hfin.local/
+`curl http://dev.hfin.local/`

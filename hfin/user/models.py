@@ -1,9 +1,22 @@
 from datetime import timedelta
 
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.timezone import now
 from phonenumber_field.modelfields import PhoneNumberField
+
+
+class CustomtUserManager(BaseUserManager):
+    """Кастомизированный менеджер управления моделью пользователя."""
+
+    def create_superuser(self, phone, password=None, **extra_fields):
+        """Создать суперпользователя."""
+        password = password if password else 'test'
+        user = User.objects.create(phone, extra_fields.get('email'), "test")
+        user.set_password(password)
+        user.is_superuser = True
+        user.is_service_account = True
+        user.save(using=self._db)
 
 
 class User(AbstractUser):
@@ -13,7 +26,7 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=124)
     middle_name = models.CharField(max_length=124)
     email = models.EmailField(max_length=254)
-    birth_date = models.DateTimeField()
+    birth_date = models.DateTimeField(null=True)
     register_date = models.DateField()
     sms_subcribe = models.BooleanField()
     email_subcribe = models.BooleanField()

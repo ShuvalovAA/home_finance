@@ -16,7 +16,8 @@ class Command(BaseCommand):
     INGNORE_APPS = [
         'userphoneconfirmsms',
         'user_user_permissions',
-        
+        'captchastore',
+        'user_groups'
     ]
 
     def add_arguments(self, parser):

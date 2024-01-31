@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "service.fullname" . }}-postgresql
+  name: {{ include "service.fullname" . }}-postgresql-master
   labels:
     {{- include "service.labels" . | nindent 4 }}
 spec:
@@ -24,7 +24,7 @@ spec:
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
-                name: {{ include "service.fullname" . }}-postgresql-env
+                name: {{ include "service.fullname" . }}-postgresql-master-env
           ports:
             - name: pg
               containerPort: {{ .Values.postgresql.port }}

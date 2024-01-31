@@ -5,7 +5,7 @@ metadata:
   name: {{ include "service.fullname" . }}-ingress-nginx
 spec:
   rules:
-  - host: {{ .Values.app.localhost }}
+  - host: {{ .Values.app.devhost }}
     http:
       paths:
       - path: /

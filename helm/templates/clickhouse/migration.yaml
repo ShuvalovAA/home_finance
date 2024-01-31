@@ -19,7 +19,7 @@ spec:
       envFrom:
         - configMapRef:
             name: {{ include "service.fullname" . }}-clickhouse-env
-      command: ['sh', '-c', 'await.sh $(HFIN_CLICKHOUSE_HOST) $(HFIN_CLICKHOUSE_PORT) 100000 10']
+      command: ['sh', '-c', 'echo -e "Checking CH"; while ! nc -z $(HFIN_CLICKHOUSE_HOST) $(HFIN_CLICKHOUSE_PORT); do sleep 1; printf "-"; done; echo -e "  >> CH OK";']
   containers:
     - name: {{ .Chart.Name }}
       image: "{{ .Values.image }}:{{ .Values.app.version | default .Chart.AppVersion }}"

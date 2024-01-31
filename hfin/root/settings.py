@@ -95,8 +95,12 @@ ASGI_APPLICATION = 'asgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('HFIN_POSTGRESQL_DATABASE', 'postgres'),
+        'USER': os.environ.get('HFIN_POSTGRESQL_USER', 'postgres'),
+        'PASSWORD': os.environ.get('HFIN_POSTGRESQL_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('HFIN_POSTGRESQL_HOST', 'localhost'),
+        'PORT': os.environ.get('HFIN_POSTGRESQL_PORT', '5432'),
     }
 }
 

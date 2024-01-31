@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "service.fullname" . }}-postgresql-env
+  name: {{ include "service.fullname" . }}-postgresql-master-env
   labels:
     {{- include "service.labels" . | nindent 4 }}
 data:
@@ -13,4 +13,18 @@ data:
   HFIN_POSTGRESQL_PASSWORD: "{{ .Values.postgresql.user.password }}"
   HFIN_POSTGRESQL_USER: "{{ .Values.postgresql.user.name }}"
   HFIN_POSTGRESQL_DATABASE: "{{ .Values.postgresql.db.name }}"
+{{- end }}
+
+---
+{{- if ne .Values.deployment "staging" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "service.fullname" . }}-postgresql-master-env
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+data:
+  # POSTGRESQL settings
+  DJANGO_SUPERUSER_PASSWORD: test
+  DJANGO_SUPERUSER_EMAIL: example@example.com
 {{- end }}
