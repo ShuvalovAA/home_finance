@@ -49,6 +49,26 @@ postgresql:
     name: postgres
     password: postgres
 
+postgresql_replica_1:
+  version: 15
+  host: hfin-postgresql-replica-1
+  port: 5432
+  db:
+    name: postgres
+  user:
+    name: postgres
+    password: postgres
+
+postgresql-replica-2:
+  version: 15
+  host: hfin-postgresql-replica-2
+  port: 5432
+  db:
+    name: postgres
+  user:
+    name: postgres
+    password: postgres
+
 autoscaling:
   enabled: false
 

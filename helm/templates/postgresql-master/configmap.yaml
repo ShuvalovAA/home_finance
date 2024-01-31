@@ -15,16 +15,3 @@ data:
   HFIN_POSTGRESQL_DATABASE: "{{ .Values.postgresql.db.name }}"
 {{- end }}
 
----
-{{- if ne .Values.deployment "staging" }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "service.fullname" . }}-postgresql-master-env
-  labels:
-    {{- include "service.labels" . | nindent 4 }}
-data:
-  # POSTGRESQL settings
-  DJANGO_SUPERUSER_PASSWORD: test
-  DJANGO_SUPERUSER_EMAIL: example@example.com
-{{- end }}
