@@ -18,8 +18,30 @@ spec:
         {{- end }}
         envFrom:
           - configMapRef:
-              name: {{ include "service.fullname" . }}-postgresql-master-env
+              name: {{ include "service.fullname" . }}-migration-env
         command: ['sh', '-c', 'echo -e "Checking PG"; while ! nc -z $(HFIN_POSTGRESQL_HOST) $(HFIN_POSTGRESQL_PORT); do sleep 1; printf "-"; done; echo -e "  >> PG OK";']
+      - name: {{ .Chart.Name }}-init-postgres-replica-1
+        image: busybox:1.35
+        {{- if eq .Values.deployment "local" }}
+        imagePullPolicy: IfNotPresent
+        {{- else }}
+        imagePullPolicy: Always
+        {{- end }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "service.fullname" . }}-migration-env
+        command: ['sh', '-c', 'echo -e "Checking PG"; while ! nc -z $(HFIN_POSTGRESQL_REPLICA_1_HOST) $(HFIN_POSTGRESQL_REPLICA_1_PORT); do sleep 1; printf "-"; done; echo -e "  >> PG OK";']
+      - name: {{ .Chart.Name }}-init-postgres-replica-2
+        image: busybox:1.35
+        {{- if eq .Values.deployment "local" }}
+        imagePullPolicy: IfNotPresent
+        {{- else }}
+        imagePullPolicy: Always
+        {{- end }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "service.fullname" . }}-migration-env
+        command: ['sh', '-c', 'echo -e "Checking PG"; while ! nc -z $(HFIN_POSTGRESQL_REPLICA_2_HOST) $(HFIN_POSTGRESQL_REPLICA_2_PORT); do sleep 1; printf "-"; done; echo -e "  >> PG OK";']
       - name: {{ .Chart.Name }}-init-clickhouse
         image: busybox:1.35
         {{- if eq .Values.deployment "local" }}
@@ -29,7 +51,7 @@ spec:
         {{- end }}
         envFrom:
           - configMapRef:
-              name: {{ include "service.fullname" . }}-app-env
+              name: {{ include "service.fullname" . }}-migration-env
         command: ['sh', '-c', 'echo -e "Checking CH"; while ! nc -z $(HFIN_CLICKHOUSE_HOST) $(HFIN_CLICKHOUSE_PORT); do sleep 1; printf "-"; done; echo -e "  >> CH OK";']
       - name: {{ .Chart.Name }}-init-clickhouse-replica
         image: busybox:1.35
@@ -40,9 +62,8 @@ spec:
         {{- end }}
         envFrom:
           - configMapRef:
-              name: {{ include "service.fullname" . }}-app-env
+              name: {{ include "service.fullname" . }}-migration-env
         command: ['sh', '-c', 'echo -e "Checking CH"; while ! nc -z $(HFIN_CLICKHOUSE_REPLICA_HOST) $(HFIN_CLICKHOUSE_REPLICA_PORT); do sleep 1; printf "-"; done; echo -e "  >> CH OK";']
-  containers:
   containers:
     - name: {{ .Chart.Name }}
       image: "{{ .Values.image }}:{{ .Values.app.version | default .Chart.AppVersion }}"
@@ -53,7 +74,7 @@ spec:
       {{- end }}
       envFrom:
         - configMapRef:
-            name: {{ include "service.fullname" . }}-postgresql-master-env
+            name: {{ include "service.fullname" . }}-migration-env
       command: ["sh", "-c"]
       args:
       - |

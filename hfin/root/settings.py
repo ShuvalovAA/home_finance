@@ -102,6 +102,22 @@ DATABASES = {
         'HOST': os.environ.get('HFIN_POSTGRESQL_HOST', 'localhost'),
         'PORT': os.environ.get('HFIN_POSTGRESQL_PORT', '5432'),
     },
+    'postgresql_replica_1': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_DATABASE', 'postgres'),
+        'USER': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_USER', 'postgres'),
+        'PASSWORD': os.environ.get('HFIN_POSTGRESQ_REPLICA_1L_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_HOST', 'localhost'),
+        'PORT': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_PORT', '5432'),
+    },
+    'postgresql_replica_2': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_DATABASE', 'postgres'),
+        'USER': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_USER', 'postgres'),
+        'PASSWORD': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_HOST', 'localhost'),
+        'PORT': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_PORT', '5432'),
+    },
     'clickhouse': {
         'ENGINE': 'clickhouse_backend.backend',
         'NAME': os.environ.get('HFIN_CLICKHOUSE_DATABASE', 'default'),

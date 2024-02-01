@@ -1,0 +1,32 @@
+---
+{{- if ne .Values.deployment "production" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "service.fullname" . }}-postgresql-replica-2
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.postgresql_replica_2.host }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.postgresql_replica_2.host }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-postgresql
+          image: postgres:{{ .Values.postgresql_replica_2.version }}
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: {{ include "service.fullname" . }}-postgresql-replica-2-env
+          ports:
+            - name: pg
+              containerPort: {{ .Values.postgresql_replica_2.port }}
+              protocol: TCP
+{{- end }}

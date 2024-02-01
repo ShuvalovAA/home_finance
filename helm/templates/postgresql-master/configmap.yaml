@@ -14,17 +14,5 @@ data:
   HFIN_POSTGRESQL_USER: "{{ .Values.postgresql.user.name }}"
   HFIN_POSTGRESQL_DATABASE: "{{ .Values.postgresql.db.name }}"
 
-  # CLICK_HOUSE
-  HFIN_CLICKHOUSE_DATABASE: "{{ .Values.clickhouse.db.name }}"
-  HFIN_CLICKHOUSE_USER: "{{ .Values.clickhouse.user.name }}"
-  HFIN_CLICKHOUSE_PASSWORD: "{{ .Values.clickhouse.user.password }}"
-  HFIN_CLICKHOUSE_HOST: "{{ .Values.clickhouse.host }}"
-  HFIN_CLICKHOUSE_PORT: "{{ .Values.clickhouse.port }}"
-  HFIN_CLICKHOUSE_REPLICA_DATABASE: "{{ .Values.clickhouse_replica.db.name }}"
-  HFIN_CLICKHOUSE_REPLICA_USER: "{{ .Values.clickhouse_replica.user.name }}"
-  HFIN_CLICKHOUSE_REPLICA_PASSWORD: "{{ .Values.clickhouse_replica.user.password }}"
-  HFIN_CLICKHOUSE_REPLICA_HOST: "{{ .Values.clickhouse_replica.host }}"
-  HFIN_CLICKHOUSE_REPLICA_PORT: "{{ .Values.clickhouse_replica.port }}"
-
 {{- end }}
 

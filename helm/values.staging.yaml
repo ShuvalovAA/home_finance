@@ -81,7 +81,7 @@ postgresql_replica_1:
     name: postgres
     password: postgres
 
-postgresql-replica-2:
+postgresql_replica_2:
   version: 15
   host: hfin-postgresql-replica-2
   port: 5432
