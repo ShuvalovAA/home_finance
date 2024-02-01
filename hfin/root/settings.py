@@ -101,9 +101,17 @@ DATABASES = {
         'PASSWORD': os.environ.get('HFIN_POSTGRESQL_PASSWORD', 'postgres'),
         'HOST': os.environ.get('HFIN_POSTGRESQL_HOST', 'localhost'),
         'PORT': os.environ.get('HFIN_POSTGRESQL_PORT', '5432'),
+    },
+    'clickhouse': {
+        'ENGINE': 'clickhouse_backend.backend',
+        'NAME': os.environ.get('HFIN_CLICKHOUSE_DATABASE', 'default'),
+        'USER': os.environ.get('HFIN_CLICKHOUSE_USER', 'default'),
+        'PASSWORD': os.environ.get('HFIN_CLICKHOUSE_PASSWORD', ''),
+        'HOST': os.environ.get('HFIN_CLICKHOUSE_HOST', 'localhost'),
+        'PORT': os.environ.get('HFIN_CLICKHOUSE_PORT', '9000'),
     }
 }
-
+DATABASE_ROUTERS = ["root.dbrouters.DBRouter"]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -176,4 +184,17 @@ PAYMENT_CONFIG = {
     'password': 'password',
     'secret_key': 'secret_key',
     'url': 'url'
+}
+
+
+redis_cache_host = os.environ.get('HFIN_REDIS_CACHE_HOST', 'localhost')
+redis_cache_port = os.environ.get('HFIN_REDIS_CACHE_PORT', '6379')
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{redis_cache_host}:{redis_cache_port}/',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
 }

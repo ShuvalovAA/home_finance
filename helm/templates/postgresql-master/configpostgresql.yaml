@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  postgresql.conf: " \n wal_level = logical \n
+    listen_addresses = '*' \n
+    "
+
+kind: ConfigMap
+metadata:
+  name: {{ include "service.fullname" . }}-postgresql-conf-master-env

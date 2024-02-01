@@ -1,0 +1,17 @@
+{{- if ne .Values.deployment "production" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "service.fullname" . }}-redis-cache
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "service.name" . }}-{{ .Values.deployment | default "dev" }}-redis-cache
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: {{ include "service.fullname" . }}-redis-cache
+      port: {{ .Values.redis_cache.port }}
+      targetPort: {{ .Values.redis_cache.port }}
+{{- end }}

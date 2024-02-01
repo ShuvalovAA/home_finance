@@ -9,4 +9,9 @@
 1.6 - PGbouncer
 1.8 - Ошибка пользователь не найден user.views.signin
 1.9 - Рефакторинг /home/shuva/reps/home_finance/hfin/root/management/commands/custom_createsuperuser.py
-1.10 - - Функционал повторной отправки email подтверждения электронной почты
+1.10 - Функционал повторной отправки email подтверждения электронной почты
+1.11 - Sentry
+1.12 - Kibana
+1.13 - Grafana
+1.14 - Rust linters
+1.15 - ? REPLICA IDENTITY FULL на нужные таблицы PostgeSQL master

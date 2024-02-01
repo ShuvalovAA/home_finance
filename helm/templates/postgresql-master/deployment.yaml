@@ -21,12 +21,22 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-postgresql
           image: postgres:{{ .Values.postgresql.version }}
+          args: ['-c', 'config_file=/tmp/postgresql.conf']
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
                 name: {{ include "service.fullname" . }}-postgresql-master-env
+
           ports:
             - name: pg
               containerPort: {{ .Values.postgresql.port }}
               protocol: TCP
+          volumeMounts:
+          - name: {{ include "service.fullname" . }}-postgresql-conf-master-env
+            mountPath: /tmp/
+            readOnly: false
+      volumes:
+      - name: {{ include "service.fullname" . }}-postgresql-conf-master-env
+        configMap:
+          name: {{ include "service.fullname" . }}-postgresql-conf-master-env
 {{- end }}

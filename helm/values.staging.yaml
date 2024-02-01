@@ -39,6 +39,18 @@ redis:
       cpu: 200m
       memory: 256Mi
 
+redis_cache:
+  version: 7.0
+  host: hfin-redis-cache
+  port: 6379
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
 postgresql:
   version: 15
   host: hfin-postgresql-master

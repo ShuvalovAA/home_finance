@@ -35,7 +35,8 @@ spec:
       args:
       - |
         poetry run python manage.py makemigrations
-        poetry run python manage.py migrate
+        poetry run python manage.py migrate --database=default
+        poetry run python manage.py set_schema_replication_on_clickhouse
         poetry run python manage.py custom_createsuperuser +79999999999 example@example.com test
         poetry run python manage.py generate_fixtures 100
 {{- end }}
