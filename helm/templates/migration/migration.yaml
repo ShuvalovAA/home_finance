@@ -80,7 +80,10 @@ spec:
       - |
         poetry run python manage.py makemigrations
         poetry run python manage.py migrate --database=default
-        poetry run python manage.py set_schema_replication_on_clickhouse
+        poetry run python manage.py migrate --database=postgresql_replica_1
+        poetry run python manage.py migrate --database=postgresql_replica_2
+        poetry run python manage.py set_logical_replication_pg_ch
+        poetry run python manage.py set_logical_replication_pg_pg
         poetry run python manage.py custom_createsuperuser +79999999999 example@example.com test
         poetry run python manage.py generate_fixtures 100
 {{- end }}

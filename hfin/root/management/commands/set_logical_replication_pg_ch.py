@@ -11,7 +11,7 @@ class Command(BaseCommand):
     Сценарий команды забирает все соединения где имя совмпадает с подстрокой 'clickhouse' из пула
     конфигурации root.settings.DATABASES
 
-    WARNING: комнда должна быть выполнена после проведения миграций на всех базах.connection.
+    WARNING: комнда должна быть выполнена после проведения миграций на всех базах postgresql.
     REQUAREMENT:
      - /etc/postgesql/postgresql.conf должен содержать wal_level=logical
      - /etc/postgesql/postgresql.conf должен содержать max_replication_slots=20
