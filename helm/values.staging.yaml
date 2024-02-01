@@ -20,12 +20,22 @@ app:
 
 clickhouse:
   host: hfin-clickhouse
-  port: 8123
+  port: 9000
   db:
     name: default
   user:
     name: default
     password: ''
+
+clickhouse_replica:
+  host: hfin-clickhouse-replica
+  port: 9000
+  db:
+    name: default
+  user:
+    name: default
+    password: ''
+
 
 redis:
   version: 7.0

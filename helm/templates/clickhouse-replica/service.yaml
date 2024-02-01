@@ -1,0 +1,21 @@
+{{- if ne .Values.deployment "production" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "service.fullname" . }}-clickhouse-replica
+  labels:
+    {{- include "service.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ include "service.name" . }}-clickhouse-replica
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: {{ include "service.fullname" . }}-clickhouse-replica-http
+      port: 8123
+      targetPort: 8123
+    - name: {{ include "service.fullname" . }}-clickhouse-replica-native
+      port: 9000
+      targetPort: 9000
+{{- end }}
+

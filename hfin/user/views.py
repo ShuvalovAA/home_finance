@@ -134,6 +134,9 @@ def sign_in(request):
                         template_name='confirm_sms.html',
                         context={'user_id': user.id, 'register': 1}
                     )
+            else:
+                form.errors['error_user'] = 'User not found'
+                return HttpResponse(json.dumps(form.errors), status=status.HTTP_404_NOT_FOUND)
         return HttpResponse(json.dumps(form.errors), status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 

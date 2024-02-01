@@ -6,11 +6,19 @@ from .models import Expense
 class CreateExpenseSerializer(serializers.ModelSerializer):
     """Сериалайзер для создания модели расхода."""
 
+    user_id = serializers.IntegerField()
+
     class Meta:
         """Метаданные сериалайзера."""
 
         model = Expense
-        fields = '__all__'
+        fields = [
+            'name',
+            'date',
+            'amount',
+            'done',
+            'user_id'
+        ]
 
 
 class UpdateExpenseSerializer(serializers.ModelSerializer):

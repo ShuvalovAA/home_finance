@@ -6,11 +6,19 @@ from .models import Income
 class CreateIncomeSerializer(serializers.ModelSerializer):
     """Сериалайзер для создания модели дохода."""
 
+    user_id = serializers.IntegerField()
+
     class Meta:
         """Метаданные сериалайзера."""
 
         model = Income
-        fields = '__all__'
+        fields = [
+            'name',
+            'date',
+            'amount',
+            'done',
+            'user_id'
+        ]
 
 
 class UpdateIncomeSerializer(serializers.ModelSerializer):

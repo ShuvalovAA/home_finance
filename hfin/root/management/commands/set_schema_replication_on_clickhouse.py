@@ -1,17 +1,22 @@
 from django.core.management.base import BaseCommand
 from django.db import connections
 from root.management.tools_bar.clickhouse.match_pg_ch_types import MATTCHING_FIELDS_TYPES
+from root.settings import TECH_TABLES
 from django.db.utils import OperationalError
 
+
 class Command(BaseCommand):
-    """Команда настраивает схему данных clickhouse на репликацию из postgresql-master.
+    """Команда настраивает схему данных clickhouse на репликацию из postgresql.
+
+    Сценарий команды забирает все соединения где имя совмпадает с подстрокой 'clickhouse' из пула
+    конфигурации root.settings.DATABASES
 
     WARNING: комнда должна быть выполнена после проведения миграций на всех базах.connection.
     REQUAREMENT:
      - /etc/postgesql/postgresql.conf должен содержать wal_level=logical
      - /etc/postgesql/postgresql.conf должен содержать max_replication_slots=20
      - /etc/postgesql/postgresql.conf должен содержать max_logical_replication_workers=10
-     - /etc/postgesql/postgresql.conf должен содержать max_worker_processes = 13
+     - /etc/postgesql/postgresql.conf должен содержать max_worker_processes=13
     """
     help = "Команда создаёт в инстантсе clickhouse таблицы с движками MaterializedPostgreSQL"
 
@@ -25,7 +30,7 @@ class Command(BaseCommand):
         result = ', '.join(table_fields_str_list)
         return result
 
-    def _set_materialized_in_clickhouse(self, table_name, table_fields, pg_connection):
+    def _set_materialized_in_clickhouse(self, table_name, table_fields, pg_connection, ch_connection):
         table_fields_str = self._generate_table_fields_str(table_fields=table_fields)
         query = '''
             CREATE TABLE {table_name} ({table_fields})
@@ -43,13 +48,16 @@ class Command(BaseCommand):
             pg_password=pg_connection.settings_dict['PASSWORD']
         )
 
-        with connections['clickhouse'].cursor() as cursor:
+        with ch_connection.cursor() as cursor:
             try:
                 cursor.execute(query)
+                print(f'{ch_connection.alias}:\tMaterializedPostgreSQL table:\t {table_name} \t - ADDED')
             except OperationalError as error_operation:
                 error = error_operation
                 if error.args[0].code == 57:
-                    print(error)
+                    print(f'{ch_connection.alias}:\tMaterializedPostgreSQL table:\t {table_name} \t - ALREADY_EXISTS')
+                else:
+                    print(f'{ch_connection.alias}:\t{error}')
 
     def _get_all_info_from_master(self, pg_connection):
         query = '''
@@ -74,12 +82,19 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         pg_connection = connections['default']
+        ch_connections_name = [name for name in connections if 'clickhouse' in name]
+        ch_connections = [connections[name] for name in ch_connections_name]
         all_tables_info = self._get_all_info_from_master(pg_connection)
         tables = set([r[0] for r in all_tables_info])
-        for table in tables:
-            table_fields = [(r[1], r[2]) for r in all_tables_info if r[0] == table]
-            self._set_materialized_in_clickhouse(
-                table_name=table,
-                table_fields=table_fields,
-                pg_connection=pg_connection
-            )
+        for ch_connection in ch_connections:
+            for table in tables:
+                if table in TECH_TABLES:
+                    print(f'skip tech table - {table}')
+                    continue
+                table_fields = [(r[1], r[2]) for r in all_tables_info if r[0] == table]
+                self._set_materialized_in_clickhouse(
+                    table_name=table,
+                    table_fields=table_fields,
+                    pg_connection=pg_connection,
+                    ch_connection=ch_connection
+                )

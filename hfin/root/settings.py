@@ -109,6 +109,14 @@ DATABASES = {
         'PASSWORD': os.environ.get('HFIN_CLICKHOUSE_PASSWORD', ''),
         'HOST': os.environ.get('HFIN_CLICKHOUSE_HOST', 'localhost'),
         'PORT': os.environ.get('HFIN_CLICKHOUSE_PORT', '9000'),
+    },
+    'clickhouse_replica': {
+        'ENGINE': 'clickhouse_backend.backend',
+        'NAME': os.environ.get('HFIN_CLICKHOUSE_REPLICA_DATABASE', 'default'),
+        'USER': os.environ.get('HFIN_CLICKHOUSE_REPLICA_USER', 'default'),
+        'PASSWORD': os.environ.get('HFIN_CLICKHOUSE_REPLICA_PASSWORD', ''),
+        'HOST': os.environ.get('HFIN_CLICKHOUSE_REPLICA_HOST', 'localhost'),
+        'PORT': os.environ.get('HFIN_CLICKHOUSE_REPLICA_PORT', '9000'),
     }
 }
 DATABASE_ROUTERS = ["root.dbrouters.DBRouter"]
@@ -198,3 +206,21 @@ CACHES = {
         }
     }
 }
+
+
+# Models and tables lists for routing db
+NOT_TECH_MODELS = [
+    'Income',
+    'Expense',
+    'Notification',
+    'Tariff',
+    'UsersPayments'
+    'Transaction'
+    ]
+TECH_TABLES = [
+    'auth_group',
+    'django_admin_log',
+    'auth_permission',
+    'captcha_captchastore',
+    'django_session'
+]

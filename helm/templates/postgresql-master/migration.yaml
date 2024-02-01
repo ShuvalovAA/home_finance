@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: {{ include "service.fullname" . }}-migration-postgresql
+  name: {{ include "service.fullname" . }}-migrations
   labels:
     {{- include "service.labels" . | nindent 4 }}
 spec:
@@ -20,6 +20,29 @@ spec:
           - configMapRef:
               name: {{ include "service.fullname" . }}-postgresql-master-env
         command: ['sh', '-c', 'echo -e "Checking PG"; while ! nc -z $(HFIN_POSTGRESQL_HOST) $(HFIN_POSTGRESQL_PORT); do sleep 1; printf "-"; done; echo -e "  >> PG OK";']
+      - name: {{ .Chart.Name }}-init-clickhouse
+        image: busybox:1.35
+        {{- if eq .Values.deployment "local" }}
+        imagePullPolicy: IfNotPresent
+        {{- else }}
+        imagePullPolicy: Always
+        {{- end }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "service.fullname" . }}-app-env
+        command: ['sh', '-c', 'echo -e "Checking CH"; while ! nc -z $(HFIN_CLICKHOUSE_HOST) $(HFIN_CLICKHOUSE_PORT); do sleep 1; printf "-"; done; echo -e "  >> CH OK";']
+      - name: {{ .Chart.Name }}-init-clickhouse-replica
+        image: busybox:1.35
+        {{- if eq .Values.deployment "local" }}
+        imagePullPolicy: IfNotPresent
+        {{- else }}
+        imagePullPolicy: Always
+        {{- end }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "service.fullname" . }}-app-env
+        command: ['sh', '-c', 'echo -e "Checking CH"; while ! nc -z $(HFIN_CLICKHOUSE_REPLICA_HOST) $(HFIN_CLICKHOUSE_REPLICA_PORT); do sleep 1; printf "-"; done; echo -e "  >> CH OK";']
+  containers:
   containers:
     - name: {{ .Chart.Name }}
       image: "{{ .Values.image }}:{{ .Values.app.version | default .Chart.AppVersion }}"
