@@ -1,4 +1,4 @@
-from root.settings import NOT_TECH_MODELS, TECH_TABLES
+from root.settings import NEED_TABLE_ROUTING
 
 
 class DBRouter:
@@ -8,11 +8,7 @@ class DBRouter:
 
     def db_for_read(self, model, **hints):
         """Маршрут на чтение данных."""
-        need_go_to_ch = all([
-            model._meta.db_table not in TECH_TABLES,
-            model.__name__ in NOT_TECH_MODELS
-        ])
-        if need_go_to_ch:
+        if model._meta.db_table in NEED_TABLE_ROUTING:
             return "clickhouse"
 
         return 'default'

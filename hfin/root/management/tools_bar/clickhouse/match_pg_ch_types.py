@@ -6,6 +6,7 @@ MATTCHING_FIELDS_TYPES = {
     'double precision': 'Float64',
     'character varying': 'String',
     'character': 'String',
+    'jsonb': 'String',
     'text': 'String',
     'boolean': 'UInt8',
     'date': 'Date',

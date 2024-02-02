@@ -9,18 +9,33 @@ data:
   APPLICATION_ENVIRONMENT:  "{{ .Values.deployment }}"
   APPLICATION_ROOT: "{{ .Values.app.root }}"
   APPLICATION_VERSION: "{{ .Values.app.version | default .Chart.AppVersion }}"
+
+  # POSTGRESQL settings
   HFIN_POSTGRESQL_PORT: "{{ .Values.postgresql.port }}"
   HFIN_POSTGRESQL_HOST: "{{ .Values.postgresql.host }}"
   HFIN_POSTGRESQL_PASSWORD: "{{ .Values.postgresql.user.password }}"
   HFIN_POSTGRESQL_USER: "{{ .Values.postgresql.user.name }}"
   HFIN_POSTGRESQL_DATABASE: "{{ .Values.postgresql.db.name }}"
 
-  # CLICKHOUSE
+  HFIN_POSTGRESQL_REPLICA_1_PORT: "{{ .Values.postgresql_replica_1.port }}"
+  HFIN_POSTGRESQL_REPLICA_1_HOST: "{{ .Values.postgresql_replica_1.host }}"
+  HFIN_POSTGRESQL_REPLICA_1_PASSWORD: "{{ .Values.postgresql_replica_1.user.password }}"
+  HFIN_POSTGRESQL_REPLICA_1_USER: "{{ .Values.postgresql_replica_1.user.name }}"
+  HFIN_POSTGRESQL_REPLICA_1_DATABASE: "{{ .Values.postgresql_replica_1.db.name }}"
+
+  HFIN_POSTGRESQL_REPLICA_2_PORT: "{{ .Values.postgresql_replica_2.port }}"
+  HFIN_POSTGRESQL_REPLICA_2_HOST: "{{ .Values.postgresql_replica_2.host }}"
+  HFIN_POSTGRESQL_REPLICA_2_PASSWORD: "{{ .Values.postgresql_replica_2.user.password }}"
+  HFIN_POSTGRESQL_REPLICA_2_USER: "{{ .Values.postgresql_replica_2.user.name }}"
+  HFIN_POSTGRESQL_REPLICA_2_DATABASE: "{{ .Values.postgresql_replica_2.db.name }}"
+
+  # CLICK_HOUSE
   HFIN_CLICKHOUSE_DATABASE: "{{ .Values.clickhouse.db.name }}"
   HFIN_CLICKHOUSE_USER: "{{ .Values.clickhouse.user.name }}"
   HFIN_CLICKHOUSE_PASSWORD: "{{ .Values.clickhouse.user.password }}"
   HFIN_CLICKHOUSE_HOST: "{{ .Values.clickhouse.host }}"
   HFIN_CLICKHOUSE_PORT: "{{ .Values.clickhouse.port }}"
+
   HFIN_CLICKHOUSE_REPLICA_DATABASE: "{{ .Values.clickhouse_replica.db.name }}"
   HFIN_CLICKHOUSE_REPLICA_USER: "{{ .Values.clickhouse_replica.user.name }}"
   HFIN_CLICKHOUSE_REPLICA_PASSWORD: "{{ .Values.clickhouse_replica.user.password }}"

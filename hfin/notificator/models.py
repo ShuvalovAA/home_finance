@@ -1,6 +1,6 @@
 from django.db import models
 from root.settings import AUTH_USER_MODEL
-
+from root.managers import RoutedManager
 
 class Notification(models.Model):
     """Модель уведомления."""
@@ -12,4 +12,6 @@ class Notification(models.Model):
     user = models.ForeignKey(AUTH_USER_MODEL, models.CASCADE)
     event_date = models.fields.DateTimeField(null=False)
     event_type = models.CharField(choices=EVENTS_TYPES, max_length=1)
-    detail_info = models.JSONField(encoder='utf-8', decoder='utf-8')
+    detail_info = models.JSONField()
+    
+    objects = RoutedManager()

@@ -1,6 +1,6 @@
 from django.db import models
 from root.settings import AUTH_USER_MODEL
-
+from root.managers import RoutedManager
 
 class Income(models.Model):
     """Модель дохода."""
@@ -10,3 +10,5 @@ class Income(models.Model):
     amount = models.fields.DecimalField(null=False, max_digits=21, decimal_places=2)
     done = models.fields.BooleanField(null=False, blank=False)
     user = models.ForeignKey(AUTH_USER_MODEL, models.CASCADE)
+    
+    objects = RoutedManager()

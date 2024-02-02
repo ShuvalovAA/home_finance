@@ -1,6 +1,7 @@
 from django.db import models
 from root.settings import AUTH_USER_MODEL
 
+from root.managers import RoutedManager
 
 class Expense(models.Model):
     """Модель расхода."""
@@ -11,3 +12,4 @@ class Expense(models.Model):
     done = models.fields.BooleanField(null=False)
     user = models.ForeignKey(AUTH_USER_MODEL, models.CASCADE)
 
+    objects = RoutedManager()

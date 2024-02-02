@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.db import connections
 from root.management.tools_bar.clickhouse.match_pg_ch_types import MATTCHING_FIELDS_TYPES
-from root.settings import TECH_TABLES
+from root.settings import NEED_TABLE_ROUTING
 from django.db.utils import OperationalError
 
 
@@ -51,13 +51,13 @@ class Command(BaseCommand):
         with ch_connection.cursor() as cursor:
             try:
                 cursor.execute(query)
-                print(f'{ch_connection.alias}:\tMaterializedPostgreSQL table:\t {table_name} \t - ADDED')
+                print(f'{pg_connection.alias} - {ch_connection.alias}:\tMaterializedPostgreSQL table:\t {table_name} \t - ADDED')
             except OperationalError as error_operation:
                 error = error_operation
                 if error.args[0].code == 57:
-                    print(f'{ch_connection.alias}:\tMaterializedPostgreSQL table:\t {table_name} \t - ALREADY_EXISTS')
+                    print(f'{pg_connection.alias} - {ch_connection.alias}:\tMaterializedPostgreSQL table:\t {table_name} \t - ALREADY_EXISTS')
                 else:
-                    print(f'{ch_connection.alias}:\t{error}')
+                    print(f'{pg_connection.alias} - {ch_connection.alias}:\t{error}')
 
     def _get_all_info_from_master(self, pg_connection):
         query = '''
@@ -81,14 +81,17 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        pg_connection = connections['default']
-        ch_connections_name = [name for name in connections if 'clickhouse' in name]
-        ch_connections = [connections[name] for name in ch_connections_name]
-        all_tables_info = self._get_all_info_from_master(pg_connection)
-        tables = set([r[0] for r in all_tables_info])
-        for ch_connection in ch_connections:
+        pg_ch_dbs = (
+            (connections['postgresql_replica_1'], connections['clickhouse']),
+            (connections['postgresql_replica_2'], connections['clickhouse_replica'])
+        )
+        for dbs in pg_ch_dbs:
+            pg_connection = dbs[0]
+            ch_connection = dbs[1]
+            all_tables_info = self._get_all_info_from_master(pg_connection)
+            tables = set([r[0] for r in all_tables_info])
             for table in tables:
-                if table in TECH_TABLES:
+                if table not in NEED_TABLE_ROUTING:
                     print(f'skip tech table - {table}')
                     continue
                 table_fields = [(r[1], r[2]) for r in all_tables_info if r[0] == table]
@@ -97,4 +100,4 @@ class Command(BaseCommand):
                     table_fields=table_fields,
                     pg_connection=pg_connection,
                     ch_connection=ch_connection
-                )
+                    )

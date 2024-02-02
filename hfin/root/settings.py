@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'payment',
     'funds_director',
     'root',
+    'notificator',
     'tasks'
 ]
 
@@ -101,14 +102,7 @@ DATABASES = {
         'PASSWORD': os.environ.get('HFIN_POSTGRESQL_PASSWORD', 'postgres'),
         'HOST': os.environ.get('HFIN_POSTGRESQL_HOST', 'localhost'),
         'PORT': os.environ.get('HFIN_POSTGRESQL_PORT', '5432'),
-    },
-    'postgresql_replica_1': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_DATABASE', 'postgres'),
-        'USER': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_USER', 'postgres'),
-        'PASSWORD': os.environ.get('HFIN_POSTGRESQ_REPLICA_1L_PASSWORD', 'postgres'),
-        'HOST': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_HOST', 'localhost'),
-        'PORT': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_PORT', '5432'),
+        'priority': 1
     },
     'postgresql_replica_2': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -117,14 +111,16 @@ DATABASES = {
         'PASSWORD': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_PASSWORD', 'postgres'),
         'HOST': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_HOST', 'localhost'),
         'PORT': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_PORT', '5432'),
+        'priority': 3
     },
-    'clickhouse': {
-        'ENGINE': 'clickhouse_backend.backend',
-        'NAME': os.environ.get('HFIN_CLICKHOUSE_DATABASE', 'default'),
-        'USER': os.environ.get('HFIN_CLICKHOUSE_USER', 'default'),
-        'PASSWORD': os.environ.get('HFIN_CLICKHOUSE_PASSWORD', ''),
-        'HOST': os.environ.get('HFIN_CLICKHOUSE_HOST', 'localhost'),
-        'PORT': os.environ.get('HFIN_CLICKHOUSE_PORT', '9000'),
+    'postgresql_replica_1': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_DATABASE', 'postgres'),
+        'USER': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_USER', 'postgres'),
+        'PASSWORD': os.environ.get('HFIN_POSTGRESQ_REPLICA_1L_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_HOST', 'localhost'),
+        'PORT': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_PORT', '5432'),
+        'priority': 2
     },
     'clickhouse_replica': {
         'ENGINE': 'clickhouse_backend.backend',
@@ -133,6 +129,16 @@ DATABASES = {
         'PASSWORD': os.environ.get('HFIN_CLICKHOUSE_REPLICA_PASSWORD', ''),
         'HOST': os.environ.get('HFIN_CLICKHOUSE_REPLICA_HOST', 'localhost'),
         'PORT': os.environ.get('HFIN_CLICKHOUSE_REPLICA_PORT', '9000'),
+        'priority': 5
+    },
+    'clickhouse': {
+        'ENGINE': 'clickhouse_backend.backend',
+        'NAME': os.environ.get('HFIN_CLICKHOUSE_DATABASE', 'default'),
+        'USER': os.environ.get('HFIN_CLICKHOUSE_USER', 'default'),
+        'PASSWORD': os.environ.get('HFIN_CLICKHOUSE_PASSWORD', ''),
+        'HOST': os.environ.get('HFIN_CLICKHOUSE_HOST', 'localhost'),
+        'PORT': os.environ.get('HFIN_CLICKHOUSE_PORT', '9000'),
+        'priority': 4
     }
 }
 DATABASE_ROUTERS = ["root.dbrouters.DBRouter"]
@@ -225,18 +231,19 @@ CACHES = {
 
 
 # Models and tables lists for routing db
-NOT_TECH_MODELS = [
-    'Income',
-    'Expense',
-    'Notification',
-    'Tariff',
-    'UsersPayments'
-    'Transaction'
+NEED_TABLE_ROUTING = [
+    'income_income',
+    'expense_expense',
+    'payment_tariff',
+    'payment_userspayments',
+    'notificator_notification',
+    'transaction_transaction'
     ]
 TECH_TABLES = [
     'auth_group',
     'django_admin_log',
     'auth_permission',
     'captcha_captchastore',
-    'django_session'
+    'django_session',
+    'django_content_type',
 ]

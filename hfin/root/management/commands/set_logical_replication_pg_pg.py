@@ -1,10 +1,14 @@
 from django.core.management.base import BaseCommand
 from django.db import connections
 from root.management.tools_bar.clickhouse.match_pg_ch_types import MATTCHING_FIELDS_TYPES
-from root.settings import TECH_TABLES
-from django.db.utils import OperationalError
 
+'''to delete
+на мастере
+CREATE PUBLICATION my_publication FOR ALL TABLES;
 
+на реплике
+CREATE SUBSCRIPTION my_subscription  CONNECTION 'host=hfin-postgresql-master port=5432 dbname=postgres password=postgres' PUBLICATION publication_for_slaves;
+'''
 class Command(BaseCommand):
     """Команда настраивает логическую репликацию между инстансами PostgreSQL.
 
@@ -55,6 +59,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         pg_connection = connections['default']
+        self._set_publication_master(pg_connection=pg_connection)
         pg_replica_connections_name = [name for name in connections if 'postgresql_replica' in name]
         pg_replica_connections = [connections[name] for name in pg_replica_connections_name]
         for pg_replica_connection in pg_replica_connections:

@@ -1,5 +1,6 @@
 from django.db import models
 from root.settings import AUTH_USER_MODEL
+from root.managers import RoutedManager
 
 
 class Tariff(models.Model):
@@ -10,6 +11,8 @@ class Tariff(models.Model):
     name = models.TextField()
     price = models.DecimalField(decimal_places=2, max_digits=21)
     period_months = models.CharField(choices=CHOICES_PERIOD_MOTNHS, max_length=1)
+    
+    objects = RoutedManager()
 
 
 
@@ -20,3 +23,5 @@ class UsersPayments(models.Model):
     date = models.DateTimeField()
     tariff = models.ForeignKey(to=Tariff, on_delete=models.CASCADE, null=False)
     done = models.BooleanField()
+    
+    objects = RoutedManager()
