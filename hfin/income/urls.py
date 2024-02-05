@@ -19,6 +19,7 @@ from django.urls import path
 from income import views
 
 urlpatterns = [
+    path('', views.render_income_page),
     path('create/', views.create),
     path('update/', views.update),
     path('delete/', views.delete),

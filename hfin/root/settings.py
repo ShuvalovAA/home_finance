@@ -74,7 +74,15 @@ ROOT_URLCONF = 'root.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'static/user/'],
+        'DIRS': [
+            BASE_DIR / 'static/home/',
+            BASE_DIR / 'static/user/',
+            BASE_DIR / 'static/income/',
+            BASE_DIR / 'static/expense/',
+            BASE_DIR / 'static/transaction/',
+            BASE_DIR / 'static/profile/',
+            BASE_DIR / 'static/report/'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

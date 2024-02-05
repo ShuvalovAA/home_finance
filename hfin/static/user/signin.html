@@ -10,12 +10,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <title>SigIn Form | Home Finance</title> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
-	<link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+	<link rel="shortcut icon" href="{% static 'common/images/favicon.ico' %}">
   </head>
   <body>
     <div class="container">
       <div class="wrapper">
-        <div class="title"><span><img src="http://127.0.0.1:9395{%  static 'logo.png' %}"></span></div>
+        <div class="title"><span><img src=" {%  static 'common/images/logo.png' %}"></span></div>
         <form method="POST" novalidate class="signin">
 			{% csrf_token %}
 		  

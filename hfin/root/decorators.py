@@ -1,6 +1,6 @@
 from django.core.exceptions import PermissionDenied
 from user.models import User
-
+from django.shortcuts import render, redirect
 
 def check_premission(method, *args, **kwargs):
     """Декоратор проверки доступа к функционалу API.
@@ -12,6 +12,7 @@ def check_premission(method, *args, **kwargs):
 
     def wrapper(*args, **kwargs):
         request = args[0]
+        breakpoint()
         request_user_id = request.user.id
 
         if not request_user_id:
@@ -36,6 +37,43 @@ def check_premission(method, *args, **kwargs):
 
         if not is_permission:
             raise PermissionDenied
+        res = method(*args, **kwargs)
+        return res
+    return wrapper
+
+
+def is_authenticated_and_is_active(method, *args, **kwargs):
+    """Декоратор проверки доступа к функционалу приложения.
+
+    Функционал приложения доступен только:
+    - авторизованного пользователя
+    - активного пользователя
+    """
+
+    def wrapper(*args, **kwargs):
+        request = args[0]
+        request_user = request.user
+
+        not_active_is_authenticated = all([
+            request.user,
+            not request.user.is_active,
+            request.user.is_authenticated
+        ])
+
+        if not_active_is_authenticated:
+        #redirect('/profile/')
+            pass
+
+        active_not_authenticated = all([
+            request.user,
+            request.user.is_active,
+            not request.user.is_authenticated
+        ])
+
+        if active_not_authenticated or not request.user:
+            return render('signin.html')
+
+
         res = method(*args, **kwargs)
         return res
     return wrapper

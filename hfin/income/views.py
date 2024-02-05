@@ -5,7 +5,9 @@ from rest_framework import parsers, renderers, status
 from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
-from root.decorators import check_premission
+from root.decorators import check_premission, is_authenticated_and_is_active
+from django.shortcuts import redirect, render
+
 
 from .serializers import (
     CopyIncomeBulkSerializer,
@@ -19,6 +21,13 @@ from .serializers import (
     UpdateIncomeBulkSerializer,
     UpdateIncomeSerializer,
 )
+
+
+@is_authenticated_and_is_active
+def render_income_page(request):
+    """Рендер на страницу доходов."""
+    #breakpoint()
+    return render(request, 'income.html')
 
 
 @swagger_auto_schema(method='POST', request_body=CreateIncomeSerializer, tags=['Income'])
