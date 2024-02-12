@@ -1,0 +1,21 @@
+div{
+    background-color: #eee9da;
+}
+body{
+    background-color: #eee9da;
+}
+
+.btn-warning {
+    background-color: #e7c24a !important; 
+}
+.page-item.active .page-link, .btn-primary{
+    background-color: #133344;
+}
+
+button.btn.btn-primary.btn-lg.dropdown-toggle.show {
+    background-color: #2e6985 !important;
+}
+
+.btn-primary:hover{
+    background-color: #2e6985 !important;
+}

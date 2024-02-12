@@ -4,25 +4,44 @@
 <!DOCTYPE html>
 <html lang="ru" dir="ltr" class="h-100">
   <head>
+    <div style="display: none;" id="csrf_token">{{ csrf_token }}</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="{% static 'income/js/test.js' %}"></script>	
+
+  <!--для построения графиков-->
+  <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cdbootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cdbootstrap/css/cdb.min.css" />-->
+  <script src="https://cdn.jsdelivr.net/npm/cdbootstrap/js/cdb.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cdbootstrap/js/bootstrap.min.js"></script>
+  <script src="https://kit.fontawesome.com/9d1d9a82d2.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+  <!--для построения графиков-->
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  
+  <script src="{% static 'income/js/common.js' %}"></script>
+  
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <title>SigIn Form | Home Finance</title> 
     <link href="https://getbootstrap.com/docs/5.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="{% static 'common/css/common.css' %}"/>
 	<link rel="shortcut icon" href="{% static 'common/images/favicon.ico' %}">
-  <body class="d-flex flex-column min-vh-100">
+  <body class="d-flex flex-column min-vh-100" style="padding: 20px;">
 <!---->
 
   <div class="row" name="header">
+    <div class="col-md-0.5"></div>
   <div class="col-md-1 align-items-left justify-content-left">
-    <div class="text-left">
-      <img src="..." class="rounded" alt="...">
+    <div class="container text-left">
+      <img src="{% static 'common/images/logo.png' %}" style="height: 120px; wight:120px;" class="rounded" alt="logo">
     </div>
   </div>
-  <div class="col-md-11">
+  <div class="col-md-10">
   <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
     <!--<a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
       <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
@@ -30,16 +49,23 @@
     
 
     <ul class="nav col-9 col-md-auto mb-2 justify-content-center mb-md-0">
-      <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>
-      <li><a href="#" class="nav-link px-2 link-dark">Features</a></li>
-      <li><a href="#" class="nav-link px-2 link-dark">Pricing</a></li>
-      <li><a href="#" class="nav-link px-2 link-dark">FAQs</a></li>
-      <li><a href="#" class="nav-link px-2 link-dark">About</a></li>
+      <li><a href="#" class="nav-link px-2 link-secondary">Доходы</a></li>
+      <li><a href="#" class="nav-link px-2 link-dark">Расходы</a></li>
+      <li><a href="#" class="nav-link px-2 link-dark">Транзакции</a></li>
+      <li><a href="#" class="nav-link px-2 link-dark">Аналитика</a></li>
     </ul>
 
     <div class="col-md-3 text-end">
-      <button type="button" class="btn btn-outline-primary me-2">Login</button>
-      <button type="button" class="btn btn-primary">Sign-up</button>
+      <div class="btn-group">
+        <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Артемий Шувалов
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="#">Профиль</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#">Выйти</a></li>
+        </ul>
+      </div>
     </div>
   </header>
 </div>
@@ -53,11 +79,11 @@
       <div class="form-row">
         <div class="form-group col-md-1">
           <label for="inputCity">Год</label>
-          <input type="text" class="form-control" id="inputCity" maxlength="4">
+          <input type="number" class="form-control" id="inputCity" maxlength="4">
         </div>
         <div class="form-group col-md-1">
           <label for="inputZip">Месяц</label>
-          <input type="text" class="form-control" id="inputZip" maxlength="2">
+          <input type="number" class="form-control" id="inputZip" maxlength="2">
         </div>
         <div class="form-group col-md-3">
           <label for="inputState">Наименование</label>
@@ -84,14 +110,19 @@
     <div class="col">
       <div class="container" name="table-operation">
         <div class="text-center">
-          <div class="btn-group float-start">
+          <div class="col-md-2 btn-group float-start">
             <button class="btn btn-primary btn btn-warning form-control" type="button">Добавить</button>
-            <button class="btn btn-primary btn btn-warning form-control" type="button" style="display: none;">Удалить</button>
-            <button class="btn btn-primary btn btn-warning form-control" type="button" style="display: none;">Копировать</button>
+            <button class="btn btn-primary btn btn-warning form-control" type="button" style="display: none ;">Удалить</button>
+            <button class="btn btn-primary btn btn-warning form-control" type="button" style="display: none ;">Копировать</button>
           </div>
+          <div class="col-md-2 btn-group float-end">
+            <button type="button" class="btn btn-outline-warning" style="display: none;">Импорт</button>
+            <button type="button" class="btn btn-outline-warning">Экспорт</button>
+          </div>
+
         </div>
-      </div>
-    </div>
+      </div> 
+    </div> 
     <div class="container" name="table">
       <table class="table">
         <thead>
@@ -111,6 +142,105 @@
           </tr>
         </thead>
         <tbody>
+          <tr class="d-flex">
+            <td class="col-3 text-left">Ипотека</td>
+            <td class="col-2 text-left">2010-10-10</td>
+            <td class="col-3 text-left">47000</td>
+            <td class="col-1 text-right">Да</td>
+            <td class="col-2 ">
+              <div class="row">
+                <div class="col text-right"><input class="form-check-input" type="checkbox" ></div>
+              </div>
+            </td>
+          </tr>
+          <tr class="d-flex">
+            <td class="col-3 text-left">Ипотека</td>
+            <td class="col-2 text-left">2010-10-10</td>
+            <td class="col-3 text-left">47000</td>
+            <td class="col-1 text-right">Да</td>
+            <td class="col-2 ">
+              <div class="row">
+                <div class="col text-right"><input class="form-check-input" type="checkbox" ></div>
+              </div>
+            </td>
+          </tr>
+          <tr class="d-flex">
+            <td class="col-3 text-left">Ипотека</td>
+            <td class="col-2 text-left">2010-10-10</td>
+            <td class="col-3 text-left">47000</td>
+            <td class="col-1 text-right">Да</td>
+            <td class="col-2 ">
+              <div class="row">
+                <div class="col text-right"><input class="form-check-input" type="checkbox" ></div>
+              </div>
+            </td>
+          </tr>
+          <tr class="d-flex">
+            <td class="col-3 text-left">Ипотека</td>
+            <td class="col-2 text-left">2010-10-10</td>
+            <td class="col-3 text-left">47000</td>
+            <td class="col-1 text-right">Да</td>
+            <td class="col-2 ">
+              <div class="row">
+                <div class="col text-right"><input class="form-check-input" type="checkbox" ></div>
+              </div>
+            </td>
+          </tr>
+          <tr class="d-flex">
+            <td class="col-3 text-left">Ипотека</td>
+            <td class="col-2 text-left">2010-10-10</td>
+            <td class="col-3 text-left">47000</td>
+            <td class="col-1 text-right">Да</td>
+            <td class="col-2 ">
+              <div class="row">
+                <div class="col text-right"><input class="form-check-input" type="checkbox" ></div>
+              </div>
+            </td>
+          </tr>
+          <tr class="d-flex">
+            <td class="col-3 text-left">Ипотека</td>
+            <td class="col-2 text-left">2010-10-10</td>
+            <td class="col-3 text-left">47000</td>
+            <td class="col-1 text-right">Да</td>
+            <td class="col-2 ">
+              <div class="row">
+                <div class="col text-right"><input class="form-check-input" type="checkbox" ></div>
+              </div>
+            </td>
+          </tr>
+          <tr class="d-flex">
+            <td class="col-3 text-left">Ипотека</td>
+            <td class="col-2 text-left">2010-10-10</td>
+            <td class="col-3 text-left">47000</td>
+            <td class="col-1 text-right">Да</td>
+            <td class="col-2 ">
+              <div class="row">
+                <div class="col text-right"><input class="form-check-input" type="checkbox" ></div>
+              </div>
+            </td>
+          </tr>
+          <tr class="d-flex">
+            <td class="col-3 text-left">Ипотека</td>
+            <td class="col-2 text-left">2010-10-10</td>
+            <td class="col-3 text-left">47000</td>
+            <td class="col-1 text-right">Да</td>
+            <td class="col-2 ">
+              <div class="row">
+                <div class="col text-right"><input class="form-check-input" type="checkbox" ></div>
+              </div>
+            </td>
+          </tr>
+          <tr class="d-flex">
+            <td class="col-3 text-left">Ипотека</td>
+            <td class="col-2 text-left">2010-10-10</td>
+            <td class="col-3 text-left">47000</td>
+            <td class="col-1 text-right">Да</td>
+            <td class="col-2 ">
+              <div class="row">
+                <div class="col text-right"><input class="form-check-input" type="checkbox" ></div>
+              </div>
+            </td>
+          </tr>
           <tr class="d-flex">
             <td class="col-3 text-left">Ипотека</td>
             <td class="col-2 text-left">2010-10-10</td>
@@ -165,7 +295,10 @@
   <div class="col-md-4">
     <div class="container" name="report">
       <div class="text-center">
-        <img src="..." class="rounded" alt="...">
+          <div class="card chart-container">
+            <canvas id="chart" style="width:600px;height:300px"></canvas>
+          </div>
+        
       </div>
     </div>
   </div>
@@ -177,11 +310,10 @@
 <div class="container py-3 footer mt-auto my-4" name="footer">
   <footer class="py-3 footer mt-auto my-4">
     <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Home</a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Features</a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Pricing</a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">FAQs</a></li>
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">About</a></li>
+      <li class="nav-item"><a href="#" class="nav-link px-2 text-muted"></a></li>
+      <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">О нас</a></li>
+      <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Политика</a></li>
+      <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Контакты</a></li>
     </ul>
     <p class="text-center text-muted">© ShuvalovProduction, all rights reserved</p>
   </footer>

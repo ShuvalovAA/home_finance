@@ -12,7 +12,6 @@ def check_premission(method, *args, **kwargs):
 
     def wrapper(*args, **kwargs):
         request = args[0]
-        breakpoint()
         request_user_id = request.user.id
 
         if not request_user_id:

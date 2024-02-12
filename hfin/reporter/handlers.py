@@ -19,7 +19,9 @@ class Reporter:
             user_id=self.user_id,
             date__gte=self.start_period,
             date__lte=self.end_period
-        ).only('name', 'date', 'amount', 'done').values())
+        ).only('name', 'date', 'amount', 'done').values(
+            'name', 'date__date', 'amount', 'done'
+        ))
         return {'incomes': incomes_list}
 
     def get_expense(self):
@@ -28,7 +30,9 @@ class Reporter:
             user_id=self.user_id,
             date__gte=self.start_period,
             date__lte=self.end_period
-        ).only('name', 'date', 'amount', 'done').values())
+        ).only('name', 'date', 'amount', 'done').values(
+            'name', 'date__date', 'amount', 'done'
+        ))
         return {'expenses': expense_list}
 
     def get_transaction(self):
@@ -37,5 +41,7 @@ class Reporter:
             user_id=self.user_id,
             date__gte=self.start_period,
             date__lte=self.end_period
-        ).only('name', 'date', 'amount').values())
+        ).only('name', 'date', 'amount').values(
+            'name', 'date__date', 'amount'
+        ))
         return {'transactions': transaction_list}
