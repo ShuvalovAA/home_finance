@@ -17,6 +17,10 @@ class DBRouter:
         """Маршрут на запись данных."""
         return "default"
 
+    def db_for_delete(self, model, **hints):
+        """Маршрут на удаления данных."""
+        return "default"
+
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         """Разрещение на миграцию."""
         return True

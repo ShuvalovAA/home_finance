@@ -3,6 +3,8 @@ from datetime import datetime
 from income.models import Income
 from expense.models import Expense
 from transaction.models import Transaction
+from django.db.models import Sum
+
 
 
 class Reporter:
@@ -19,9 +21,12 @@ class Reporter:
             user_id=self.user_id,
             date__gte=self.start_period,
             date__lte=self.end_period
-        ).only('name', 'date', 'amount', 'done').values(
-            'name', 'date__date', 'amount', 'done'
-        ))
+        ).values_list(
+            'date__date',
+            ).annotate(
+                amount=Sum('amount')
+            ).values_list('date__date', 'amount')
+        )
         return {'incomes': incomes_list}
 
     def get_expense(self):
@@ -30,9 +35,12 @@ class Reporter:
             user_id=self.user_id,
             date__gte=self.start_period,
             date__lte=self.end_period
-        ).only('name', 'date', 'amount', 'done').values(
-            'name', 'date__date', 'amount', 'done'
-        ))
+        ).values_list(
+            'date__date',
+            ).annotate(
+                amount=Sum('amount')
+            ).values_list('date__date', 'amount')
+        )
         return {'expenses': expense_list}
 
     def get_transaction(self):
@@ -41,7 +49,10 @@ class Reporter:
             user_id=self.user_id,
             date__gte=self.start_period,
             date__lte=self.end_period
-        ).only('name', 'date', 'amount').values(
-            'name', 'date__date', 'amount'
-        ))
+        ).values_list(
+            'date__date',
+            ).annotate(
+                amount=Sum('amount')
+            ).values_list('date__date', 'amount')
+        )
         return {'transactions': transaction_list}

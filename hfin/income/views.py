@@ -1,3 +1,4 @@
+import json
 from django.forms.models import model_to_dict
 from drf_yasg.utils import swagger_auto_schema
 from income.models import Income
@@ -159,7 +160,9 @@ def delete_bulk(request):
     incomes = Income.objects.filter(pk__in=ids, user_id=user_id)
     if not incomes:
         return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
-    incomes.delete()
+
+    for income in incomes:
+        income.delete()
 
     return Response({'status': 'ok'}, status=status.HTTP_204_NO_CONTENT)
 

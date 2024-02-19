@@ -19,3 +19,12 @@ button.btn.btn-primary.btn-lg.dropdown-toggle.show {
 .btn-primary:hover{
     background-color: #2e6985 !important;
 }
+
+.btn-primary:focus{
+    background-color: #133344 !important;
+    border-color: #eee9da00;
+}
+
+div#exampleModal.modal.fade.show {
+    background-color: #eee9da00;
+}
