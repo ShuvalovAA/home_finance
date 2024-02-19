@@ -28,6 +28,8 @@ class RotedQuerySet(QuerySet):
         return self._filter_or_exclude(False, args, kwargs)
 
     def filter(self, *args, **kwargs):
+        if self._db == 'default_hard':
+            return self._filter(*args, **kwargs).using('default')
         db_queue = _get_db_queue()
         for db in db_queue:
             print(db)
@@ -70,6 +72,15 @@ class RotedQuerySet(QuerySet):
 
 class RoutedManager(Manager):
     """Маршрутизированный менеджер взаимодействия с базами данных."""
+    using_default = False
 
-    def get_queryset(self):
-        return RotedQuerySet(model=self.model, using=self._db, hints=self._hints)
+    def _using_default(self):
+        self.using_default = True
+
+    def get_queryset(self, *args, **kwargs):
+        if self.using_default:
+            r_q = RotedQuerySet(model=self.model, using='default_hard', hints=self._hints)
+            self.using_default = False
+            return r_q
+        else:
+            return RotedQuerySet(model=self.model, using=self._db, hints=self._hints)

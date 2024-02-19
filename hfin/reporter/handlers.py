@@ -17,6 +17,7 @@ class Reporter:
 
     def get_income(self):
         "Получить словарь значений доходов."
+        Income.objects._using_default()
         incomes_list = list(Income.objects.filter(
             user_id=self.user_id,
             date__gte=self.start_period,

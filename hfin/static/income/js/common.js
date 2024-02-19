@@ -29,10 +29,23 @@ function filter_table(start=null, end=null){
 
 }
 
-function create_table(incomes){
-
+function create_table(incomes, update_all=null){
+  
+  this_tabel = document.getElementById('the_table')
   table_body = document.getElementById('table_body')
-  for(i=0; i<incomes.items.length; ++i){
+  
+  if(update_all){
+    
+    children = table_body.children
+    console.log(children.length)
+    steps = children.length
+    for(i=0; i< steps; i++){
+      console.log(children[i])
+      children[0].remove()
+    }
+  }
+  console.log(incomes.items)
+  for(i=0; i<incomes.items.length; i++){
     income = incomes.items[i]
     var income_id = income.id
     var name = income.name
@@ -54,23 +67,23 @@ function create_table(incomes){
             '</td>'+
           '</tr>'
     table_body.prepend(tr)
-    create_events_on_click()
   }
+  create_events_on_click()
 }
 
-function get_income_for_table(user_id, page=null){
+function get_income_for_table( page=null){
   if(page==null){
     page = 1
   }
 
   data = $.ajax({
-    url: '/income/get/bulk',         
+    url: '/income/get/bulk', 
     method: 'GET',             
     dataType: 'json',
     headers: {'X-CSRFToken':get_token()},
     data: {
         'page': page,
-        'user_id': user_id
+        'user_id': get_user_id()
       },
     success: function(data){
       create_table(data)
@@ -157,7 +170,10 @@ function income_add(name, amount, date, done){
 }
 
 function income_delete_bulk(items){
-  
+  /* либо забрать из фильтра*/
+  dates = get_first_laste_date_this_month()
+  start = dates[0]
+  end = dates[1]
   items_int = [] 
   for(i=0;i<items.length;i++){
     items_int.push(Number(items[i]))
@@ -165,19 +181,18 @@ function income_delete_bulk(items){
   user_id = get_user_id()
   data = {
     "user_id": user_id,
-    "items": items_int,
+    "items": JSON.stringify(items_int),
   }
-  console.log(items_int)
   $.ajax({
       url: '/income/delete/bulk/',         
       method: 'DELETE',             
-      dataType: 'application/json',
+      dataType: 'json',
       headers: {'X-CSRFToken':get_token()},
       data: data,
       success: function(data){
-        get_income_for_table()
-        set_data_for_dashboard()
-        create_events_on_click()
+        create_table(incomes=data, update_all=true);
+        set_data_for_dashboard(start, end);
+        create_events_on_click();
       }
   });
 }
@@ -187,11 +202,16 @@ function create_dashbord(data){
 
     canvas_el = document.getElementById('chart')
     canvas_el.remove()
+    canvas_el_new = document.createElement('canvas')
+    /*<canvas id="chart" style="width:600px;height:300px"></canvas> */
+    canvas_el_new.style.width = '600px'
+    canvas_el_new.style.height = '300px'
+    canvas_el_new.id = 'chart'
     
     conteiner_chart = document.getElementById('conteiner_chart')
-    conteiner_chart.append(canvas_el)
+    conteiner_chart.append(canvas_el_new)
 
-    const ctx = canvas_el.getContext('2d');
+    const ctx = canvas_el_new.getContext('2d');
     incomes = data.incomes.incomes
     expense = data.expense.expenses
 
@@ -205,6 +225,7 @@ function create_dashbord(data){
     }
 
     incomes_amount_list = []
+    
     for(i=0; i < incomes.length;i++){
       ex = incomes[i]
       amount = ex[1]
@@ -327,6 +348,7 @@ function create_events_on_click(){
 
   button_delete.onclick = function(e){
     items = []
+    to_delete = []
     checked_checkbox = []
     for(i=0; i<all_checkbox.length;i++){
       if(all_checkbox[i].checked){
@@ -338,10 +360,16 @@ function create_events_on_click(){
     for(i=0;i<checked_checkbox.length;i++){
       el = checked_checkbox[i]
       items.push(el.parentNode.parentNode.parentNode.parentNode.id)
-      console.log(el.parentNode.parentNode.parentNode.parentNode.id)
-      
+      to_delete.push(el.parentNode.parentNode.parentNode.parentNode)
     };
     income_delete_bulk(items)
+
+    for(i=0;i<to_delete.length;i++){
+      console.log(to_delete[i])
+      to_delete[i].remove()
+    }
+    button_delete.style.display = 'none';
+    button_copy.style.display = 'none';
   }
 
   /*при нажатии на ячейкку переходить к редактированию(сохранение по ентер или клику на другое место)
@@ -353,7 +381,7 @@ function create_events_on_click(){
 /*PUBLIC*/
 window.addEventListener('load', function () {
   create_events_on_click()
-  get_income_for_table(get_user_id())
+  get_income_for_table()
   set_data_for_dashboard()
 
 })

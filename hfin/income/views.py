@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from root.decorators import check_premission, is_authenticated_and_is_active
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 
 
 from .serializers import (
@@ -150,21 +150,34 @@ def delete_bulk(request):
     """
     if not request.method == 'DELETE':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    serialaizer = DeleteIncomeBulkSerializer(data=request.data)
+    reload_data = {
+        'user_id': request.data['user_id'],
+        'items': json.loads(request.data['items'])
+    }
+    serialaizer = DeleteIncomeBulkSerializer(data=reload_data)
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    ids = request.data['items']
-    user_id = request.data['user_id']
+    ids = reload_data['items']
+    user_id = reload_data['user_id']
 
-    incomes = Income.objects.filter(pk__in=ids, user_id=user_id)
+    incomes = Income.objects.filter(id__in=ids, user_id=user_id)
     if not incomes:
         return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
 
     for income in incomes:
         income.delete()
 
-    return Response({'status': 'ok'}, status=status.HTTP_204_NO_CONTENT)
+    page=1
+    limit = 20
+    offset = page * limit if (page > 1) else 0
+    manager = Income.objects
+    manager._using_default()
+    incomes = Income.objects.filter(user_id=user_id)[offset:offset + limit]
+    if not incomes:
+        return Response({'items': []}, status=status.HTTP_200_OK)
+
+    items = [model_to_dict(obj) for obj in incomes]
+    return Response({'items': items}, status=status.HTTP_200_OK)
 
 
 @swagger_auto_schema(method='get', query_serializer=GetIncomeSerializer, tags=['Income'])
