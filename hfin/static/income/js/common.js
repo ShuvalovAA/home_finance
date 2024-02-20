@@ -1,13 +1,6 @@
 /*
-страница доступна только авторизованным и активным пользователям
-наполнять таблицу
 пагирировать по данным
-запись данных
-построение дашборда на рил данных
 фильтрация
-переход по страницам
-копировать
-удалить
 скачать
 изменени данных по клику на элемент
 Логотип Finance Planner
@@ -37,14 +30,11 @@ function create_table(incomes, update_all=null){
   if(update_all){
     
     children = table_body.children
-    console.log(children.length)
     steps = children.length
     for(i=0; i< steps; i++){
-      console.log(children[i])
       children[0].remove()
     }
   }
-  console.log(incomes.items)
   for(i=0; i<incomes.items.length; i++){
     income = incomes.items[i]
     var income_id = income.id
@@ -52,14 +42,20 @@ function create_table(incomes, update_all=null){
     var date = income.date
     var amount = income.amount
     var done = income.done
+    if(done == 0 || done == false){
+      done = 'Нет'
+    }
+    if(done == 1 || done == true){
+      done = 'Да'
+    }
     var tr = document.createElement("tr");
     tr.className = 'd-flex'
     tr.id = income_id
     tr.innerHTML = '<tr>'+
-            '<td class="col-3 text-left">'+name+'</td>' +
-            '<td class="col-2 text-left">'+date+'</td>' +
-            '<td class="col-3 text-left">'+amount+'</td>' +
-            '<td class="col-1 text-right">'+done+'</td>' +
+            '<td class="col-3 text-left" name="text">'+name+'</td>' +
+            '<td class="col-2 text-left" name="date">'+date.split('T')[0]+'</td>' +
+            '<td class="col-3 text-left" name="number">'+amount+'</td>' +
+            '<td class="col-1 text-right" name="selector">'+done+'</td>' +
             '<td class="col-2 ">'+
               '<div class="row">'+
                 '<div class="col text-right"><input class="form-check-input" name="get" type="checkbox" ></div>'+
@@ -197,6 +193,34 @@ function income_delete_bulk(items){
   });
 }
 
+function income_copy_bulk(items){
+  /* либо забрать из фильтра*/
+  dates = get_first_laste_date_this_month()
+  start = dates[0]
+  end = dates[1]
+  items_int = [] 
+  for(i=0;i<items.length;i++){
+    items_int.push(Number(items[i]))
+  }
+  user_id = get_user_id()
+  data = {
+    "user_id": user_id,
+    "items": JSON.stringify(items_int),
+  }
+  $.ajax({
+      url: '/income/copy/bulk/',         
+      method: 'POST',             
+      dataType: 'json',
+      headers: {'X-CSRFToken':get_token()},
+      data: data,
+      success: function(data){
+        create_table(incomes=data, update_all=true);
+        set_data_for_dashboard(start, end);
+        create_events_on_click();
+      }
+  });
+}
+
 
 function create_dashbord(data){
 
@@ -295,6 +319,12 @@ function add_action_for_all_checkboxes(all_checkbox){
 }
 
 function create_events_on_click(){
+  all_td = document.getElementsByTagName('td')
+  for(i=0; i < all_td.length; i++){
+    all_td[i].addEventListener('click', function() {
+      console.log(all_td[i])
+    })
+  }
 
   /*add*/
   document.getElementById('button_add').onclick = function(e){
@@ -365,9 +395,28 @@ function create_events_on_click(){
     income_delete_bulk(items)
 
     for(i=0;i<to_delete.length;i++){
-      console.log(to_delete[i])
       to_delete[i].remove()
     }
+    button_delete.style.display = 'none';
+    button_copy.style.display = 'none';
+  }
+
+  button_copy.onclick = function(e){
+    items = []
+    checked_checkbox = []
+    for(i=0; i<all_checkbox.length;i++){
+      if(all_checkbox[i].checked){
+        checked_checkbox.push(all_checkbox[i])
+    };
+    
+    /*собрать все чекбоксы, которые выбраны  */
+    };
+    for(i=0;i<checked_checkbox.length;i++){
+      el = checked_checkbox[i]
+      items.push(el.parentNode.parentNode.parentNode.parentNode.id)
+    };
+    income_copy_bulk(items)
+
     button_delete.style.display = 'none';
     button_copy.style.display = 'none';
   }

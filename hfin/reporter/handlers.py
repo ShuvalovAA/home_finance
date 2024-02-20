@@ -6,7 +6,6 @@ from transaction.models import Transaction
 from django.db.models import Sum
 
 
-
 class Reporter:
     """Класс отчётов по доходам, расходам, транзакциям пользователя."""
 

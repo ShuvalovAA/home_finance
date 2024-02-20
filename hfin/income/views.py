@@ -8,6 +8,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from root.decorators import check_premission, is_authenticated_and_is_active
 from django.shortcuts import render
+from user.models import User
 
 
 from .serializers import (
@@ -272,21 +273,37 @@ def copy_bulk(request):
     if not request.method == 'POST':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    serialaizer = CopyIncomeBulkSerializer(data=request.data)
+    reload_data = {
+        'user_id': request.data['user_id'],
+        'items': json.loads(request.data['items'])
+    }
+    serialaizer = CopyIncomeBulkSerializer(data=reload_data)
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    ids = request.data['items']
-    user_id = request.data['user_id']
-
-    incomes = Income.objects.filter(pk__in=ids, user_id=user_id)
+    ids = reload_data['items']
+    user_id = reload_data['user_id']
+    user = User.objects.get(pk=user_id)
+    
+    incomes = Income.objects.filter(id__in=ids, user_id=user_id)
     if not incomes:
         return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
     obj_dicts = [model_to_dict(obj) for obj in incomes]
     [obj_dict.pop('id') for obj_dict in obj_dicts]
+    obj_dicts_try = []
+    for obj in obj_dicts:
+        obj['user'] = user
+        obj_dicts_try.append(obj)
 
     objs = [Income(**obj_dict) for obj_dict in obj_dicts]
     Income.objects.bulk_create(objs=objs, batch_size=25)
-    return Response({'status': 'ok'}, status=status.HTTP_201_CREATED)
+    page=1
+    limit = 20
+    offset = page * limit if (page > 1) else 0
+    manager = Income.objects
+    manager._using_default()
+    incomes = Income.objects.filter(user_id=user_id)[offset:offset + limit]
+    items = [model_to_dict(obj) for obj in incomes]
+    return Response({'items': items}, status=status.HTTP_201_CREATED)
 
 
 class CreateBulkIncomeView(GenericAPIView):

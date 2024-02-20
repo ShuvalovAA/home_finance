@@ -28,3 +28,10 @@ button.btn.btn-primary.btn-lg.dropdown-toggle.show {
 div#exampleModal.modal.fade.show {
     background-color: #eee9da00;
 }
+
+.table td, .table th {
+    text-align: left !important;
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}

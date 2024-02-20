@@ -60,8 +60,7 @@ def is_authenticated_and_is_active(method, *args, **kwargs):
         ])
 
         if not_active_is_authenticated:
-        #redirect('/profile/')
-            pass
+            return redirect('/profile/')
 
         active_not_authenticated = all([
             request.user,
@@ -69,9 +68,13 @@ def is_authenticated_and_is_active(method, *args, **kwargs):
             not request.user.is_authenticated
         ])
 
-        if active_not_authenticated or not request.user:
-            return render('signin.html')
-
+        need_signin = any([
+            active_not_authenticated,
+            not request.user,
+            not request.user.is_authenticated
+        ])
+        if need_signin:
+            return redirect('/user/signin')
 
         res = method(*args, **kwargs)
         return res
