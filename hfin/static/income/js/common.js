@@ -11,11 +11,33 @@ function get_user_id() {
   return user_id_div.textContent
 }
 
+function set_page(page, page_link_obj){
+    
+    //старый неактивный
+    old_parent_page_link_obj = document.getElementsByClassName('page-item active')[0]
+    console.log(old_parent_page_link_obj)
+    old_parent_page_link_obj.className = 'page-item'
+    span_obj = old_parent_page_link_obj.children[0]
+    ahref = document.createElement('a')
+    ahref.href = '#'
+    ahref.textContent = span_obj.textContent
+    ahref.className = 'page-link'
+    ahref.addEventListener('click', function(e){
+        set_page(e.target.textContent, e.target)
+    })
+    old_parent_page_link_obj.appendChild(ahref)
+    old_parent_page_link_obj.removeChild(span_obj)
+
+    //новый активный
+    console.log(page_link_obj)
+    page_link_obj.parentElement.className = 'page-item active'
+
+    get_income_for_table(page=page)
+}
 
 function _generate_pagination_menu(data, start_page=1){
     
     page_count = data.count
-    console.log(page_count)
     pag_menu = document.getElementById('pag_menu')
     lenth_menu = pag_menu.children.length
     for(i=lenth_menu-1;i>=0;i--){
@@ -23,8 +45,9 @@ function _generate_pagination_menu(data, start_page=1){
     }
     count_preview = 3
     need_pag_next_preview = (page_count > count_preview) && (start_page < (page_count-count_preview))
+    nexstartpagebase = 0
 
-    if(start_page>count_preview){
+    if(start_page>=count_preview){
         li = document.createElement('li')
         li.className = 'page-item'
 
@@ -43,16 +66,24 @@ function _generate_pagination_menu(data, start_page=1){
         pag_prev_preview.addEventListener(
             'click',
             function(e){
-                _generate_pagination_menu(data, start_page-3)
+                if(start_page == 1){
+                    page = 1
+                }else{
+                    page = start_page - 3
+                }
+                get_income_for_table(page=page)
+                _generate_pagination_menu(data, page)
             }
         )
     }
     
     for(i=start_page;i<=page_count;i++){
-        if(count_preview==0){
+        
+        if(count_preview==0 && i < page_count){
             break
         }
-        if(count_preview >0){
+        
+        if(count_preview >0 || i == page_count){
             if(start_page==i){
                 first_li = document.createElement('li')
                 first_li.className = 'page-item active'
@@ -77,6 +108,7 @@ function _generate_pagination_menu(data, start_page=1){
                 li.appendChild(ahref)
                 pag_menu.appendChild(li)
                 count_preview -=1
+                nexstartpagebase = i+1
             }
         }
     }
@@ -109,9 +141,21 @@ function _generate_pagination_menu(data, start_page=1){
         pag_next_preview.addEventListener(
             'click',
             function(e){
-                _generate_pagination_menu(data, i)
+                get_income_for_table(page=nexstartpagebase)
+                _generate_pagination_menu(data, nexstartpagebase)
             }
         )
+    }
+
+    page_links = document.getElementsByClassName('page-link')
+    for(i=0; i < page_links.length; i++){
+        page_link = page_links[i]
+        if(page_link.textContent != '...' && page_link.parentElement.className != 'page-item active'){
+            page_link.addEventListener('click', function(e){
+                set_page(e.target.textContent, e.target)
+            })
+        }
+        
     }
     
 }
@@ -151,9 +195,12 @@ function create_table(incomes, update_all = null) {
 
       children = table_body.children
       steps = children.length
-      for (i = 0; i < steps; i++) {
-          children[0].remove()
+      if(children.length>0){
+        for (i = steps-1; i >=0 ; i--){
+            table_body.removeChild(children[i])
+        }
       }
+
   }
   for (i = 0; i < incomes.items.length; i++) {
       income = incomes.items[i]
@@ -204,7 +251,7 @@ function get_income_for_table(page = null) {
           'user_id': get_user_id()
       },
       success: function(data) {
-          create_table(data)
+          create_table(data, update_all= true)
       }
   });
 }
@@ -563,10 +610,8 @@ function create_events_on_click() {
           $(document).keyup(function(e) {
             if(e.keyCode == 13){
               new_value = input_obj.value
-              console.log('enter')
               var container = $("#input_update");
               if ((new_value.length > 0) && (new_value != old_value)) {
-                  console.log('send')
                   parent = input_obj.parentElement.parentElement
                   
                   update_field = input_obj.type
@@ -609,7 +654,6 @@ function create_events_on_click() {
                       new_value = input_obj.value
 
                       if ((new_value.length > 0) && (new_value != old_value)) {
-                          console.log('send')
                           parent = input_obj.parentElement.parentElement
                           
 

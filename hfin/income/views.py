@@ -1,5 +1,4 @@
 import json
-from math import ceil
 from django.forms.models import model_to_dict
 from drf_yasg.utils import swagger_auto_schema
 from income.models import Income
@@ -46,7 +45,7 @@ def get_count_for_paggination(request):
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     user_id = request.GET.get('user_id')
-    incomes_count_page = ceil(Income.objects.filter(user_id=user_id).count() / 20)
+    incomes_count_page = int(Income.objects.filter(user_id=user_id).count() / 20)
     return Response({'count': incomes_count_page}, status=status.HTTP_200_OK)
 
 
