@@ -52,11 +52,11 @@ function create_table(incomes, update_all=null){
     tr.className = 'd-flex'
     tr.id = income_id
     tr.innerHTML = '<tr>'+
-            '<td class="col-3 text-left" name="text">'+name+'</td>' +
-            '<td class="col-2 text-left" name="date">'+date.split('T')[0]+'</td>' +
-            '<td class="col-3 text-left" name="number">'+amount+'</td>' +
-            '<td class="col-1 text-right" name="selector">'+done+'</td>' +
-            '<td class="col-2 ">'+
+            '<td class="col-3 text-left" id="td_text" >'+name+'</td>' +
+            '<td class="col-2 text-left" id="td_date" >'+date.split('T')[0]+'</td>' +
+            '<td class="col-3 text-left" id="td_number" >'+amount+'</td>' +
+            '<td class="col-1 text-right" id="td_selector" >'+done+'</td>' +
+            '<td class="col-2" id="td_get">'+
               '<div class="row">'+
                 '<div class="col text-right"><input class="form-check-input" name="get" type="checkbox" ></div>'+
               '</div>'+
@@ -319,11 +319,114 @@ function add_action_for_all_checkboxes(all_checkbox){
 }
 
 function create_events_on_click(){
+  all_td_to_click = []
   all_td = document.getElementsByTagName('td')
   for(i=0; i < all_td.length; i++){
-    all_td[i].addEventListener('click', function() {
-      console.log(all_td[i])
-    })
+      if(all_td[i].id != 'td_get'){
+        all_td_to_click.push(all_td[i])
+      }
+
+  }
+
+  function _get_input_by_type(element_type_input){
+
+    if(element_type_input == 'td_text'){
+      input_obj = document.createElement('input')
+      input_obj.className = 'form-control'
+      input_obj.type = 'text'
+    }
+    
+    if(element_type_input == 'td_date'){
+      input_obj = document.createElement('input')
+      input_obj.className = 'form-control'
+      input_obj.type = 'date'
+    }
+
+    if(element_type_input == 'td_number'){
+      input_obj = document.createElement('input')
+      input_obj.className = 'form-control'
+      input_obj.type = 'number'
+    }
+
+    if(element_type_input == 'td_selector'){
+      input_obj = document.createElement('select')
+      input_obj.className = 'form-select text-right'
+      op_1 = document.createElement('option')
+      op_1.innerHTML = 'Да'
+      input_obj_op_1 = input_obj.appendChild(op_1)
+      
+      op_2 = document.createElement('option')
+      op_2.innerHTML = 'Нет'
+      input_obj_op_2 = input_obj.appendChild(op_2)
+      
+    }
+
+    return input_obj
+  }
+
+  for(i=0; i < all_td_to_click.length; i++){
+    all_td_to_click[i].addEventListener('click', function(e) {
+      id_name = "input_update"
+      input_obj_already_exists = document.getElementById(id_name)
+      if(input_obj_already_exists){
+        return
+      }
+      td_elemnt = e.target
+      input_obj = _get_input_by_type(td_elemnt.id)
+      
+      input_obj.id = id_name
+      old_value = td_elemnt.textContent
+      td_elemnt.innerHTML = ""
+      
+      td_elemnt.appendChild(input_obj)
+      
+      
+      input_obj.focus()
+      $(document).mouseup(function (e) {
+        var container = $("#input_update");
+        if (container.has(e.target).length == 0){
+
+          if(container.length > 0){
+            if(e.target.id == container[0].id){
+              return
+            }
+          }
+          //тута
+            if(container[0] != td_elemnt){
+              console.log('контейнер не элемент по которомы кликнули' )
+              new_value = input_obj.value
+              parent = input_obj.parentNode
+              if((new_value.length > 0) && (new_value != old_value)){
+                console.log('send')
+                
+                if(parent){
+                  for(i=0;i<parent.children.length;i++){
+                    parent.removeChild(parent.children[i])
+                  }
+                }
+                input_obj.remove()
+                input_obj = null
+                
+                td_elemnt.textContent = new_value
+              
+              }else{
+                if(parent){
+                  for(i=0;i<parent.children.length;i++){
+                    parent.removeChild(parent.children[i])
+                  }
+                }
+                input_obj.remove()
+                input_obj = null
+                
+                td_elemnt.textContent = old_value
+              }
+                
+            }
+            
+        }
+      });
+    
+      })
   }
 
   /*add*/
