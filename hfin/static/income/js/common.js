@@ -2,7 +2,6 @@
 пагирировать по данным
 фильтрация
 скачать
-изменени данных по клику на элемент
 Логотип Finance Planner
 Дизайн подшаманить
 */
@@ -12,6 +11,127 @@ function get_user_id() {
   return user_id_div.textContent
 }
 
+
+function _generate_pagination_menu(data, start_page=1){
+    
+    page_count = data.count
+    console.log(page_count)
+    pag_menu = document.getElementById('pag_menu')
+    lenth_menu = pag_menu.children.length
+    for(i=lenth_menu-1;i>=0;i--){
+        pag_menu.removeChild(pag_menu.children[i])
+    }
+    count_preview = 3
+    need_pag_next_preview = (page_count > count_preview) && (start_page < (page_count-count_preview))
+
+    if(start_page>count_preview){
+        li = document.createElement('li')
+        li.className = 'page-item'
+
+        ahref_next = document.createElement('a')
+        ahref_next.className = 'page-link'
+        ahref_next.id = 'pag_prev_preview'
+        ahref_next.setAttribute('new_start_page',i)
+        ahref_next.textContent = '...'
+        li.appendChild(ahref_next)
+        pag_menu.prepend(li)
+        
+    }
+
+    pag_prev_preview = document.getElementById('pag_prev_preview')
+    if(pag_prev_preview){
+        pag_prev_preview.addEventListener(
+            'click',
+            function(e){
+                _generate_pagination_menu(data, start_page-3)
+            }
+        )
+    }
+    
+    for(i=start_page;i<=page_count;i++){
+        if(count_preview==0){
+            break
+        }
+        if(count_preview >0){
+            if(start_page==i){
+                first_li = document.createElement('li')
+                first_li.className = 'page-item active'
+                first_li.setAttribute('aria-current', 'page')
+                
+                span = document.createElement('span')
+                span.className = 'page-link'
+                span.textContent = i
+
+                first_li.appendChild(span)
+                pag_menu.appendChild(first_li)
+                count_preview -=1
+                continue
+            }else{
+                li = document.createElement('li')
+                li.className = 'page-item'
+
+                ahref = document.createElement('a')
+                ahref.className = 'page-link'
+                ahref.href = '#'
+                ahref.textContent = i
+                li.appendChild(ahref)
+                pag_menu.appendChild(li)
+                count_preview -=1
+            }
+        }
+    }
+
+    if(need_pag_next_preview){
+        li = document.createElement('li')
+        li.className = 'page-item'
+
+        ahref_next = document.createElement('a')
+        ahref_next.className = 'page-link'
+        ahref_next.id = 'pag_next_preview'
+        ahref_next.setAttribute('new_start_page',i)
+        ahref_next.textContent = '...'
+        li.appendChild(ahref_next)
+        pag_menu.appendChild(li)
+        
+        li = document.createElement('li')
+        li.className = 'page-item'
+
+        ahref = document.createElement('a')
+        ahref.className = 'page-link'
+        ahref.href = '#'
+        ahref.textContent = page_count
+        li.appendChild(ahref)
+        pag_menu.appendChild(li)
+    }
+
+    pag_next_preview = document.getElementById('pag_next_preview')
+    if(pag_next_preview){
+        pag_next_preview.addEventListener(
+            'click',
+            function(e){
+                _generate_pagination_menu(data, i)
+            }
+        )
+    }
+    
+}
+
+function get_sec_page(){
+    data = $.ajax({
+        url: '/income/get_count_for_paggination/',
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'X-CSRFToken': get_token()
+        },
+        data: {
+            'user_id': get_user_id()
+        },
+        success: function(data) {
+            _generate_pagination_menu(data)
+        }
+    });
+}
 
 function get_token() {
   token = document.getElementById('csrf_token').innerHTML
@@ -173,8 +293,6 @@ function income_add(name, amount, date, done) {
           }
           create_table(to_add_in_table)
           set_data_for_dashboard()
-          /*фильтровать таблицу*/
-          /*фильтровать дашборд */
       }
   });
 }
@@ -284,7 +402,6 @@ function create_dashbord(data) {
   canvas_el = document.getElementById('chart')
   canvas_el.remove()
   canvas_el_new = document.createElement('canvas')
-  /*<canvas id="chart" style="width:600px;height:300px"></canvas> */
   canvas_el_new.style.width = '600px'
   canvas_el_new.style.height = '300px'
   canvas_el_new.id = 'chart'
@@ -526,7 +643,6 @@ function create_events_on_click() {
       })
   }
 
-  /*add*/
   document.getElementById('button_add').onclick = function(e) {
       name_i = document.getElementById('add_name_income')
       date = document.getElementById('add_date_income')
@@ -554,7 +670,6 @@ function create_events_on_click() {
       done.value = ""
       set_data_for_dashboard()
   }
-  /*события выбора чебокса*/
   get_all = document.getElementById('get_all')
   all_checkbox = document.getElementsByName('get')
   add_action_for_all_checkboxes(all_checkbox)
@@ -621,6 +736,7 @@ function create_events_on_click() {
 
 /*PUBLIC*/
 window.addEventListener('load', function() {
+  get_sec_page()
   create_events_on_click()
   get_income_for_table()
   set_data_for_dashboard()

@@ -142,35 +142,7 @@
             </th>
           </tr>
         </thead>
-        <tbody id="table_body">
-          <tr class="d-flex">
-            <td class="col-3 text-left">Ипотека</td>
-            <td class="col-2 text-left">2010-10-10</td>
-            <td class="col-3 text-left">47000</td>
-            <td class="col-1 text-right">Да</td>
-            <td class="col-2 ">
-              <div class="row">
-                <div class="col text-right"><input class="form-check-input" name='get' type="checkbox" ></div>
-              </div>
-            </td>
-          </tr>
-          <tr class="d-flex">
-            <td class="col-3 text-left"><input type="text" class="form-control"></td>
-            <td class="col-2 text-left"><input class="form-control" type="date" value="2011-08-19"></td>
-            <td class="col-3 text-left"><input type="number" class="form-control" placeholder="0.00" /></td>
-            <td class="col-1 text-right">
-              <select class="form-select text-right">
-                <option selected>Нет</option>
-                <option>Да</option>
-                <option>Нет</option>
-              </select>
-            </td>
-            <td class="col-2 ">
-              <div class="row">
-                <div class="col text-right"><input class="form-check-input" name='get' type="checkbox" ></div>
-              </div>
-            </td>
-          </tr>     
+        <tbody id="table_body"> 
         </tbody>
       </table>
     </div>
@@ -180,12 +152,7 @@
       <div class="row">
         <div class="col"></div>
         <div class="col">      <nav aria-label="...">
-          <ul class="pagination pagination-lg">
-            <li class="page-item active" aria-current="page">
-              <span class="page-link">1</span>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <ul class="pagination pagination-lg" id="pag_menu">
           </ul>
         </nav></div>
         <div class="col"></div>
@@ -197,7 +164,7 @@
   <div class="col-md-4">
     <div class="container" name="report">
       <div class="text-center">
-          <div class="card chart-container" id="conteiner_chart"">
+          <div class="card chart-container" id="conteiner_chart">
             <canvas id="chart" style="width:600px;height:300px"></canvas>
           </div>
         

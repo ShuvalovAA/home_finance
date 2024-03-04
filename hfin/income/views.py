@@ -1,4 +1,5 @@
 import json
+from math import ceil
 from django.forms.models import model_to_dict
 from drf_yasg.utils import swagger_auto_schema
 from income.models import Income
@@ -18,6 +19,7 @@ from .serializers import (
     CreateIncomeSerializer,
     DeleteIncomeBulkSerializer,
     DeleteIncomeSerializer,
+    CountIncomeSerializer,
     GetIncomeBulkSerializer,
     GetIncomeSerializer,
     UpdateIncomeBulkSerializer,
@@ -30,6 +32,22 @@ def render_income_page(request):
     """Рендер на страницу доходов."""
     #breakpoint()
     return render(request, 'income.html')
+
+
+@swagger_auto_schema(method='GET', query_serializer=CountIncomeSerializer, tags=['Income'])
+@api_view(['GET'])
+@check_premission
+def get_count_for_paggination(request):
+    """Получить количество страниц."""
+    if not request.method == 'GET':
+        return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    serialaizer = CountIncomeSerializer(data=request.GET.dict())
+    if not serialaizer.is_valid():
+        return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    user_id = request.GET.get('user_id')
+    incomes_count_page = ceil(Income.objects.filter(user_id=user_id).count() / 20)
+    return Response({'count': incomes_count_page}, status=status.HTTP_200_OK)
 
 
 @swagger_auto_schema(method='POST', request_body=CreateIncomeSerializer, tags=['Income'])

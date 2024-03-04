@@ -96,6 +96,12 @@ class GetIncomeBulkSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
 
 
+class CountIncomeSerializer(serializers.Serializer):
+    """Сериалайзер для получения количества элементов доходов."""
+
+    user_id = serializers.IntegerField()
+
+
 class CopyIncomeSerializer(serializers.ModelSerializer):
     """Сериалайзер для копирования модели дохода."""
 
