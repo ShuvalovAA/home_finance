@@ -209,6 +209,45 @@ function income_delete_bulk(items) {
   });
 }
 
+function with_preprocess_update(income, update_field, new_value){
+  if(new_value =='Да'){
+    new_value=true
+  }
+  if(new_value =='Нет'){
+    new_value=false
+  }
+  data = {
+    "id": income.id,
+    "user_id": get_user_id(),
+    "name": income.name,
+    "date": income.date,
+    "amount": income.amount,
+    "done": income.done
+  }
+  data[update_field] = new_value
+  income_update(income_data=data)
+}
+
+
+function income_update( income_data) {
+  /* либо забрать из фильтра*/
+  dates = get_first_laste_date_this_month()
+  start = dates[0]
+  end = dates[1]
+  $.ajax({
+      url: '/income/update/',
+      method: 'PATCH',
+      dataType: 'json',
+      headers: {
+          'X-CSRFToken': get_token()
+      },
+      data: income_data,
+      success: function(data) {
+          set_data_for_dashboard(start, end);
+      }
+  });
+}
+
 function income_copy_bulk(items) {
   /* либо забрать из фильтра*/
   dates = get_first_laste_date_this_month()
@@ -411,8 +450,23 @@ function create_events_on_click() {
               var container = $("#input_update");
               if ((new_value.length > 0) && (new_value != old_value)) {
                   console.log('send')
-
+                  parent = input_obj.parentElement.parentElement
+                  
+                  update_field = input_obj.type
+                  if(update_field == 'date'){
+                    update_field = 'date'
+                  }
+                  if(update_field == 'number'){
+                    update_field = 'amount'
+                  }
+                  if(update_field == 'select-one'){
+                    update_field = 'done'
+                  }
+                  if(update_field == 'text'){
+                    update_field = 'name'
+                  }
                   td_elemnt.textContent = new_value
+                  with_preprocess_update(parent, update_field, new_value)
                   $(document).off('keyup')
                   $(document).off('mouseup')
 
@@ -439,8 +493,25 @@ function create_events_on_click() {
 
                       if ((new_value.length > 0) && (new_value != old_value)) {
                           console.log('send')
+                          parent = input_obj.parentElement.parentElement
+                          
 
                           td_elemnt.textContent = new_value
+                          update_field = input_obj.type
+                          if(update_field == 'date'){
+                            update_field = 'date'
+                          }
+                          if(update_field == 'number'){
+                            update_field = 'amount'
+                          }
+                          if(update_field == 'select-one'){
+                            update_field = 'done'
+                          }
+                          if(update_field == 'text'){
+                            update_field = 'name'
+                          }
+                          td_elemnt.textContent = new_value
+                          with_preprocess_update(parent, update_field, new_value)
 
 
                       } else {
@@ -513,8 +584,6 @@ function create_events_on_click() {
           if (all_checkbox[i].checked) {
               checked_checkbox.push(all_checkbox[i])
           };
-
-          /*собрать все чекбоксы, которые выбраны  */
       };
       for (i = 0; i < checked_checkbox.length; i++) {
           el = checked_checkbox[i]
@@ -538,7 +607,6 @@ function create_events_on_click() {
               checked_checkbox.push(all_checkbox[i])
           };
 
-          /*собрать все чекбоксы, которые выбраны  */
       };
       for (i = 0; i < checked_checkbox.length; i++) {
           el = checked_checkbox[i]
@@ -549,11 +617,6 @@ function create_events_on_click() {
       button_delete.style.display = 'none';
       button_copy.style.display = 'none';
   }
-
-  /*при нажатии на ячейкку переходить к редактированию(сохранение по ентер или клику на другое место)
-    при нажатии на другую ячейку закрыть редактирование здесь и открыть ту ячейку, которую нажали
-  */
-
 }
 
 /*PUBLIC*/

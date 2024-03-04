@@ -225,7 +225,7 @@ def get_bulk(request):
     user_id = request.GET.get('user_id')
     limit = 20
     offset = page * limit if (page > 1) else 0
-    incomes = Income.objects.filter(user_id=user_id)[offset:offset + limit]
+    incomes = Income.objects.filter(user_id=user_id).order_by('date').reverse()[offset:offset + limit]
     if not incomes:
         return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
 

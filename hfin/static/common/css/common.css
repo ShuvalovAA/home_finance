@@ -35,3 +35,6 @@ div#exampleModal.modal.fade.show {
     vertical-align: top;
     border-top: 1px solid #dee2e6;
 }
+.form-select{
+    width: 170%;
+}

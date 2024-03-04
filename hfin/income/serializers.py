@@ -31,7 +31,14 @@ class UpdateIncomeSerializer(serializers.ModelSerializer):
         """Метаданные сериалайзера."""
 
         model = Income
-        fields = '__all__'
+        fields = [
+            'id',
+            'user_id',
+            'name',
+            'date',
+            'amount',
+            'done'
+        ]
 
 
 class UpdateIncomeBulkSerializer(serializers.Serializer):
