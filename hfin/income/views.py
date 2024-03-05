@@ -1,5 +1,6 @@
 import json
 import datetime
+import math
 from django.forms.models import model_to_dict
 from drf_yasg.utils import swagger_auto_schema
 from income.models import Income
@@ -69,7 +70,7 @@ def get_count_for_paggination(request):
                 filter_data['done'] = True
             if v == 'false':
                 filter_data['done'] = False
-    incomes_count_page = int(Income.objects.filter(**filter_data).count() / 20)
+    incomes_count_page = math.ceil((Income.objects.filter(**filter_data).count() / 20))
     return Response({'count': incomes_count_page}, status=status.HTTP_200_OK)
 
 
@@ -211,10 +212,10 @@ def delete_bulk(request):
 
     page=1
     limit = 20
-    offset = page * limit if (page > 1) else 0
+    offset = (page * limit)-20 if (page > 1) else 0
     manager = Income.objects
     manager._using_default()
-    incomes = Income.objects.filter(user_id=user_id)[offset:offset + limit]
+    incomes = Income.objects.filter(user_id=user_id).order_by('date')[offset:offset + limit]
     if not incomes:
         return Response({'items': []}, status=status.HTTP_200_OK)
 
@@ -286,9 +287,8 @@ def get_bulk(request):
             if v == 'false':
                 filter_data['done'] = False
     limit = 20
-    offset = page * limit if (page > 1) else 0
-    
-    incomes = Income.objects.filter(**filter_data).order_by('date').reverse()[offset:offset + limit]
+    offset = (page * limit)-20 if (page > 1) else 0
+    incomes = Income.objects.filter(**filter_data).order_by('date')[offset:offset + limit]
     if not incomes:
         return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -346,7 +346,7 @@ def copy_bulk(request):
     ids = reload_data['items']
     user_id = reload_data['user_id']
     user = User.objects.get(pk=user_id)
-    
+
     incomes = Income.objects.filter(id__in=ids, user_id=user_id)
     if not incomes:
         return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -361,10 +361,10 @@ def copy_bulk(request):
     Income.objects.bulk_create(objs=objs, batch_size=25)
     page=1
     limit = 20
-    offset = page * limit if (page > 1) else 0
+    offset = (page * limit)-20 if (page > 1) else 0
     manager = Income.objects
     manager._using_default()
-    incomes = Income.objects.filter(user_id=user_id)[offset:offset + limit]
+    incomes = Income.objects.filter(user_id=user_id).order_by('date')[offset:offset + limit]
     items = [model_to_dict(obj) for obj in incomes]
     return Response({'items': items}, status=status.HTTP_201_CREATED)
 

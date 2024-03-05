@@ -237,6 +237,30 @@ function filter_table(start_period, end_period, name_income, done) {
         done=done,
         pag_need_update=true
     )
+    
+    if(page == null){
+        page=1
+    }
+
+    params = {
+        'page': page,
+        'start_date': start_date,
+        'end_date': end_date,
+        'name': name_income,
+        'done': done,
+        'user_id': get_user_id()
+      }
+    
+      request_data = {}
+    
+      for(i in params){
+        if(params[i]){
+            request_data[i] = params[i]
+        }
+      }
+
+    get_sec_page(filter_data=request_data)
+    //_generate_pagination_menu({'count':2})
 
     //get_income_for_table
 
@@ -316,9 +340,9 @@ function get_income_for_table(
         request_data[i] = params[i]
     }
   }
-  if(pag_need_update){
-    get_sec_page(request_data=request_data)
-  }
+//   if(pag_need_update){
+//     get_sec_page(request_data=request_data)
+//   }
 
   if (page == null) {
     request_data['page'] = 1
