@@ -1,5 +1,4 @@
 /*
-пагирировать по данным
 фильтрация
 скачать
 Логотип Finance Planner
@@ -13,7 +12,7 @@ function get_user_id() {
 
 function set_page(page, page_link_obj){
     
-    //старый неактивный
+
     old_parent_page_link_obj = document.getElementsByClassName('page-item active')[0]
     console.log(old_parent_page_link_obj)
     old_parent_page_link_obj.className = 'page-item'
@@ -28,7 +27,7 @@ function set_page(page, page_link_obj){
     old_parent_page_link_obj.appendChild(ahref)
     old_parent_page_link_obj.removeChild(span_obj)
 
-    //новый активный
+
     console.log(page_link_obj)
     page_link_obj.parentElement.className = 'page-item active'
 
@@ -542,7 +541,26 @@ function add_action_for_all_checkboxes(all_checkbox) {
   }
 }
 
+
 function create_events_on_click() {
+
+    button_filter = document.getElementById('button-filter')
+    button_filter.addEventListener(
+        'click',
+        function(e){
+            start_period = document.getElementById('start-filter').value
+            end_period = document.getElementById('end-filter').value
+            name_income = document.getElementById('name-filter').selectedOptions[0].textContent
+            done = document.getElementById('done-filter').selectedOptions[0]
+            if(done='Да'){
+                done = true
+            }
+            if(done='Нет'){
+                done=false
+            }
+
+        }
+    )
   all_td_to_click = []
   all_td = document.getElementsByTagName('td')
   for (i = 0; i < all_td.length; i++) {
