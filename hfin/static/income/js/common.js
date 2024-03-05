@@ -458,35 +458,45 @@ function create_dashbord(data) {
   const ctx = canvas_el_new.getContext('2d');
   incomes = data.incomes.incomes
   expense = data.expense.expenses
-
-  all_elemts = [expense, incomes]
-
-  expenses_amount_list = []
-  for (i = 0; i < expense.length; i++) {
-      ex = expense[i]
-      amount = ex[1]
-      expenses_amount_list.push(amount)
+  incomes_dict = {}
+  for(i in incomes){
+    incomes_dict[incomes[i][0]] = incomes[i][1]
   }
 
-  incomes_amount_list = []
+  expense_dict = {}
+  for(i in expense){
+    expense_dict[expense[i][0]] = expense[i][1]
+  }
 
-  for (i = 0; i < incomes.length; i++) {
-      ex = incomes[i]
-      amount = ex[1]
-      incomes_amount_list.push(amount)
+  for(i in incomes_dict){
+    expense_on_date = expense_dict[i]
+    if(!expense_on_date){
+        expense_dict[i] = 0
+    }
   }
-  dts = []
-  for (z = 0; z < all_elemts.length; z++) {
-      el = all_elemts[z]
-      for (i = 0; i < el.length; i++) {
-          e = el[i]
-          for (q = 0; q < e.length; q++) {
-              date = e[0]
-              dts.push(date)
-          }
-      }
+  for(i in expense_dict){
+    income_on_date = incomes_dict[i]
+    if(!income_on_date){
+        incomes_dict[i] = 0
+    }
   }
-  dts = Array.from(new Set(dts))
+
+  sorted_keys_income = Object.keys(incomes_dict).sort()
+  income_dict_result = {}
+  for(i in sorted_keys_income){
+    income_dict_result[sorted_keys_income[i]] = incomes_dict[sorted_keys_income[i]]
+  }
+
+  sorted_keys_expense = Object.keys(expense_dict).sort()
+  expense_dict_result = {}
+  for(i in sorted_keys_expense){
+    expense_dict_result[sorted_keys_expense[i]] = expense_dict[sorted_keys_expense[i]]
+  }
+
+  dts = sorted_keys_expense
+  incomes_amount_list = Object.values(income_dict_result)
+  expenses_amount_list = Object.values(expense_dict_result)
+
 
   const myChart = new Chart(ctx, {
       type: 'bar',
