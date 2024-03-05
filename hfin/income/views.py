@@ -1,4 +1,5 @@
 import json
+import datetime
 from django.forms.models import model_to_dict
 from drf_yasg.utils import swagger_auto_schema
 from income.models import Income
@@ -37,15 +38,38 @@ def render_income_page(request):
 @api_view(['GET'])
 @check_premission
 def get_count_for_paggination(request):
-    """Получить количество страниц."""
+    """Получить количество страниц.
+
+    - start_date: дата начала поиска
+    - end_date: дата конца поиска
+    - name: наименование
+    - done: статус выполнения
+    """
     if not request.method == 'GET':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     serialaizer = CountIncomeSerializer(data=request.GET.dict())
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    user_id = request.GET.get('user_id')
-    incomes_count_page = int(Income.objects.filter(user_id=user_id).count() / 20)
+    params = {k: v[0] for k, v in dict(request.GET).items()}
+    user_id = int(params.get('user_id'))
+
+    filter_data = {}
+    for k, v in params.items():
+        if k == 'user_id':
+            filter_data['user_id'] = v
+        if k == 'start_date':
+            filter_data['date__gte'] = datetime.datetime.strptime(v, '%Y-%m-%d')
+        if k == 'end_date':
+            filter_data['date__lte'] = datetime.datetime.strptime(v, '%Y-%m-%d') + datetime.timedelta(days=1)
+        if k == 'name':
+            filter_data['name'] = v
+        if k == 'done':
+            if v == 'true':
+                filter_data['done'] = True
+            if v == 'false':
+                filter_data['done'] = False
+    incomes_count_page = int(Income.objects.filter(**filter_data).count() / 20)
     return Response({'count': incomes_count_page}, status=status.HTTP_200_OK)
 
 
@@ -251,9 +275,9 @@ def get_bulk(request):
         if k == 'user_id':
             filter_data['user_id'] = v
         if k == 'start_date':
-            filter_data['date__gte'] = v
+            filter_data['date__gte'] = datetime.datetime.strptime(v, '%Y-%m-%d')
         if k == 'end_date':
-            filter_data['date__lte'] = v
+            filter_data['date__lte'] = datetime.datetime.strptime(v, '%Y-%m-%d') + datetime.timedelta(days=1)
         if k == 'name':
             filter_data['name'] = v
         if k == 'done':
@@ -263,7 +287,7 @@ def get_bulk(request):
                 filter_data['done'] = False
     limit = 20
     offset = page * limit if (page > 1) else 0
-
+    
     incomes = Income.objects.filter(**filter_data).order_by('date').reverse()[offset:offset + limit]
     if not incomes:
         return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)

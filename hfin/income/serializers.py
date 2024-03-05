@@ -104,6 +104,10 @@ class CountIncomeSerializer(serializers.Serializer):
     """Сериалайзер для получения количества элементов доходов."""
 
     user_id = serializers.IntegerField()
+    start_date = serializers.DateField(required=False)
+    end_date = serializers.DateField(required=False)
+    name = serializers.CharField(required=False)
+    done = serializers.BooleanField(required=False)
 
 
 class CopyIncomeSerializer(serializers.ModelSerializer):

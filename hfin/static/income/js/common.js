@@ -157,7 +157,12 @@ function _generate_pagination_menu(data, start_page=1){
     
 }
 
-function get_sec_page(){
+function get_sec_page(filter_data = null){
+    if(!filter_data){
+        filter_data = {
+            'user_id': get_user_id()
+        }
+    }
     data = $.ajax({
         url: '/income/get_count_for_paggination/',
         method: 'GET',
@@ -165,9 +170,7 @@ function get_sec_page(){
         headers: {
             'X-CSRFToken': get_token()
         },
-        data: {
-            'user_id': get_user_id()
-        },
+        data: filter_data,
         success: function(data) {
             _generate_pagination_menu(data)
         }
@@ -194,6 +197,7 @@ function filter_table(start_period, end_period, name_income, done) {
     }
     
     set_data_for_dashboard(start=start_period, end=end_period)
+    
     get_income_for_table(
         page = null,
         start_date=start_period,
@@ -256,11 +260,6 @@ function create_table(incomes, update_all = null) {
 }
 
 
-// - page: номер страницы;
-// - start_date: дата начала поиска
-// - end_date: дата конца поиска
-// - name: наименование
-// - done: статус выполнения
 function get_income_for_table(
     page = null,
     start_date = null,
@@ -286,6 +285,10 @@ function get_income_for_table(
         request_data[i] = params[i]
     }
   }
+  if(pag_need_update){
+    get_sec_page(request_data=request_data)
+  }
+  //get_sec_page(request_data=request_data)
 
   if (page == null) {
     request_data['page'] = 1
@@ -602,9 +605,7 @@ function add_action_for_all_checkboxes(all_checkbox) {
   }
 }
 
-
-function create_events_on_click() {
-
+function set_event_button_filter(){
     button_filter = document.getElementById('button-filter')
     button_filter.addEventListener(
         'click',
@@ -627,6 +628,10 @@ function create_events_on_click() {
             )
         }
     )
+}
+
+function create_events_on_click() {
+
   all_td_to_click = []
   all_td = document.getElementsByTagName('td')
   for (i = 0; i < all_td.length; i++) {
@@ -868,5 +873,5 @@ window.addEventListener('load', function() {
   create_events_on_click()
   get_income_for_table()
   set_data_for_dashboard()
-
+  set_event_button_filter()
 })
