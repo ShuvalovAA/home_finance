@@ -12,8 +12,9 @@ function get_user_id() {
 
 function set_page(page, page_link_obj){
     
-
+    
     old_parent_page_link_obj = document.getElementsByClassName('page-item active')[0]
+    console.log(old_parent_page_link_obj)
     old_parent_page_link_obj.className = 'page-item'
     span_obj = old_parent_page_link_obj.children[0]
     ahref = document.createElement('a')
@@ -26,10 +27,40 @@ function set_page(page, page_link_obj){
     old_parent_page_link_obj.appendChild(ahref)
     old_parent_page_link_obj.removeChild(span_obj)
 
-
+    console.log(page_link_obj.parentElement)
     page_link_obj.parentElement.className = 'page-item active'
+    start_period = document.getElementById('start-filter').value
+    end_period = document.getElementById('end-filter').value
+    name_income = document.getElementById('name-filter').selectedOptions[0].textContent
+    done = document.getElementById('done-filter').selectedOptions[0]
+    if(done='Да'){
+        done = true
+    }
+    if(done='Нет'){
+        done=false
+    }
+    if(start_period == ''){
+        start_period = '1000-01-01'
+    }
+    if(end_period == ''){
+        end_period = '3000-01-01'
+    }
+    if(done == '...'){
+        done = null
+    }
+    if(name_income == '...'){
+        name_income = null
+    }
 
-    get_income_for_table(page=page)
+
+    get_income_for_table(
+        page = page,
+        start_date=start_period,
+        end_date=end_period,
+        name=name_income,
+        done=done,
+        pag_need_update=true
+    )
 }
 
 function _generate_pagination_menu(data, start_page=1){
@@ -288,7 +319,6 @@ function get_income_for_table(
   if(pag_need_update){
     get_sec_page(request_data=request_data)
   }
-  //get_sec_page(request_data=request_data)
 
   if (page == null) {
     request_data['page'] = 1
