@@ -230,6 +230,10 @@ def get_bulk(request):
     Входные параметры:
     ---
     - page: номер страницы;
+    - start_date: дата начала поиска
+    - end_date: дата конца поиска
+    - name: наименование
+    - done: статус выполнения
     *тротлинг:20 записей на страницу
     """
     if not request.method == 'GET':
@@ -238,11 +242,29 @@ def get_bulk(request):
     serialaizer = GetIncomeBulkSerializer(data=request.GET.dict())
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    page = int(request.GET.get('page'))
-    user_id = request.GET.get('user_id')
+    params = {k: v[0] for k, v in dict(request.GET).items()}
+    page = int(params.pop('page'))
+    user_id = int(params.get('user_id'))
+
+    filter_data = {}
+    for k, v in params.items():
+        if k == 'user_id':
+            filter_data['user_id'] = v
+        if k == 'start_date':
+            filter_data['date__gte'] = v
+        if k == 'end_date':
+            filter_data['date__lte'] = v
+        if k == 'name':
+            filter_data['name'] = v
+        if k == 'done':
+            if v == 'true':
+                filter_data['done'] = True
+            if v == 'false':
+                filter_data['done'] = False
     limit = 20
     offset = page * limit if (page > 1) else 0
-    incomes = Income.objects.filter(user_id=user_id).order_by('date').reverse()[offset:offset + limit]
+
+    incomes = Income.objects.filter(**filter_data).order_by('date').reverse()[offset:offset + limit]
     if not incomes:
         return Response({'Error': 'Incomes not found.'}, status=status.HTTP_404_NOT_FOUND)
 

@@ -14,7 +14,6 @@ function set_page(page, page_link_obj){
     
 
     old_parent_page_link_obj = document.getElementsByClassName('page-item active')[0]
-    console.log(old_parent_page_link_obj)
     old_parent_page_link_obj.className = 'page-item'
     span_obj = old_parent_page_link_obj.children[0]
     ahref = document.createElement('a')
@@ -28,7 +27,6 @@ function set_page(page, page_link_obj){
     old_parent_page_link_obj.removeChild(span_obj)
 
 
-    console.log(page_link_obj)
     page_link_obj.parentElement.className = 'page-item active'
 
     get_income_for_table(page=page)
@@ -181,7 +179,31 @@ function get_token() {
   return token
 }
 
-function filter_table(start = null, end = null) {
+function filter_table(start_period, end_period, name_income, done) {
+    if(start_period == ''){
+        start_period = '1000-01-01'
+    }
+    if(end_period == ''){
+        end_period = '3000-01-01'
+    }
+    if(done == '...'){
+        done = null
+    }
+    if(name_income == '...'){
+        name_income = null
+    }
+    
+    set_data_for_dashboard(start=start_period, end=end_period)
+    get_income_for_table(
+        page = null,
+        start_date=start_period,
+        end_date=end_period,
+        name=name_income,
+        done=done,
+        pag_need_update=true
+    )
+
+    //get_income_for_table
 
 }
 
@@ -233,9 +255,40 @@ function create_table(incomes, update_all = null) {
   create_events_on_click()
 }
 
-function get_income_for_table(page = null) {
+
+// - page: номер страницы;
+// - start_date: дата начала поиска
+// - end_date: дата конца поиска
+// - name: наименование
+// - done: статус выполнения
+function get_income_for_table(
+    page = null,
+    start_date = null,
+    end_date = null,
+    name = null,
+    done = null,
+    pag_need_update = false
+    ) {
+
+  params = {
+    'page': page,
+    'start_date': start_date,
+    'end_date': end_date,
+    'name': name,
+    'done': done,
+    'user_id': get_user_id()
+  }
+
+  request_data = {}
+
+  for(i in params){
+    if(params[i]){
+        request_data[i] = params[i]
+    }
+  }
+
   if (page == null) {
-      page = 1
+    request_data['page'] = 1
   }
 
   data = $.ajax({
@@ -245,12 +298,9 @@ function get_income_for_table(page = null) {
       headers: {
           'X-CSRFToken': get_token()
       },
-      data: {
-          'page': page,
-          'user_id': get_user_id()
-      },
+      data: request_data,
       success: function(data) {
-          create_table(data, update_all= true)
+        create_table(data, update_all= true)
       }
   });
 }
@@ -258,7 +308,8 @@ function get_income_for_table(page = null) {
 function get_first_laste_date_this_month() {
   var date = new Date();
   var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-  var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59);
+  UTC_CODE  = date.getTimezoneOffset() * (-1) / 60
   firstDay = firstDay.toISOString().split('T')[0]
   lastDay = lastDay.toISOString().split('T')[0]
   return [firstDay, lastDay]
@@ -568,7 +619,12 @@ function create_events_on_click() {
             if(done='Нет'){
                 done=false
             }
-
+            filter_table(
+                start_period,
+                end_period,
+                name_income,
+                done
+            )
         }
     )
   all_td_to_click = []
