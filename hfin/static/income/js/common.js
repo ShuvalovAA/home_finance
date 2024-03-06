@@ -1,5 +1,5 @@
 /*
-фильтрация
+добавить валидацию при добавлении
 скачать
 Логотип Finance Planner
 Дизайн подшаманить
@@ -10,6 +10,40 @@ function get_user_id() {
   return user_id_div.textContent
 }
 
+function apply_names_for_filter(){
+    data = $.ajax({
+        url: '/income/get_name_list/',
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'X-CSRFToken': get_token()
+        },
+        data: {
+            'user_id': get_user_id()
+        },
+        success: function(data) {
+            set_name_list(data.names)
+        }
+    });
+
+}
+
+function set_name_list(names){
+    selecter = document.getElementById('name-filter')
+    for(i=selecter.children.length-1; i >= 0; i--){
+        console.log(selecter.children[i].textContent)
+        if(selecter.children[i].textContent != '...'){
+            selecter.removeChild(selecter.children[i])
+        }
+    }
+    
+    for(i in names){
+        option_element = document.createElement('option')
+        option_element.textContent = names[i]
+        selecter.append(option_element)
+    }
+
+}
 function set_page(page, page_link_obj){
     
     
@@ -213,6 +247,55 @@ function get_token() {
   return token
 }
 
+function update_sec_pag(){
+
+    start_period = document.getElementById('start-filter').value
+    end_period = document.getElementById('end-filter').value
+    name_income = document.getElementById('name-filter').selectedOptions[0].textContent
+    done = document.getElementById('done-filter').selectedOptions[0]
+    if(done='Да'){
+        done = true
+    }
+    if(done='Нет'){
+        done=false
+    }
+    if(start_period == ''){
+        start_period = '1000-01-01'
+    }
+    if(end_period == ''){
+        end_period = '3000-01-01'
+    }
+    if(done == '...'){
+        done = null
+    }
+    if(name_income == '...'){
+        name_income = null
+    }
+
+    if(page == null){
+        page=1
+    }
+
+    params = {
+        'page': page,
+        'start_date': start_date,
+        'end_date': end_date,
+        'name': name_income,
+        'done': done,
+        'user_id': get_user_id()
+      }
+    
+      request_data = {}
+    
+      for(i in params){
+        if(params[i]){
+            request_data[i] = params[i]
+        }
+      }
+
+    get_sec_page(filter_data=request_data)
+}
+
 function filter_table(start_period, end_period, name_income, done) {
     if(start_period == ''){
         start_period = '1000-01-01'
@@ -237,6 +320,8 @@ function filter_table(start_period, end_period, name_income, done) {
         done=done,
         pag_need_update=true
     )
+
+    //update_sec_pag()
     
     if(page == null){
         page=1
@@ -260,9 +345,6 @@ function filter_table(start_period, end_period, name_income, done) {
       }
 
     get_sec_page(filter_data=request_data)
-    //_generate_pagination_menu({'count':2})
-
-    //get_income_for_table
 
 }
 
@@ -340,9 +422,6 @@ function get_income_for_table(
         request_data[i] = params[i]
     }
   }
-//   if(pag_need_update){
-//     get_sec_page(request_data=request_data)
-//   }
 
   if (page == null) {
     request_data['page'] = 1
@@ -374,12 +453,12 @@ function get_first_laste_date_this_month() {
 
 function set_data_for_dashboard(start = null, end = null) {
   dates = get_first_laste_date_this_month()
-  if (!start) {
-      start = dates[0]
-  }
-  if (!end) {
-      end = dates[1]
-  }
+    if (!start) {
+        start = dates[0]
+    }
+    if (!end) {
+        end = dates[1]
+    }
   get_incomes(start, end)
 
 }
@@ -516,6 +595,7 @@ function income_update( income_data) {
       data: income_data,
       success: function(data) {
           set_data_for_dashboard(start, end);
+          apply_names_for_filter()
       }
   });
 }
@@ -843,13 +923,6 @@ function create_events_on_click() {
 
 
       document.getElementById('button_exit').click();
-      /*
-      прочитать данные с формы
-      валидировать
-      отправить
-      получить
-      внести в таблицу(на странице 10 элементов, последний добавленный вверх таблицы вставлять, последний удалять из таблицы)
-      */
       income_add(name_value, amount_value, date_value, done_value);
       name_i.value = ""
       date.value = ""
@@ -923,9 +996,10 @@ function create_events_on_click() {
 
 /*PUBLIC*/
 window.addEventListener('load', function() {
-  get_sec_page()
-  create_events_on_click()
-  get_income_for_table()
-  set_data_for_dashboard()
-  set_event_button_filter()
+    apply_names_for_filter()
+    get_sec_page()
+    create_events_on_click()
+    get_income_for_table()
+    set_data_for_dashboard()
+    set_event_button_filter()
 })

@@ -14,6 +14,7 @@ from user.models import User
 
 
 from .serializers import (
+    NamesIncomeSerializer,
     CopyIncomeBulkSerializer,
     CopyIncomeSerializer,
     CreateBulkIncomeSerializer,
@@ -31,8 +32,18 @@ from .serializers import (
 @is_authenticated_and_is_active
 def render_income_page(request):
     """Рендер на страницу доходов."""
-    #breakpoint()
     return render(request, 'income.html')
+
+
+@swagger_auto_schema(method='GET', query_serializer=NamesIncomeSerializer, tags=['Income'])
+@api_view(['GET'])
+@check_premission
+def get_name_list(request):
+    user_id = request.GET.get('user_id')
+    manager = Income.objects
+    manager._using_default()
+    names = list(Income.objects.filter(user_id=user_id).distinct("name").values_list('name', flat=True))
+    return Response({'names': names}, status=status.HTTP_200_OK)
 
 
 @swagger_auto_schema(method='GET', query_serializer=CountIncomeSerializer, tags=['Income'])

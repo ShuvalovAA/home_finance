@@ -89,6 +89,11 @@ class GetIncomeSerializer(serializers.ModelSerializer):
         fields = ['id', 'user_id']
 
 
+class NamesIncomeSerializer(serializers.Serializer):
+    """Сериалайзер для получения списка наименования доходов."""
+
+    user_id = serializers.IntegerField()
+
 class GetIncomeBulkSerializer(serializers.Serializer):
     """Сериалайзер для массового получения модели дохода."""
 
