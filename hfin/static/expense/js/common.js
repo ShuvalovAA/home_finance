@@ -12,7 +12,7 @@ function get_user_id() {
   
   function apply_names_for_filter(){
       data = $.ajax({
-          url: '/income/get_name_list/',
+          url: '/expense/get_name_list/',
           method: 'GET',
           dataType: 'json',
           headers: {
@@ -229,7 +229,7 @@ function get_user_id() {
           }
       }
       data = $.ajax({
-          url: '/income/get_count_for_paggination/',
+          url: '/expense/get_count_for_paggination/',
           method: 'GET',
           dataType: 'json',
           headers: {
@@ -428,7 +428,7 @@ function get_user_id() {
     }
   
     data = $.ajax({
-        url: '/income/get/bulk',
+        url: '/expense/get/bulk',
         method: 'GET',
         dataType: 'json',
         headers: {
@@ -507,7 +507,7 @@ function get_user_id() {
   
   function income_add(name, amount, date, done) {
     $.ajax({
-        url: '/income/create/',
+        url: '/expense/create/',
         method: 'POST',
         dataType: 'json',
         headers: {
@@ -545,7 +545,7 @@ function get_user_id() {
         "items": JSON.stringify(items_int),
     }
     $.ajax({
-        url: '/income/delete/bulk/',
+        url: '/expense/delete/bulk/',
         method: 'DELETE',
         dataType: 'json',
         headers: {
@@ -586,7 +586,7 @@ function get_user_id() {
     start = dates[0]
     end = dates[1]
     $.ajax({
-        url: '/income/update/',
+        url: '/expense/update/',
         method: 'PATCH',
         dataType: 'json',
         headers: {
@@ -615,7 +615,7 @@ function get_user_id() {
         "items": JSON.stringify(items_int),
     }
     $.ajax({
-        url: '/income/copy/bulk/',
+        url: '/expense/copy/bulk/',
         method: 'POST',
         dataType: 'json',
         headers: {

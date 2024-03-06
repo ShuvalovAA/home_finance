@@ -30,12 +30,12 @@ from .serializers import (
 
 
 @is_authenticated_and_is_active
-def render_Expense_page(request):
+def render_expense_page(request):
     """Рендер на страницу расходов."""
-    return render(request, 'Expense.html')
+    return render(request, 'expense.html')
 
 
-@swagger_auto_schema(method='GET', query_serializer=NamesExpenseSerializer, tags=['Expense'])
+@swagger_auto_schema(method='GET', query_serializer=NamesExpenseSerializer, tags=['expense'])
 @api_view(['GET'])
 @check_premission
 def get_name_list(request):
@@ -46,7 +46,7 @@ def get_name_list(request):
     return Response({'names': names}, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='GET', query_serializer=CountExpenseSerializer, tags=['Expense'])
+@swagger_auto_schema(method='GET', query_serializer=CountExpenseSerializer, tags=['expense'])
 @api_view(['GET'])
 @check_premission
 def get_count_for_paggination(request):
@@ -85,7 +85,7 @@ def get_count_for_paggination(request):
     return Response({'count': Expenses_count_page}, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='POST', request_body=CreateExpenseSerializer, tags=['Expense'])
+@swagger_auto_schema(method='POST', request_body=CreateExpenseSerializer, tags=['expense'])
 @api_view(['POST'])
 @check_premission
 def create(request):
@@ -115,7 +115,7 @@ def create(request):
     return Response(data, status=status.HTTP_201_CREATED)
 
 
-@swagger_auto_schema(method='PATCH', request_body=UpdateExpenseSerializer, tags=['Expense'])
+@swagger_auto_schema(method='PATCH', request_body=UpdateExpenseSerializer, tags=['expense'])
 @api_view(['PATCH'])
 @check_premission
 def update(request):
@@ -144,7 +144,7 @@ def update(request):
     return Response(update_Expense.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='PATCH', request_body=UpdateExpenseBulkSerializer, tags=['Expense'])
+@swagger_auto_schema(method='PATCH', request_body=UpdateExpenseBulkSerializer, tags=['expense'])
 @api_view(['PATCH'])
 @check_premission
 def update_bulk(request):
@@ -167,7 +167,7 @@ def update_bulk(request):
     return Response({'status': 'ok'}, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='DELETE', query_serializer=DeleteExpenseSerializer, tags=['Expense'])
+@swagger_auto_schema(method='DELETE', query_serializer=DeleteExpenseSerializer, tags=['expense'])
 @api_view(['DELETE'])
 @check_premission
 def delete(request):
@@ -191,7 +191,7 @@ def delete(request):
     return Response({'status_delete': 'ok'}, status=status.HTTP_204_NO_CONTENT)
 
 
-@swagger_auto_schema(method='DELETE', request_body=DeleteExpenseBulkSerializer, tags=['Expense'])
+@swagger_auto_schema(method='DELETE', request_body=DeleteExpenseBulkSerializer, tags=['expense'])
 @api_view(['DELETE'])
 @check_premission
 def delete_bulk(request):
@@ -216,7 +216,7 @@ def delete_bulk(request):
 
     Expenses = Expense.objects.filter(id__in=ids, user_id=user_id)
     if not Expenses:
-        return Response({'Error': 'Expenses not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Error': 'expenses not found.'}, status=status.HTTP_404_NOT_FOUND)
 
     for Expense in Expenses:
         Expense.delete()
@@ -234,7 +234,7 @@ def delete_bulk(request):
     return Response({'items': items}, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='get', query_serializer=GetExpenseSerializer, tags=['Expense'])
+@swagger_auto_schema(method='get', query_serializer=GetExpenseSerializer, tags=['expense'])
 @api_view(['GET'])
 @check_premission
 def get(request):
@@ -257,7 +257,7 @@ def get(request):
     return Response(model_to_dict(Expense), status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='GET', query_serializer=GetExpenseBulkSerializer, tags=['Expense'])
+@swagger_auto_schema(method='GET', query_serializer=GetExpenseBulkSerializer, tags=['expense'])
 @api_view(['GET'])
 @check_premission
 def get_bulk(request):
@@ -301,13 +301,13 @@ def get_bulk(request):
     offset = (page * limit)-20 if (page > 1) else 0
     Expenses = Expense.objects.filter(**filter_data).order_by('date')[offset:offset + limit]
     if not Expenses:
-        return Response({'Error': 'Expenses not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Error': 'expenses not found.'}, status=status.HTTP_404_NOT_FOUND)
 
     items = [model_to_dict(obj) for obj in Expenses]
     return Response({'items': items}, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='POST', query_serializer=CopyExpenseSerializer, tags=['Expense'])
+@swagger_auto_schema(method='POST', query_serializer=CopyExpenseSerializer, tags=['expense'])
 @api_view(['POST'])
 @check_premission
 def copy(request):
@@ -333,7 +333,7 @@ def copy(request):
     return Response(model_to_dict(coping_Expense), status=status.HTTP_201_CREATED)
 
 
-@swagger_auto_schema(method='POST', request_body=CopyExpenseBulkSerializer, tags=['Expense'])
+@swagger_auto_schema(method='POST', request_body=CopyExpenseBulkSerializer, tags=['expense'])
 @api_view(['POST'])
 @check_premission
 def copy_bulk(request):
@@ -360,7 +360,7 @@ def copy_bulk(request):
 
     Expenses = Expense.objects.filter(id__in=ids, user_id=user_id)
     if not Expenses:
-        return Response({'Error': 'Expenses not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Error': 'expenses not found.'}, status=status.HTTP_404_NOT_FOUND)
     obj_dicts = [model_to_dict(obj) for obj in Expenses]
     [obj_dict.pop('id') for obj_dict in obj_dicts]
     obj_dicts_try = []
@@ -390,7 +390,7 @@ class CreateBulkExpenseView(GenericAPIView):
     serializer_class = CreateBulkExpenseSerializer
     tags = ['Expense']
 
-    @swagger_auto_schema(tags=['Expense'])
+    @swagger_auto_schema(tags=['expense'])
     @check_premission
     def post(self, request):
         """Массовое добавление записей о расходах файлом.
