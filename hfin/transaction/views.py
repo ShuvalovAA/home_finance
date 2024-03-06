@@ -1,10 +1,17 @@
+import json
+import datetime
+import math
 from django.forms.models import model_to_dict
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from root.decorators import check_premission
 from transaction.models import Transaction
+from rest_framework import parsers, renderers, status
+from rest_framework.decorators import api_view
+from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
+from root.decorators import check_premission, is_authenticated_and_is_active
+from django.shortcuts import render
+from user.models import User
+
 
 from .serializers import (
     CopyTransactionBulkSerializer,
@@ -12,6 +19,7 @@ from .serializers import (
     CreateTransactionSerializer,
     DeleteTransactionBulkSerializer,
     DeleteTransactionSerializer,
+    CountTransactionSerializer,
     GetTransactionBulkSerializer,
     GetTransactionSerializer,
     UpdateTransactionBulkSerializer,
@@ -19,83 +27,118 @@ from .serializers import (
 )
 
 
-@swagger_auto_schema(method='POST', request_body=CreateTransactionSerializer, tags=['Transaction'])
+@is_authenticated_and_is_active
+def render_transaction_page(request):
+    """Рендер на страницу расходов."""
+    return render(request, 'transaction.html')
+
+
+@swagger_auto_schema(method='GET', query_serializer=CountTransactionSerializer, tags=['transaction'])
+@api_view(['GET'])
+@check_premission
+def get_count_for_paggination(request):
+    """Получить количество страниц.
+
+    - start_date: дата начала поиска
+    - end_date: дата конца поиска
+    - name: наименование
+    - done: статус выполнения
+    """
+    if not request.method == 'GET':
+        return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    serialaizer = CountTransactionSerializer(data=request.GET.dict())
+    if not serialaizer.is_valid():
+        return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    params = {k: v[0] for k, v in dict(request.GET).items()}
+    filter_data = {}
+    for k, v in params.items():
+        if k == 'user_id':
+            filter_data['user_id'] = v
+        if k == 'start_date':
+            filter_data['date__gte'] = datetime.datetime.strptime(v, '%Y-%m-%d')
+        if k == 'end_date':
+            filter_data['date__lte'] = datetime.datetime.strptime(v, '%Y-%m-%d') + datetime.timedelta(days=1)
+        if k == 'name':
+            filter_data['name'] = v
+        if k == 'done':
+            if v == 'true':
+                filter_data['done'] = True
+            if v == 'false':
+                filter_data['done'] = False
+    Transactions_count_page = math.ceil((Transaction.objects.filter(**filter_data).count() / 20))
+    return Response({'count': Transactions_count_page}, status=status.HTTP_200_OK)
+
+
+@swagger_auto_schema(method='POST', request_body=CreateTransactionSerializer, tags=['transaction'])
 @api_view(['POST'])
 @check_premission
 def create(request):
-    """Создать запись о транзакции.
+    """Создать запись о расходе.
 
     Входные параметры:
     ---
-    - name: наименование транзакции;
-    - date: дата транзакции;
-    - amounnt: сумма транзакции.
+    - name: наименование расхода;
+    - date: дата расхода;
+    - amounnt: сумма расхода.
     """
     if not request.method == 'POST':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    create_transaction = CreateTransactionSerializer(data=request.data)
+    create_Transaction = CreateTransactionSerializer(data=request.data)
 
-    if not create_transaction.is_valid():
-        return Response(create_transaction.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    if not create_Transaction.is_valid():
+        return Response(create_Transaction.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-    name = create_transaction.validated_data.get('name')
-    date = create_transaction.validated_data.get('date')
-    amount = create_transaction.validated_data.get('amount')
-    done = create_transaction.validated_data.get('done')
-    user_id = create_transaction.validated_data.get('user_id')
-    new_transaction = Transaction.objects.create(
-        name=name,
-        date=date,
-        amount=amount,
-        done=done,
-        user_id=user_id
-    )
-    data = model_to_dict(new_transaction)
+    name = create_Transaction.validated_data.get('name')
+    date = create_Transaction.validated_data.get('date')
+    amount = create_Transaction.validated_data.get('amount')
+    done = create_Transaction.validated_data.get('done')
+    user_id = create_Transaction.validated_data.get('user_id')
+    new_Transaction = Transaction.objects.create(name=name, date=date, amount=amount, done=done, user_id=user_id)
+    data = model_to_dict(new_Transaction)
     return Response(data, status=status.HTTP_201_CREATED)
 
 
-@swagger_auto_schema(method='PATCH', request_body=UpdateTransactionSerializer, tags=['Transaction'])
+@swagger_auto_schema(method='PATCH', request_body=UpdateTransactionSerializer, tags=['transaction'])
 @api_view(['PATCH'])
 @check_premission
 def update(request):
-    """Обновить запись о транзакции.
+    """Обновить запись о расходе.
 
     Входные параметры:
     ---
-    - name: наименование транзакции;
-    - date: дата транзакции;
-    - amounnt: сумма транзакции.
+    - name: наименование расхода;
+    - date: дата расхода;
+    - amounnt: сумма расхода.
     """
     if not request.method == 'PATCH':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     try:
-        old_transaction = Transaction.objects.get(
-            pk=request.data.get('id'), user_id=request.data.get('user_id')
-        )
+        old_Transaction = Transaction.objects.get(pk=request.data.get('id'), user_id=request.data.get('user_id'))
     except Transaction.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 
-    update_transaction = UpdateTransactionSerializer(old_transaction, data=request.data, partial=True)
+    update_Transaction = UpdateTransactionSerializer(old_Transaction, data=request.data, partial=True)
 
-    if not update_transaction.is_valid():
-        return Response(update_transaction.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    if not update_Transaction.is_valid():
+        return Response(update_Transaction.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-    update_transaction.save()
-    return Response(update_transaction.data, status=status.HTTP_200_OK)
+    update_Transaction.save()
+    return Response(update_Transaction.data, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='PATCH', request_body=UpdateTransactionBulkSerializer, tags=['Transaction'])
+@swagger_auto_schema(method='PATCH', request_body=UpdateTransactionBulkSerializer, tags=['transaction'])
 @api_view(['PATCH'])
 @check_premission
 def update_bulk(request):
-    """Массово обновить запись о транзакции.
+    """Массово обновить запись о расходе.
 
     Входные параметры:
     ---
     - items: список словарей;
-    *тротлинг:50 записей; несуществующие транзакции игнорируются.
+    *тротлинг:50 записей; несуществующие расходы игнорируются.
     """
     if not request.method == 'PATCH':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -109,90 +152,109 @@ def update_bulk(request):
     return Response({'status': 'ok'}, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='DELETE', query_serializer=DeleteTransactionSerializer, tags=['Transaction'])
+@swagger_auto_schema(method='DELETE', query_serializer=DeleteTransactionSerializer, tags=['transaction'])
 @api_view(['DELETE'])
 @check_premission
 def delete(request):
-    """Удалить запись о транзакции.
+    """Удалить запись о расходе.
 
     Входные параметры:
     ---
-    -  id: идентификатор транзакции.
+    -  id: идентификатор расхода.
     """
     if not request.method == 'DELETE':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    id_transaction = request.GET.get('id')
+    id_Transaction = request.GET.get('id')
     user_id = request.GET.get('user_id')
     try:
-        transaction = Transaction.objects.get(pk=id_transaction, user_id=user_id)
+        Transaction = Transaction.objects.get(pk=id_Transaction, user_id=user_id)
     except Transaction.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 
-    transaction.delete()
+    Transaction.delete()
     return Response({'status_delete': 'ok'}, status=status.HTTP_204_NO_CONTENT)
 
 
-@swagger_auto_schema(method='DELETE', request_body=DeleteTransactionBulkSerializer, tags=['Transaction'])
+@swagger_auto_schema(method='DELETE', request_body=DeleteTransactionBulkSerializer, tags=['transaction'])
 @api_view(['DELETE'])
 @check_premission
 def delete_bulk(request):
-    """Массово удалить запись о транзакции.
+    """Массово удалить запись о расходе.
 
     Входные параметры:
     ---
     - items: список id;
-    *тротлинг:50 записей; несуществующие транзакции игнорируются.
+    *тротлинг:50 записей; несуществующие расходы игнорируются.
     """
     if not request.method == 'DELETE':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    serialaizer = DeleteTransactionBulkSerializer(data=request.data)
+    reload_data = {
+        'user_id': request.data['user_id'],
+        'items': json.loads(request.data['items'])
+    }
+    serialaizer = DeleteTransactionBulkSerializer(data=reload_data)
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    ids = request.data['items']
-    user_id = request.data['user_id']
+    ids = reload_data['items']
+    user_id = reload_data['user_id']
 
-    transactions = Transaction.objects.filter(pk__in=ids, user_id=user_id)
+    transactions = Transaction.objects.filter(id__in=ids, user_id=user_id)
     if not transactions:
-        return Response({'Error': 'Transactions not found.'}, status=status.HTTP_404_NOT_FOUND)
-    transactions.delete()
+        return Response({'Error': 'transactions not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-    return Response({'status': 'ok'}, status=status.HTTP_204_NO_CONTENT)
+    for transaction in transactions:
+        transaction.delete()
+
+    page=1
+    limit = 20
+    offset = (page * limit)-20 if (page > 1) else 0
+    manager = Transaction.objects
+    manager._using_default()
+    transactions = Transaction.objects.filter(user_id=user_id).order_by('date')[offset:offset + limit]
+    if not transactions:
+        return Response({'items': []}, status=status.HTTP_200_OK)
+
+    items = [model_to_dict(obj) for obj in transactions]
+    return Response({'items': items}, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='get', query_serializer=GetTransactionSerializer, tags=['Transaction'])
+@swagger_auto_schema(method='get', query_serializer=GetTransactionSerializer, tags=['transaction'])
 @api_view(['GET'])
 @check_premission
 def get(request):
-    """Получить запись о транзакции.
+    """Получить запись о расходе.
 
     Входные параметры:
     ---
-    -  id: идентификатор транзакции.
+    -  id: идентификатор расхода.
     """
     if not request.method == 'GET':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    id_transaction = request.GET.get('id')
+    id_Transaction = request.GET.get('id')
     user_id = request.GET.get('user_id')
     try:
-        transaction = Transaction.objects.get(pk=id_transaction, user_id=user_id)
+        Transaction = Transaction.objects.get(pk=id_Transaction, user_id=user_id)
     except Transaction.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 
-    return Response(model_to_dict(transaction), status=status.HTTP_200_OK)
+    return Response(model_to_dict(Transaction), status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='GET', query_serializer=GetTransactionBulkSerializer, tags=['Transaction'])
+@swagger_auto_schema(method='GET', query_serializer=GetTransactionBulkSerializer, tags=['transaction'])
 @api_view(['GET'])
 @check_premission
 def get_bulk(request):
-    """Массово получить запись о транзакции.
+    """Массово получить запись о расходе.
 
     Входные параметры:
     ---
     - page: номер страницы;
+    - start_date: дата начала поиска
+    - end_date: дата конца поиска
+    - name: наименование
+    - done: статус выполнения
     *тротлинг:20 записей на страницу
     """
     if not request.method == 'GET':
@@ -201,70 +263,103 @@ def get_bulk(request):
     serialaizer = GetTransactionBulkSerializer(data=request.GET.dict())
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    page = int(request.GET.get('page'))
-    user_id = request.GET.get('user_id')
+    params = {k: v[0] for k, v in dict(request.GET).items()}
+    page = int(params.pop('page'))
+    user_id = int(params.get('user_id'))
+
+    filter_data = {}
+    for k, v in params.items():
+        if k == 'user_id':
+            filter_data['user_id'] = v
+        if k == 'start_date':
+            filter_data['date__gte'] = datetime.datetime.strptime(v, '%Y-%m-%d')
+        if k == 'end_date':
+            filter_data['date__lte'] = datetime.datetime.strptime(v, '%Y-%m-%d') + datetime.timedelta(days=1)
+        if k == 'name':
+            filter_data['name'] = v
+        if k == 'done':
+            if v == 'true':
+                filter_data['done'] = True
+            if v == 'false':
+                filter_data['done'] = False
     limit = 20
-    offset = page * limit if (page > 1) else 0
-    transactions = Transaction.objects.filter(user_id=user_id)[offset:offset + limit]
+    offset = (page * limit)-20 if (page > 1) else 0
+    transactions = Transaction.objects.filter(**filter_data).order_by('date')[offset:offset + limit]
     if not transactions:
-        return Response({'Error': 'Transactions not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Error': 'transactions not found.'}, status=status.HTTP_404_NOT_FOUND)
 
     items = [model_to_dict(obj) for obj in transactions]
     return Response({'items': items}, status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='POST', query_serializer=CopyTransactionSerializer, tags=['Transaction'])
+@swagger_auto_schema(method='POST', query_serializer=CopyTransactionSerializer, tags=['transaction'])
 @api_view(['POST'])
 @check_premission
 def copy(request):
-    """Копировать запись о транзакции.
+    """Копировать запись о расходе.
 
     Входные параметры:
     ---
-    -  id: идентификатор транзакции.
+    -  id: идентификатор расхода.
     """
     if not request.method == 'POST':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    id_transaction = request.GET.get('id')
+    id_Transaction = request.GET.get('id')
     user_id = request.GET.get('user_id')
     try:
-        transaction = Transaction.objects.get(pk=id_transaction, user_id=user_id)
+        Transaction = Transaction.objects.get(pk=id_Transaction, user_id=user_id)
     except Transaction.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
-    params = model_to_dict(transaction)
+    params = model_to_dict(Transaction)
     params.pop('id')
-    coping_transaction = Transaction.objects.create(**params)
+    coping_Transaction = Transaction.objects.create(**params)
 
-    return Response(model_to_dict(coping_transaction), status=status.HTTP_201_CREATED)
+    return Response(model_to_dict(coping_Transaction), status=status.HTTP_201_CREATED)
 
 
-@swagger_auto_schema(method='POST', request_body=CopyTransactionBulkSerializer, tags=['Transaction'])
+@swagger_auto_schema(method='POST', request_body=CopyTransactionBulkSerializer, tags=['transaction'])
 @api_view(['POST'])
 @check_premission
 def copy_bulk(request):
-    """Массово копировать запись о транзакции.
+    """Массово копировать запись о расходе.
 
     Входные параметры:
     ---
     - items: список id;
-    *тротлинг:50 записей; несуществующие транзакции игнорируются.
+    *тротлинг:50 записей; несуществующие расходы игнорируются.
     """
     if not request.method == 'POST':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    serialaizer = CopyTransactionBulkSerializer(data=request.data)
+    reload_data = {
+        'user_id': request.data['user_id'],
+        'items': json.loads(request.data['items'])
+    }
+    serialaizer = CopyTransactionBulkSerializer(data=reload_data)
     if not serialaizer.is_valid():
         return Response(serialaizer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    ids = request.data['items']
-    user_id = request.data['user_id']
+    ids = reload_data['items']
+    user_id = reload_data['user_id']
+    user = User.objects.get(pk=user_id)
 
-    transactions = Transaction.objects.filter(pk__in=ids, user_id=user_id)
+    transactions = Transaction.objects.filter(id__in=ids, user_id=user_id)
     if not transactions:
-        return Response({'Error': 'Transactions not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Error': 'transactions not found.'}, status=status.HTTP_404_NOT_FOUND)
     obj_dicts = [model_to_dict(obj) for obj in transactions]
     [obj_dict.pop('id') for obj_dict in obj_dicts]
+    obj_dicts_try = []
+    for obj in obj_dicts:
+        obj['user'] = user
+        obj_dicts_try.append(obj)
 
     objs = [Transaction(**obj_dict) for obj_dict in obj_dicts]
     Transaction.objects.bulk_create(objs=objs, batch_size=25)
-    return Response({'status': 'ok'}, status=status.HTTP_201_CREATED)
+    page=1
+    limit = 20
+    offset = (page * limit)-20 if (page > 1) else 0
+    manager = Transaction.objects
+    manager._using_default()
+    transactions = Transaction.objects.filter(user_id=user_id).order_by('date')[offset:offset + limit]
+    items = [model_to_dict(obj) for obj in transactions]
+    return Response({'items': items}, status=status.HTTP_201_CREATED)

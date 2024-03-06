@@ -3,6 +3,16 @@ from rest_framework import serializers
 from .models import Transaction
 
 
+class CountTransactionSerializer(serializers.Serializer):
+    """Сериалайзер для получения количества элементов транзакции."""
+
+    user_id = serializers.IntegerField()
+    start_date = serializers.DateField(required=False)
+    end_date = serializers.DateField(required=False)
+    name = serializers.CharField(required=False)
+    done = serializers.BooleanField(required=False)
+
+
 class CreateTransactionSerializer(serializers.ModelSerializer):
     """Сериалайзер для создания модели транзакции."""
 

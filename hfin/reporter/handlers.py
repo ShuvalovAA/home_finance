@@ -31,6 +31,7 @@ class Reporter:
 
     def get_expense(self):
         "Получить словарь значений расходов."
+        Expense.objects._using_default()
         expense_list = list(Expense.objects.filter(
             user_id=self.user_id,
             date__gte=self.start_period,

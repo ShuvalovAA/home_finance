@@ -42,7 +42,7 @@ def get_name_list(request):
     user_id = request.GET.get('user_id')
     manager = Income.objects
     manager._using_default()
-    names = list(Income.objects.filter(user_id=user_id).distinct("name").values_list('name', flat=True))
+    names = list(Income.objects.filter(user_id=user_id).distinct("name").values_list('name', flat=True).order_by('name'))
     return Response({'names': names}, status=status.HTTP_200_OK)
 
 

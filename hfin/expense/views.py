@@ -42,7 +42,7 @@ def get_name_list(request):
     user_id = request.GET.get('user_id')
     manager = Expense.objects
     manager._using_default()
-    names = list(Expense.objects.filter(user_id=user_id).distinct("name").values_list('name', flat=True))
+    names = list(Expense.objects.filter(user_id=user_id).distinct("name").values_list('name', flat=True).order_by('name'))
     return Response({'names': names}, status=status.HTTP_200_OK)
 
 
@@ -214,23 +214,23 @@ def delete_bulk(request):
     ids = reload_data['items']
     user_id = reload_data['user_id']
 
-    Expenses = Expense.objects.filter(id__in=ids, user_id=user_id)
-    if not Expenses:
+    expenses = Expense.objects.filter(id__in=ids, user_id=user_id)
+    if not expenses:
         return Response({'Error': 'expenses not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-    for Expense in Expenses:
-        Expense.delete()
+    for expense in expenses:
+        expense.delete()
 
     page=1
     limit = 20
     offset = (page * limit)-20 if (page > 1) else 0
     manager = Expense.objects
     manager._using_default()
-    Expenses = Expense.objects.filter(user_id=user_id).order_by('date')[offset:offset + limit]
-    if not Expenses:
+    expenses = Expense.objects.filter(user_id=user_id).order_by('date')[offset:offset + limit]
+    if not expenses:
         return Response({'items': []}, status=status.HTTP_200_OK)
 
-    items = [model_to_dict(obj) for obj in Expenses]
+    items = [model_to_dict(obj) for obj in expenses]
     return Response({'items': items}, status=status.HTTP_200_OK)
 
 
@@ -299,11 +299,11 @@ def get_bulk(request):
                 filter_data['done'] = False
     limit = 20
     offset = (page * limit)-20 if (page > 1) else 0
-    Expenses = Expense.objects.filter(**filter_data).order_by('date')[offset:offset + limit]
-    if not Expenses:
+    expenses = Expense.objects.filter(**filter_data).order_by('date')[offset:offset + limit]
+    if not expenses:
         return Response({'Error': 'expenses not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-    items = [model_to_dict(obj) for obj in Expenses]
+    items = [model_to_dict(obj) for obj in expenses]
     return Response({'items': items}, status=status.HTTP_200_OK)
 
 
@@ -358,10 +358,10 @@ def copy_bulk(request):
     user_id = reload_data['user_id']
     user = User.objects.get(pk=user_id)
 
-    Expenses = Expense.objects.filter(id__in=ids, user_id=user_id)
-    if not Expenses:
+    expenses = Expense.objects.filter(id__in=ids, user_id=user_id)
+    if not expenses:
         return Response({'Error': 'expenses not found.'}, status=status.HTTP_404_NOT_FOUND)
-    obj_dicts = [model_to_dict(obj) for obj in Expenses]
+    obj_dicts = [model_to_dict(obj) for obj in expenses]
     [obj_dict.pop('id') for obj_dict in obj_dicts]
     obj_dicts_try = []
     for obj in obj_dicts:
@@ -375,8 +375,8 @@ def copy_bulk(request):
     offset = (page * limit)-20 if (page > 1) else 0
     manager = Expense.objects
     manager._using_default()
-    Expenses = Expense.objects.filter(user_id=user_id).order_by('date')[offset:offset + limit]
-    items = [model_to_dict(obj) for obj in Expenses]
+    expenses = Expense.objects.filter(user_id=user_id).order_by('date')[offset:offset + limit]
+    items = [model_to_dict(obj) for obj in expenses]
     return Response({'items': items}, status=status.HTTP_201_CREATED)
 
 
