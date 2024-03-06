@@ -31,7 +31,14 @@ class UpdateExpenseSerializer(serializers.ModelSerializer):
         """Метаданные сериалайзера."""
 
         model = Expense
-        fields = '__all__'
+        fields = [
+            'id',
+            'user_id',
+            'name',
+            'date',
+            'amount',
+            'done'
+        ]
 
 
 class UpdateExpenseBulkSerializer(serializers.Serializer):
@@ -82,11 +89,30 @@ class GetExpenseSerializer(serializers.ModelSerializer):
         fields = ['id', 'user_id']
 
 
+class NamesExpenseSerializer(serializers.Serializer):
+    """Сериалайзер для получения списка наименования расходов."""
+
+    user_id = serializers.IntegerField()
+
 class GetExpenseBulkSerializer(serializers.Serializer):
     """Сериалайзер для массового получения модели расхода."""
 
     page = serializers.IntegerField()
     user_id = serializers.IntegerField()
+    start_date = serializers.DateField(required=False)
+    end_date = serializers.DateField(required=False)
+    name = serializers.CharField(required=False)
+    done = serializers.BooleanField(required=False)
+
+
+class CountExpenseSerializer(serializers.Serializer):
+    """Сериалайзер для получения количества элементов расходов."""
+
+    user_id = serializers.IntegerField()
+    start_date = serializers.DateField(required=False)
+    end_date = serializers.DateField(required=False)
+    name = serializers.CharField(required=False)
+    done = serializers.BooleanField(required=False)
 
 
 class CopyExpenseSerializer(serializers.ModelSerializer):
