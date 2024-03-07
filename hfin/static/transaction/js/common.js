@@ -12,7 +12,7 @@ function get_user_id() {
   
   function apply_names_for_filter(){
       data = $.ajax({
-          url: '/expense/get_name_list/',
+          url: '/expense/get_name_list/',//nen
           method: 'GET',
           dataType: 'json',
           headers: {
@@ -29,9 +29,8 @@ function get_user_id() {
   }
   
   function set_name_list(names){
-      selecter = document.getElementById('name-filter')
+      selecter = document.getElementsByClassName('name-filter-custom')[0]
       for(i=selecter.children.length-1; i >= 0; i--){
-          console.log(selecter.children[i].textContent)
           if(selecter.children[i].textContent != '...'){
               selecter.removeChild(selecter.children[i])
           }
@@ -40,15 +39,30 @@ function get_user_id() {
       for(i in names){
           option_element = document.createElement('option')
           option_element.textContent = names[i]
+          option_element.setAttribute('value', i)
           selecter.append(option_element)
       }
-  
+
+    select_options = document.getElementsByClassName('form-multi-select-options')[0]
+    for(i=select_options.children.length-1; i >= 0; i--){
+    if(select_options.children[i].textContent != '...'){
+        select_options.removeChild(select_options.children[i])
+    }
+    }
+    for(i in names){
+        select_opt = document.createElement('div')
+        select_opt.className = 'form-multi-select-option form-multi-select-option-with-checkbox'
+        select_opt.setAttribute('data-value', i)
+        select_opt.setAttribute('tabindex', i)
+        select_opt.textContent = names[i]
+        select_options.append(select_opt)
+
+    }  
   }
   function set_page(page, page_link_obj){
       
       
       old_parent_page_link_obj = document.getElementsByClassName('page-item active')[0]
-      console.log(old_parent_page_link_obj)
       old_parent_page_link_obj.className = 'page-item'
       span_obj = old_parent_page_link_obj.children[0]
       ahref = document.createElement('a')
@@ -61,38 +75,26 @@ function get_user_id() {
       old_parent_page_link_obj.appendChild(ahref)
       old_parent_page_link_obj.removeChild(span_obj)
   
-      console.log(page_link_obj.parentElement)
       page_link_obj.parentElement.className = 'page-item active'
       start_period = document.getElementById('start-filter').value
       end_period = document.getElementById('end-filter').value
       name_income = document.getElementById('name-filter').selectedOptions[0].textContent
-      done = document.getElementById('done-filter').selectedOptions[0]
-      if(done='Да'){
-          done = true
-      }
-      if(done='Нет'){
-          done=false
-      }
       if(start_period == ''){
           start_period = '1000-01-01'
       }
       if(end_period == ''){
           end_period = '3000-01-01'
       }
-      if(done == '...'){
-          done = null
-      }
       if(name_income == '...'){
           name_income = null
       }
   
   
-      get_expense_for_table(
+      get_transaction_for_table(
           page = page,
           start_date=start_period,
           end_date=end_period,
           name=name_income,
-          done=done,
           pag_need_update=true
       )
   }
@@ -133,7 +135,7 @@ function get_user_id() {
                   }else{
                       page = start_page - 3
                   }
-                  get_expense_for_table(page=page)
+                  get_transaction_for_table(page=page)
                   _generate_pagination_menu(data, page)
               }
           )
@@ -203,7 +205,7 @@ function get_user_id() {
           pag_next_preview.addEventListener(
               'click',
               function(e){
-                  get_expense_for_table(page=nexstartpagebase)
+                  get_transaction_for_table(page=nexstartpagebase)
                   _generate_pagination_menu(data, nexstartpagebase)
               }
           )
@@ -229,7 +231,7 @@ function get_user_id() {
           }
       }
       data = $.ajax({
-          url: '/expense/get_count_for_paggination/',
+          url: '/transaction/get_count_for_paggination/',
           method: 'GET',
           dataType: 'json',
           headers: {
@@ -252,21 +254,11 @@ function get_user_id() {
       start_period = document.getElementById('start-filter').value
       end_period = document.getElementById('end-filter').value
       name_income = document.getElementById('name-filter').selectedOptions[0].textContent
-      done = document.getElementById('done-filter').selectedOptions[0]
-      if(done='Да'){
-          done = true
-      }
-      if(done='Нет'){
-          done=false
-      }
       if(start_period == ''){
           start_period = '1000-01-01'
       }
       if(end_period == ''){
           end_period = '3000-01-01'
-      }
-      if(done == '...'){
-          done = null
       }
       if(name_income == '...'){
           name_income = null
@@ -280,8 +272,7 @@ function get_user_id() {
           'page': page,
           'start_date': start_date,
           'end_date': end_date,
-          'name': name_income,
-          'done': done,
+          'target_name': name_income,
           'user_id': get_user_id()
         }
       
@@ -296,28 +287,28 @@ function get_user_id() {
       get_sec_page(filter_data=request_data)
   }
   
-  function filter_table(start_period, end_period, name_income, done) {
+  function filter_table(start_period, end_period, name_income, target_name) {
       if(start_period == ''){
           start_period = '1000-01-01'
       }
       if(end_period == ''){
           end_period = '3000-01-01'
       }
-      if(done == '...'){
-          done = null
-      }
       if(name_income == '...'){
           name_income = null
       }
+      if(target_name == '...'){
+        target_name = null
+    }
       
       set_data_for_dashboard(start=start_period, end=end_period)
       
-      get_expense_for_table(
+      get_transaction_for_table(
           page = null,
           start_date=start_period,
           end_date=end_period,
           name=name_income,
-          done=done,
+          target_name=target_name,
           pag_need_update=true
       )
   
@@ -331,8 +322,8 @@ function get_user_id() {
           'page': page,
           'start_date': start_date,
           'end_date': end_date,
-          'name': name_income,
-          'done': done,
+          'target_name': name_income,
+          'name': name,
           'user_id': get_user_id()
         }
       
@@ -348,7 +339,7 @@ function get_user_id() {
   
   }
   
-  function create_table(expenses, update_all = null) {
+  function create_table(transaction_items, update_all = null) {
   
     this_tabel = document.getElementById('the_table')
     table_body = document.getElementById('table_body')
@@ -364,27 +355,21 @@ function get_user_id() {
         }
   
     }
-    for (i = 0; i < expenses.items.length; i++) {
-        expense = expenses.items[i]
-        var expense_id = expense.id
-        var name = expense.name
-        var date = expense.date
-        var amount = expense.amount
-        var done = expense.done
-        if (done == 0 || done == false) {
-            done = 'Нет'
-        }
-        if (done == 1 || done == true) {
-            done = 'Да'
-        }
+    for (i = 0; i < transaction_items.items.length; i++) {
+        transaction = transaction_items.items[i]
+        var transaction_id = transaction.id
+        var name = transaction.name
+        var target_name = transaction.target_name
+        var date = transaction.date
+        var amount = transaction.amount
         var tr = document.createElement("tr");
         tr.className = 'd-flex'
-        tr.id = expense_id
+        tr.id = transaction_id
         tr.innerHTML = '<tr>' +
             '<td class="col-3 text-left" id="td_text" >' + name + '</td>' +
+            '<td class="col-3 text-left" id="td_text" >' + target_name + '</td>' +
             '<td class="col-2 text-left" id="td_date" >' + date.split('T')[0] + '</td>' +
             '<td class="col-3 text-left" id="td_number" >' + amount + '</td>' +
-            '<td class="col-1 text-right" id="td_selector" >' + done + '</td>' +
             '<td class="col-2" id="td_get">' +
             '<div class="row">' +
             '<div class="col text-right"><input class="form-check-input" name="get" type="checkbox" ></div>' +
@@ -397,12 +382,12 @@ function get_user_id() {
   }
   
   
-  function get_expense_for_table(
+  function get_transaction_for_table(
       page = null,
       start_date = null,
       end_date = null,
       name = null,
-      done = null,
+      target_name,
       pag_need_update = false
       ) {
   
@@ -410,8 +395,8 @@ function get_user_id() {
       'page': page,
       'start_date': start_date,
       'end_date': end_date,
+      'target_name': target_name,
       'name': name,
-      'done': done,
       'user_id': get_user_id()
     }
   
@@ -428,7 +413,7 @@ function get_user_id() {
     }
   
     data = $.ajax({
-        url: '/expense/get/bulk',
+        url: '/transaction/get/bulk',
         method: 'GET',
         dataType: 'json',
         headers: {
@@ -459,13 +444,13 @@ function get_user_id() {
       if (!end) {
           end = dates[1]
       }
-    get_expenses(start, end)
+    get_transaction(start, end)
   
   }
   
-  function get_expenses(start, end) {
+  function get_transaction(start, end) {
     $.ajax({
-        url: '/reporter/get_expense',
+        url: '/reporter/get_transaction',
         method: 'POST',
         dataType: 'json',
         headers: {
@@ -482,9 +467,9 @@ function get_user_id() {
     });
   }
   
-  function get_incomes(expense, start, end) {
+  function get_incomes(transaction, start, end) {
     $.ajax({
-        url: '/reporter/get_income',
+        url: '/reporter/get_transaction',
         method: 'POST',
         dataType: 'json',
         headers: {
@@ -497,7 +482,7 @@ function get_user_id() {
         },
         success: function(data) {
             data = {
-                'expense': expense,
+                'transaction': transaction,
                 'incomes': data
             }
             create_dashbord(data)
@@ -505,9 +490,9 @@ function get_user_id() {
     });
   }
   
-  function income_add(name, amount, date, done) {
+  function income_add(name, amount, date, target_name) {
     $.ajax({
-        url: '/expense/create/',
+        url: '/transaction/create/',
         method: 'POST',
         dataType: 'json',
         headers: {
@@ -516,9 +501,9 @@ function get_user_id() {
         data: {
             'user_id': get_user_id(),
             'date': date,
+            'target_name': target_name,
             'name': name,
-            'amount': amount,
-            'done': done,
+            'amount': amount
         },
         success: function(data) {
             to_add_in_table = {
@@ -545,7 +530,7 @@ function get_user_id() {
         "items": JSON.stringify(items_int),
     }
     $.ajax({
-        url: '/expense/delete/bulk/',
+        url: '/transaction/delete/bulk/',
         method: 'DELETE',
         dataType: 'json',
         headers: {
@@ -553,7 +538,7 @@ function get_user_id() {
         },
         data: data,
         success: function(data) {
-            create_table(expenses = data, update_all = true);
+            create_table(transaction = data, update_all = true);
             set_data_for_dashboard(start, end);
             create_events_on_click();
         }
@@ -572,8 +557,7 @@ function get_user_id() {
       "user_id": get_user_id(),
       "name": income.name,
       "date": income.date,
-      "amount": income.amount,
-      "done": income.done
+      "amount": income.amount
     }
     data[update_field] = new_value
     income_update(income_data=data)
@@ -586,7 +570,7 @@ function get_user_id() {
     start = dates[0]
     end = dates[1]
     $.ajax({
-        url: '/expense/update/',
+        url: '/transaction/update/',
         method: 'PATCH',
         dataType: 'json',
         headers: {
@@ -615,7 +599,7 @@ function get_user_id() {
         "items": JSON.stringify(items_int),
     }
     $.ajax({
-        url: '/expense/copy/bulk/',
+        url: '/transaction/copy/bulk/',
         method: 'POST',
         dataType: 'json',
         headers: {
@@ -623,7 +607,7 @@ function get_user_id() {
         },
         data: data,
         success: function(data) {
-            create_table(expenses = data, update_all = true);
+            create_table(transaction = data, update_all = true);
             set_data_for_dashboard(start, end);
             create_events_on_click();
         }
@@ -633,85 +617,44 @@ function get_user_id() {
   
   function create_dashbord(data) {
   
-    canvas_el = document.getElementById('chart')
-    canvas_el.remove()
-    canvas_el_new = document.createElement('canvas')
-    canvas_el_new.style.width = '600px'
-    canvas_el_new.style.height = '300px'
-    canvas_el_new.id = 'chart'
+    // canvas_el = document.getElementById('chart')
+    // canvas_el.remove()
+    // canvas_el_new = document.createElement('canvas')
+    // canvas_el_new.style.width = '600px'
+    // canvas_el_new.style.height = '300px'
+    // canvas_el_new.id = 'chart'
   
-    conteiner_chart = document.getElementById('conteiner_chart')
-    conteiner_chart.append(canvas_el_new)
+    // conteiner_chart = document.getElementById('conteiner_chart')
+    // conteiner_chart.append(canvas_el_new)
   
-    const ctx = canvas_el_new.getContext('2d');
-    incomes = data.incomes.incomes
-    expense = data.expense.expenses
-    incomes_dict = {}
-    for(i in incomes){
-      incomes_dict[incomes[i][0]] = incomes[i][1]
-    }
-  
-    expense_dict = {}
-    for(i in expense){
-      expense_dict[expense[i][0]] = expense[i][1]
-    }
-  
-    for(i in incomes_dict){
-      expense_on_date = expense_dict[i]
-      if(!expense_on_date){
-          expense_dict[i] = 0
-      }
-    }
-    for(i in expense_dict){
-      income_on_date = incomes_dict[i]
-      if(!income_on_date){
-          incomes_dict[i] = 0
-      }
-    }
-  
-    sorted_keys_income = Object.keys(incomes_dict).sort()
-    income_dict_result = {}
-    for(i in sorted_keys_income){
-      income_dict_result[sorted_keys_income[i]] = incomes_dict[sorted_keys_income[i]]
-    }
-  
-    sorted_keys_expense = Object.keys(expense_dict).sort()
-    expense_dict_result = {}
-    for(i in sorted_keys_expense){
-      expense_dict_result[sorted_keys_expense[i]] = expense_dict[sorted_keys_expense[i]]
-    }
-  
-    dts = sorted_keys_expense
-    incomes_amount_list = Object.values(income_dict_result)
-    expenses_amount_list = Object.values(expense_dict_result)
-  
-  
-    const myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dts,
-            datasets: [{
-                label: 'Доходы',
-                backgroundColor: '#324512',
-                borderColor: 'rgb(47, 128, 237)',
-                data: incomes_amount_list,
-            }, {
-                label: 'Расходы',
-                backgroundColor: '#deb99b',
-                borderColor: 'rgb(47, 128, 237)',
-                data: expenses_amount_list,
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true,
-                    }
-                }]
-            }
-        },
-    });
+    // const ctx = canvas_el_new.getContext('2d');
+      
+    // const myChart = new Chart(ctx, {
+    //     type: 'bar',
+    //     data: {
+    //         labels: dts,
+    //         datasets: [{
+    //             label: 'Доходы',
+    //             backgroundColor: '#324512',
+    //             borderColor: 'rgb(47, 128, 237)',
+    //             data: incomes_amount_list,
+    //         }, {
+    //             label: 'Расходы',
+    //             backgroundColor: '#deb99b',
+    //             borderColor: 'rgb(47, 128, 237)',
+    //             data: transaction_amount_list,
+    //         }]
+    //     },
+    //     options: {
+    //         scales: {
+    //             yAxes: [{
+    //                 ticks: {
+    //                     beginAtZero: true,
+    //                 }
+    //             }]
+    //         }
+    //     },
+    // });
   }
   
   
@@ -747,18 +690,12 @@ function get_user_id() {
               start_period = document.getElementById('start-filter').value
               end_period = document.getElementById('end-filter').value
               name_income = document.getElementById('name-filter').selectedOptions[0].textContent
-              done = document.getElementById('done-filter').selectedOptions[0]
-              if(done='Да'){
-                  done = true
-              }
-              if(done='Нет'){
-                  done=false
-              }
+
               filter_table(
                   start_period,
                   end_period,
                   name_income,
-                  done
+
               )
           }
       )
@@ -844,11 +781,8 @@ function get_user_id() {
                     if(update_field == 'number'){
                       update_field = 'amount'
                     }
-                    if(update_field == 'select-one'){
-                      update_field = 'done'
-                    }
                     if(update_field == 'text'){
-                      update_field = 'name'
+                      update_field = 'target_name'
                     }
                     td_elemnt.textContent = new_value
                     with_preprocess_update(parent, update_field, new_value)
@@ -888,11 +822,8 @@ function get_user_id() {
                             if(update_field == 'number'){
                               update_field = 'amount'
                             }
-                            if(update_field == 'select-one'){
-                              update_field = 'done'
-                            }
                             if(update_field == 'text'){
-                              update_field = 'name'
+                              update_field = 'target_name'
                             }
                             td_elemnt.textContent = new_value
                             with_preprocess_update(parent, update_field, new_value)
@@ -911,23 +842,24 @@ function get_user_id() {
     }
   
     document.getElementById('button_add').onclick = function(e) {
-        name_i = document.getElementById('add_name_expense')
-        date = document.getElementById('add_date_expense')
-        amount = document.getElementById('add_amount_expense')
-        done = document.getElementById('add_done_expense')
+        name_i = document.getElementById('add_name_transaction')
+        date = document.getElementById('add_date_transaction')
+        amount = document.getElementById('add_amount_transaction')
+        target_name = document.getElementById('add_target_name_transaction')
   
         name_value = name_i.value
         date_value = date.value
         amount_value = amount.value
-        done_value = done.selectedOptions[0].value
+        target_name_value = target_name.value
   
   
         document.getElementById('button_exit').click();
-        income_add(name_value, amount_value, date_value, done_value);
+        
+        income_add(name_value, amount_value, date_value, target_name_value);
         name_i.value = ""
         date.value = ""
         amount.value = ""
-        done.value = ""
+        target_name.value = ""
         set_data_for_dashboard()
     }
     get_all = document.getElementById('get_all')
@@ -999,7 +931,7 @@ function get_user_id() {
       apply_names_for_filter()
       get_sec_page()
       create_events_on_click()
-      get_expense_for_table()
+      get_transaction_for_table()
       set_data_for_dashboard()
       set_event_button_filter()
   })

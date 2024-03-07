@@ -10,17 +10,24 @@ class CountTransactionSerializer(serializers.Serializer):
     start_date = serializers.DateField(required=False)
     end_date = serializers.DateField(required=False)
     name = serializers.CharField(required=False)
-    done = serializers.BooleanField(required=False)
 
 
 class CreateTransactionSerializer(serializers.ModelSerializer):
     """Сериалайзер для создания модели транзакции."""
 
+    user_id = serializers.IntegerField()
+
     class Meta:
         """Метаданные сериалайзера."""
 
         model = Transaction
-        fields = '__all__'
+        fields = [
+            'name',
+            'target_name',
+            'date',
+            'amount',
+            'user_id'
+        ]
 
 
 class UpdateTransactionSerializer(serializers.ModelSerializer):

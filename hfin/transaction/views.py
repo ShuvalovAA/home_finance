@@ -42,7 +42,6 @@ def get_count_for_paggination(request):
     - start_date: дата начала поиска
     - end_date: дата конца поиска
     - name: наименование
-    - done: статус выполнения
     """
     if not request.method == 'GET':
         return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -61,11 +60,6 @@ def get_count_for_paggination(request):
             filter_data['date__lte'] = datetime.datetime.strptime(v, '%Y-%m-%d') + datetime.timedelta(days=1)
         if k == 'name':
             filter_data['name'] = v
-        if k == 'done':
-            if v == 'true':
-                filter_data['done'] = True
-            if v == 'false':
-                filter_data['done'] = False
     Transactions_count_page = math.ceil((Transaction.objects.filter(**filter_data).count() / 20))
     return Response({'count': Transactions_count_page}, status=status.HTTP_200_OK)
 
@@ -93,9 +87,9 @@ def create(request):
     name = create_Transaction.validated_data.get('name')
     date = create_Transaction.validated_data.get('date')
     amount = create_Transaction.validated_data.get('amount')
-    done = create_Transaction.validated_data.get('done')
     user_id = create_Transaction.validated_data.get('user_id')
-    new_Transaction = Transaction.objects.create(name=name, date=date, amount=amount, done=done, user_id=user_id)
+    target_name = create_Transaction.validated_data.get('target_name')
+    new_Transaction = Transaction.objects.create(name=name, date=date, amount=amount, user_id=user_id, target_name=target_name)
     data = model_to_dict(new_Transaction)
     return Response(data, status=status.HTTP_201_CREATED)
 
@@ -254,7 +248,6 @@ def get_bulk(request):
     - start_date: дата начала поиска
     - end_date: дата конца поиска
     - name: наименование
-    - done: статус выполнения
     *тротлинг:20 записей на страницу
     """
     if not request.method == 'GET':
@@ -277,11 +270,6 @@ def get_bulk(request):
             filter_data['date__lte'] = datetime.datetime.strptime(v, '%Y-%m-%d') + datetime.timedelta(days=1)
         if k == 'name':
             filter_data['name'] = v
-        if k == 'done':
-            if v == 'true':
-                filter_data['done'] = True
-            if v == 'false':
-                filter_data['done'] = False
     limit = 20
     offset = (page * limit)-20 if (page > 1) else 0
     transactions = Transaction.objects.filter(**filter_data).order_by('date')[offset:offset + limit]

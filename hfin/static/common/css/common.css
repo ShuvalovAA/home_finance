@@ -38,3 +38,24 @@ div#exampleModal.modal.fade.show {
 .form-select{
     width: 100%;
 }
+
+.footer {
+    /* --cui-footer-min-height: 3rem; !!important */
+    /* --cui-footer-padding-x: 1rem; !important */
+    /* --cui-footer-padding-y: 0.5rem; !important */
+    /* --cui-footer-color: var(--cui-body-color); !important */
+    /* --cui-footer-bg: var(--cui-tertiary-bg); !important */
+    /* --cui-footer-border-color: var(--cui-border-color); !important */
+    /* --cui-footer-border: var(--cui-border-width) solid var(--cui-footer-border-color); !important */
+display: block !important;
+--cui-footer-border: none !important;
+--cui-footer-bg: none !important;
+    /* flex-wrap: wrap; !important */
+    /* align-items: center; !important */
+    /* justify-content: space-between; !important */
+    /* min-height: var(--cui-footer-min-height); !important */
+    /* padding: var(--cui-footer-padding-y) var(--cui-footer-padding-x); !important */
+    /* color: var(--cui-footer-color); !important */
+    /* background: var(--cui-footer-bg); !important */
+    /* border-top: var(--cui-footer-border); !important */
+}
