@@ -301,7 +301,6 @@ function get_user_id() {
         target_name = null
     }
       
-      set_data_for_dashboard(start=start_period, end=end_period)
       
       get_transaction_for_table(
           page = null,
@@ -370,7 +369,7 @@ function get_user_id() {
             '<td class="col-3 text-left" id="td_text" >' + target_name + '</td>' +
             '<td class="col-2 text-left" id="td_date" >' + date.split('T')[0] + '</td>' +
             '<td class="col-3 text-left" id="td_number" >' + amount + '</td>' +
-            '<td class="col-2" id="td_get">' +
+            '<td class="col-1" id="td_get">' +
             '<div class="row">' +
             '<div class="col text-right"><input class="form-check-input" name="get" type="checkbox" ></div>' +
             '</div>' +
@@ -379,6 +378,7 @@ function get_user_id() {
         table_body.prepend(tr)
     }
     create_events_on_click()
+    get_funds()
   }
   
   
@@ -436,18 +436,7 @@ function get_user_id() {
     return [firstDay, lastDay]
   }
   
-  function set_data_for_dashboard(start = null, end = null) {
-    dates = get_first_laste_date_this_month()
-      if (!start) {
-          start = dates[0]
-      }
-      if (!end) {
-          end = dates[1]
-      }
-    get_transaction(start, end)
-  
-  }
-  
+ 
   function get_transaction(start, end) {
     $.ajax({
         url: '/reporter/get_transaction',
@@ -510,7 +499,6 @@ function get_user_id() {
                 items: [data]
             }
             create_table(to_add_in_table)
-            set_data_for_dashboard()
         }
     });
   }
@@ -539,7 +527,6 @@ function get_user_id() {
         data: data,
         success: function(data) {
             create_table(transaction = data, update_all = true);
-            set_data_for_dashboard(start, end);
             create_events_on_click();
         }
     });
@@ -578,8 +565,8 @@ function get_user_id() {
         },
         data: income_data,
         success: function(data) {
-            set_data_for_dashboard(start, end);
             apply_names_for_filter()
+            get_funds()
         }
     });
   }
@@ -608,7 +595,6 @@ function get_user_id() {
         data: data,
         success: function(data) {
             create_table(transaction = data, update_all = true);
-            set_data_for_dashboard(start, end);
             create_events_on_click();
         }
     });
@@ -860,7 +846,6 @@ function get_user_id() {
         date.value = ""
         amount.value = ""
         target_name.value = ""
-        set_data_for_dashboard()
     }
     get_all = document.getElementById('get_all')
     all_checkbox = document.getElementsByName('get')
@@ -1070,16 +1055,37 @@ function get_funds(){
     });
 }
 
+function __set_size_filters_menu_window(){
+    menus = document.getElementsByClassName('form-multi-select-options')
+    for(i in menus){
+        element = menus[i]
+        element.className = 'form-multi-select-options panel panel-primary'
+    }
+}
 
+function __set_event_click_for_info(){
+    info_buttons = document.getElementsByName('info')
+    for( i=0; i < info_buttons.length; i++){
+        el = info_buttons[i]
+        el.addEventListener(
+            'click',
+            function(e){
+                button_info = document.getElementById('info')
+                button_info.click()
+            }
+        )
+    }
+}
 
   /*PUBLIC*/
   window.addEventListener('load', function() {
+        __set_event_click_for_info()
+        __set_size_filters_menu_window()
         get_funds()
         apply_names_for_filter()
         get_sec_page()
         create_events_on_click()
         get_transaction_for_table()
-        set_data_for_dashboard()
         set_event_button_filter()
   })
 

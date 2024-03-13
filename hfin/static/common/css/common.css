@@ -59,3 +59,26 @@ display: block !important;
     /* background: var(--cui-footer-bg); !important */
     /* border-top: var(--cui-footer-border); !important */
 }
+
+.panel.panel-primary{
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.panel.panel-table-body{
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: none;
+}
+
+.modal-content{
+    width: 375%;
+}
+
+.modal-dialog{
+    margin-left: 1% !important;
+}
+
+div#staticBackdrop.modal.fade.show{
+    background-color: #eee9da00 !important;
+}

@@ -32,6 +32,7 @@ class FundsDirector:
 
     def build_funds_expense(self):
         "Построить фонды расходов."
+        Expense.objects._using_default()
         expense_funds_qs = Expense.objects.filter(
             user_id=self.user_id
         ).values('name', 'done').annotate(sum_amount=Sum('amount'))
@@ -51,12 +52,13 @@ class FundsDirector:
 
     def build_funds_transaction(self):
         "Построить фонды транзакций."
-
+        Transaction.objects._using_default()
         transaction_total = Transaction.objects.filter(
             user_id=self.user_id
         ).values('name').annotate(sum_amount=Sum('amount'))
         if not transaction_total:
             return {}
+        Transaction.objects._using_default()
         transaction_total_in_target = Transaction.objects.filter(
             user_id=self.user_id
         ).values('target_name').annotate(sum_amount=Sum('amount'))
