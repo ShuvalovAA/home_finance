@@ -2,6 +2,7 @@ from income.models import Income
 from expense.models import Expense
 from transaction.models import Transaction
 from django.db.models import Sum
+from collections import defaultdict
 
 
 class FundsDirector:
@@ -50,16 +51,19 @@ class FundsDirector:
 
     def build_funds_transaction(self):
         "Построить фонды транзакций."
-        transaction_funds_qs = Transaction.objects.filter(
+
+        transaction_total = Transaction.objects.filter(
             user_id=self.user_id
         ).values('name').annotate(sum_amount=Sum('amount'))
-        if not transaction_funds_qs:
+        if not transaction_total:
             return {}
-
-        transaction_names = set(raw['name'] for raw in transaction_funds_qs)
-        transaction_dict = {name: {'done': 0} for name in transaction_names}
-
-        for raw in transaction_funds_qs:
-            transaction_dict[raw['name']]['done'] = raw['sum_amount']
-
-        return transaction_dict
+        transaction_total_in_target = Transaction.objects.filter(
+            user_id=self.user_id
+        ).values('target_name').annotate(sum_amount=Sum('amount'))
+        if not transaction_total_in_target:
+            transaction_total_in_target = {}
+        data = {
+            'by_funds': transaction_total,
+            'by_target': transaction_total_in_target
+        }
+        return data

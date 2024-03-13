@@ -926,12 +926,162 @@ function get_user_id() {
     }
   }
   
+// NEW
+function _set_name_funds_list(names){
+    selecter = document.getElementsByClassName('form-multi-select-search')[1]
+    for(i=selecter.children.length-1; i >= 0; i--){
+        if(selecter.children[i].textContent != '...'){
+            selecter.removeChild(selecter.children[i])
+        }
+    }
+    
+    for(i in names){
+        option_element = document.createElement('option')
+        option_element.textContent = names[i]
+        option_element.setAttribute('value', i)
+        selecter.append(option_element)
+    }
+
+  select_options = document.getElementsByClassName('form-multi-select-options')[1]
+  for(i=select_options.children.length-1; i >= 0; i--){
+  if(select_options.children[i].textContent != '...'){
+      select_options.removeChild(select_options.children[i])
+  }
+  }
+  for(i in names){
+      select_opt = document.createElement('div')
+      select_opt.className = 'form-multi-select-option form-multi-select-option-with-checkbox'
+      select_opt.setAttribute('data-value', i)
+      select_opt.setAttribute('tabindex', i)
+      select_opt.textContent = names[i]
+      select_options.append(select_opt)
+
+  }  
+}
+
+function _create_table_funds(expense_funds, transaction_funds){
+    table_body_obj = document.getElementById('table_body_funds')
+    table_children = table_body_obj.children
+    for(i = table_children.length - 1; i >= 0; i--){
+        table_body_obj.removeChild(table_children[i])
+    }
+    
+    names = Object.keys(expense_funds)
+    _set_name_funds_list(names)
+    for(key in expense_funds){
+        funds_info = expense_funds[key]
+        tr = document.createElement('tr')
+        tr.className = 'd-flex'
+
+        td_found = document.createElement('td')
+        td_found.className = 'col-3 text-left'
+        td_found.id = 'found_' + key
+        td_found.textContent = key
+
+        td_wait = document.createElement('td')
+        td_wait.className = 'col-3 text-left'
+        td_wait.id = 'wait_' + key
+        td_wait.textContent = funds_info.not_done
+
+        td_done = document.createElement('td')
+        td_done.className = 'col-2 text-left'
+        td_done.id = 'done_' + key
+        td_done.textContent = funds_info.done
+
+        td_spent = document.createElement('td')
+        td_spent.className = 'col-3 text-left'
+        td_spent.id = 'spent_' + key
+        spent_by_funds = transaction_funds.by_funds
+        td_spent.textContent = 0
+        for(i = 0; i < spent_by_funds.length; i++){
+            raw_f = spent_by_funds[i]
+            
+            if(raw_f.name == key){
+                td_spent.textContent = raw_f.sum_amount
+            }
+        }
+
+        td_spent_from_other_funds = document.createElement('td')
+        td_spent_from_other_funds.className = 'col-3 text-left'
+        td_spent_from_other_funds.id = 'spent_from_other_funds_' + key
+        spent_by_target = transaction_funds.by_target
+        td_spent_from_other_funds.textContent = 0
+        for(i = 0; i < spent_by_target.length; i++){
+            raw = spent_by_target[i]
+            if(raw.target_name == key){
+                td_spent_from_other_funds.textContent = raw.sum_amount
+            }
+        }
+
+        td_remained_funds = document.createElement('td')
+        td_remained_funds.className = 'col-3 text-left'
+        td_remained_funds.id = 'remained' + key
+        td_remained_funds.textContent = td_done.textContent - td_spent.textContent
+
+        tr.appendChild(td_found)
+        tr.appendChild(td_wait)
+        tr.appendChild(td_done)
+        tr.appendChild(td_spent)
+        tr.appendChild(td_spent_from_other_funds)
+        tr.appendChild(td_remained_funds)
+
+        table_body_obj.appendChild(tr)
+
+    }
+
+
+}
+
+function _transaction_funds(expense_funds){
+    $.ajax({
+        url: '/funds_director/get_transaction',
+        method: 'POST',
+        dataType: 'json',
+        headers: {
+            'X-CSRFToken': get_token()
+        },
+        data: {
+            'user_id': get_user_id()
+        },
+        success: function(transaction_funds) {
+            _create_table_funds(
+                expense_funds=expense_funds,
+                transaction_funds=transaction_funds
+            )
+        }
+    });
+
+}
+
+function get_funds(){
+    $.ajax({
+        url: '/funds_director/get_expense',
+        method: 'POST',
+        dataType: 'json',
+        headers: {
+            'X-CSRFToken': get_token()
+        },
+        data: {
+            'user_id': get_user_id()
+        },
+        success: function(expense_funds) {
+            _transaction_funds(expense_funds)
+        }
+    });
+}
+
+
+
   /*PUBLIC*/
   window.addEventListener('load', function() {
-      apply_names_for_filter()
-      get_sec_page()
-      create_events_on_click()
-      get_transaction_for_table()
-      set_data_for_dashboard()
-      set_event_button_filter()
+        get_funds()
+        apply_names_for_filter()
+        get_sec_page()
+        create_events_on_click()
+        get_transaction_for_table()
+        set_data_for_dashboard()
+        set_event_button_filter()
   })
+
+
+
