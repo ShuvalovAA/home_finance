@@ -82,3 +82,27 @@ display: block !important;
 div#staticBackdrop.modal.fade.show{
     background-color: #eee9da00 !important;
 }
+
+button#v-pills-home-tab.nav-link.active{
+    background-color: #fff3cd;
+}
+
+button#v-pills-home-tab.nav-link{
+    color: black;
+}
+
+button#v-pills-messages-tab.nav-link.active{
+    background-color: #fff3cd;
+}
+
+button#v-pills-messages-tab.nav-link{
+    color: black;
+}
+
+button#v-pills-profile-tab.nav-link.active{
+    background-color: #fff3cd;
+}
+
+button#v-pills-profile-tab.nav-link{
+    color: black;
+}

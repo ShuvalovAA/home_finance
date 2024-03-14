@@ -31,7 +31,6 @@ function get_user_id() {
   function set_name_list(names){
       selecter = document.getElementById('name-filter')
       for(i=selecter.children.length-1; i >= 0; i--){
-          console.log(selecter.children[i].textContent)
           if(selecter.children[i].textContent != '...'){
               selecter.removeChild(selecter.children[i])
           }

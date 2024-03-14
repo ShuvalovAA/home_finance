@@ -19,6 +19,7 @@ from django.urls import path
 from user import views
 
 urlpatterns = [
+    path('', views.render_profile_page),
     path('confirm_email/<auth_token>', views.confirm_email),
     path('signin/confirm_sms/', views.confirm_sms),
     path('signup/confirm_sms/', views.confirm_sms),

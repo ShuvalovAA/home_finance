@@ -14,6 +14,12 @@ from .forms import ConfirmSMS, LoginForm, RegisterForm
 from .handlers import confirm_login, confirm_phone, create_email_confirm, create_sms_confirm
 from .models import User
 from .serialazers import GetUserSerializer, UpdateUserSerializer
+from root.decorators import is_authenticated_and_is_active
+
+@is_authenticated_and_is_active
+def render_profile_page(request):
+    """Рендер на страницу доходов."""
+    return render(request, 'profile.html')
 
 
 @swagger_auto_schema(method='PATCH', query_serializer=UpdateUserSerializer, tags=['User'])
