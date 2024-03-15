@@ -6,6 +6,14 @@ from .serializers import GetIncome, GetExpense, GetTransaction
 from rest_framework import status
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
+from django.shortcuts import render
+from root.decorators import is_authenticated_and_is_active
+
+
+@is_authenticated_and_is_active
+def render_reporter_page(request):
+    """Рендер на страницу отчётов."""
+    return render(request, 'reporter.html')
 
 
 @swagger_auto_schema(method='POST', request_body=GetIncome, tags=['Reporter'])

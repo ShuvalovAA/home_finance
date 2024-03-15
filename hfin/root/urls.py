@@ -22,7 +22,7 @@ from rest_framework import permissions
 from django.conf.urls.static import static
 from django.conf import settings
 from .handlers import favicon_view
-
+from . import views
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -38,6 +38,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path('', views.render_income_page),
     re_path(r'^favicon.ico$', favicon_view),
     path('captcha/', include('captcha.urls')),
     path('admin/', admin.site.urls),
