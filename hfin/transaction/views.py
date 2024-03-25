@@ -4,6 +4,7 @@ import math
 from django.forms.models import model_to_dict
 from drf_yasg.utils import swagger_auto_schema
 from transaction.models import Transaction
+from expense.models import Expense
 from rest_framework import parsers, renderers, status
 from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
@@ -84,11 +85,19 @@ def create(request):
     if not create_Transaction.is_valid():
         return Response(create_Transaction.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
+    
     name = create_Transaction.validated_data.get('name')
     date = create_Transaction.validated_data.get('date')
     amount = create_Transaction.validated_data.get('amount')
     user_id = create_Transaction.validated_data.get('user_id')
+    fund_exists = Expense.objects.filter(name=name, user_id=user_id, amount__gte=amount)
+    if not fund_exists:
+        return Response({'ERORR': 'Нет фонда с таким именем или достаточной суммой'}, status=status.HTTP_404_NOT_FOUND)
     target_name = create_Transaction.validated_data.get('target_name')
+    target_fund_exists = Expense.objects.filter(name=target_name, user_id=user_id)
+    if not target_fund_exists:
+        return Response({'ERORR': 'Нет фонда в счёт которого нужно проводить транзакцию'}, status=status.HTTP_404_NOT_FOUND)
+    
     new_Transaction = Transaction.objects.create(name=name, date=date, amount=amount, user_id=user_id, target_name=target_name)
     data = model_to_dict(new_Transaction)
     return Response(data, status=status.HTTP_201_CREATED)
@@ -268,8 +277,8 @@ def get_bulk(request):
             filter_data['date__gte'] = datetime.datetime.strptime(v, '%Y-%m-%d')
         if k == 'end_date':
             filter_data['date__lte'] = datetime.datetime.strptime(v, '%Y-%m-%d') + datetime.timedelta(days=1)
-        if k == 'name':
-            filter_data['name'] = v
+        if k == 'names':
+            filter_data['name__in'] = json.loads(v)
     limit = 20
     offset = (page * limit)-20 if (page > 1) else 0
     transactions = Transaction.objects.filter(**filter_data).order_by('date')[offset:offset + limit]

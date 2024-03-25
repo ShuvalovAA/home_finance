@@ -96,6 +96,11 @@ class GetTransactionBulkSerializer(serializers.Serializer):
 
     page = serializers.IntegerField()
     user_id = serializers.IntegerField()
+    start_date = serializers.DateField(required=False)
+    end_date = serializers.DateField(required=False)
+    names = serializers.JSONField(required=False)
+    target_names = serializers.CharField(required=False)
+    done = serializers.BooleanField(required=False)
 
 
 class CopyTransactionSerializer(serializers.ModelSerializer):

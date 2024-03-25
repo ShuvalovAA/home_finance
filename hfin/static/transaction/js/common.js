@@ -287,31 +287,29 @@ function get_user_id() {
       get_sec_page(filter_data=request_data)
   }
   
-  function filter_table(start_period, end_period, name_income, target_name) {
+  function filter_table(start_period, end_period, names_transactions, target_name) {
       if(start_period == ''){
           start_period = '1000-01-01'
       }
       if(end_period == ''){
           end_period = '3000-01-01'
       }
-      if(name_income == '...'){
-          name_income = null
+      if(names_transactions.length == 0){
+        names_transactions = []
       }
       if(target_name == '...'){
         target_name = null
-    }
+      }
       
       
       get_transaction_for_table(
           page = null,
           start_date=start_period,
           end_date=end_period,
-          name=name_income,
+          names_transactions=names_transactions,
           target_name=target_name,
           pag_need_update=true
       )
-  
-      //update_sec_pag()
       
       if(page == null){
           page=1
@@ -321,8 +319,8 @@ function get_user_id() {
           'page': page,
           'start_date': start_date,
           'end_date': end_date,
-          'target_name': name_income,
-          'name': name,
+          'target_name': target_name,
+          'names': names_transactions,
           'user_id': get_user_id()
         }
       
@@ -386,7 +384,7 @@ function get_user_id() {
       page = null,
       start_date = null,
       end_date = null,
-      name = null,
+      names_transactions = [],
       target_name,
       pag_need_update = false
       ) {
@@ -396,7 +394,7 @@ function get_user_id() {
       'start_date': start_date,
       'end_date': end_date,
       'target_name': target_name,
-      'name': name,
+      'names': JSON.stringify(names_transactions),
       'user_id': get_user_id()
     }
   
@@ -478,6 +476,10 @@ function get_user_id() {
         }
     });
   }
+
+  function income_add_error(data){
+    console.log(data)
+  }
   
   function income_add(name, amount, date, target_name) {
     $.ajax({
@@ -495,11 +497,22 @@ function get_user_id() {
             'amount': amount
         },
         success: function(data) {
-            to_add_in_table = {
-                items: [data]
+            
+        },
+        statusCode: {
+            422: function(response){
+                alert(response.responseText)
+            },
+            404: function(response){
+                alert(response.responseText)
+            },
+            201:function(data){
+                to_add_in_table = {
+                    items: [data]
+                }
+                create_table(to_add_in_table)
             }
-            create_table(to_add_in_table)
-        }
+         }
     });
   }
   
@@ -675,12 +688,12 @@ function get_user_id() {
           function(e){
               start_period = document.getElementById('start-filter').value
               end_period = document.getElementById('end-filter').value
-              name_income = document.getElementById('name-filter').selectedOptions[0].textContent
+              names_transactions = get_filters_values_select_transaction_name()
 
               filter_table(
                   start_period,
                   end_period,
-                  name_income,
+                  names_transactions,
 
               )
           }
@@ -832,6 +845,15 @@ function get_user_id() {
         date = document.getElementById('add_date_transaction')
         amount = document.getElementById('add_amount_transaction')
         target_name = document.getElementById('add_target_name_transaction')
+
+        valid = validation_value_for_add(
+            name_i, date, amount, target_name
+        )
+        if(!valid){
+            return
+        }
+
+
   
         name_value = name_i.value
         date_value = date.value
@@ -910,6 +932,98 @@ function get_user_id() {
         button_copy.style.display = 'none';
     }
   }
+//Валидация с формы добавления
+function validation_value_for_add(name_i, date, amount, target_name){
+    map_name = {
+        'add_name_transaction': 'Списать с фонда',
+        'add_target_name_transaction': 'Цель списания',
+        'add_date_transaction': 'Дата',
+        'add_amount_transaction': 'Сумма'
+    }
+    
+    if(name_i.value == ''){
+        alert('Поле не должно быть пустым: '+ map_name[name_i.id])
+        return false
+    }
+    if(date.value == ''){
+        alert('Поле не должно быть пустым: '+ map_name[date.id])
+        return false
+    }
+    if(amount.value == ''){
+        alert('Поле не должно быть пустым: '+ map_name[amount.id])
+        return false
+    }
+    if(target_name.value == ''){
+        alert('Поле не должно быть пустым: '+ map_name[target_name.id])
+        return false
+    }
+    return true
+    
+}
+//
+//Фильтр транзакций
+function get_filters_values_select_transaction_name(){
+    filter_div = document.getElementById('filter_select_trasactions')
+    search_input_string = filter_div.getElementsByTagName('span')[0]
+    values_str = search_input_string.textContent
+    if(values_str.includes(',')){
+        values = values_str.split(', ')
+    }else{
+        values = [values_str]
+    }
+    return values
+}
+//
+//Фильтр фондов
+function set_event_filter_table_funds(){
+    filter_div = document.getElementById('filter_select_funds')
+    search_input_span = filter_div.getElementsByTagName('span')[0]
+    search_input_span.addEventListener(
+        'DOMSubtreeModified',
+        function(e){
+            console.log(e)
+            tbody_children = document.getElementById('table_body_funds').children
+            filter_funds_table(tbody_children)
+        }
+    )
+}
+
+function get_filters_values_select_funds_name(){
+    filter_div = document.getElementById('filter_select_funds')
+    search_input_string = filter_div.getElementsByTagName('span')[0]
+    values_str = search_input_string.textContent
+    if(values_str.includes(',')){
+        values = values_str.split(', ')
+    }else{
+        values = [values_str]
+    }
+    return values
+}
+
+
+function filter_funds_table(tbody_children){
+    values = get_filters_values_select_funds_name()
+    for(i=0; i < tbody_children.length; i++){
+        tr = tbody_children[i]
+        tr_children = tr.children
+        for(z = 0;z < tr_children.length; z++){
+            if(tr_children[z].hasAttribute('id')){
+                if(tr_children[z].id.includes('found')){
+                    //
+                    id_split = tr_children[z].id.split('_')
+                    name_f = id_split.slice(id_split.length-1, id_split.length)[0]
+                    if(values.includes(name_f)){
+                        tr.style='display:flex !important'
+                    }else{
+                        tr.style='display:none !important'
+                    }
+                }
+            }
+        }
+    }
+
+}
+//
   
 // NEW
 function _set_name_funds_list(names){
@@ -1000,7 +1114,7 @@ function _create_table_funds(expense_funds, transaction_funds){
 
         td_remained_funds = document.createElement('td')
         td_remained_funds.className = 'col-3 text-left'
-        td_remained_funds.id = 'remained' + key
+        td_remained_funds.id = 'remained_' + key
         td_remained_funds.textContent = td_done.textContent - td_spent.textContent
 
         tr.appendChild(td_found)
@@ -1073,6 +1187,7 @@ function __set_size_filters_menu_window(){
         create_events_on_click()
         get_transaction_for_table()
         set_event_button_filter()
+        set_event_filter_table_funds()
   })
 
 
