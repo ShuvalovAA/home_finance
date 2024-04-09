@@ -57,3 +57,15 @@ class Reporter:
             ).values_list('date__date', 'amount')
         )
         return {'transactions': transaction_list}
+
+    def get_grouping_income(self):
+        """Получить сгрупиированные данные по доходам."""
+        grouping_incomes = list(Income.objects.filter(
+            user_id=self.user_id
+        ).values_list(
+            'name',
+            ).annotate(
+                amount=Sum('amount')
+            ).values_list('name', 'amount')
+        )
+        return grouping_incomes

@@ -841,13 +841,13 @@ function get_user_id() {
     }
   
     document.getElementById('button_add').onclick = function(e) {
-        name_i = document.getElementById('add_name_transaction')
+        name_i = document.getElementById('modal-funds')
         date = document.getElementById('add_date_transaction')
         amount = document.getElementById('add_amount_transaction')
-        target_name = document.getElementById('add_target_name_transaction')
+        target_name = document.getElementById('modal-target')
 
         valid = validation_value_for_add(
-            name_i, date, amount, target_name
+            name_i.selectedOptions[0], date, amount, target_name.selectedOptions[0]
         )
         if(!valid){
             return
@@ -855,19 +855,19 @@ function get_user_id() {
 
 
   
-        name_value = name_i.value
+        name_value = name_i.selectedOptions[0].text
         date_value = date.value
         amount_value = amount.value
-        target_name_value = target_name.value
+        target_name_value = target_name.selectedOptions[0].text
   
   
         document.getElementById('button_exit').click();
         
         income_add(name_value, amount_value, date_value, target_name_value);
-        name_i.value = ""
+        name_i.selectedOptions = []
         date.value = ""
         amount.value = ""
-        target_name.value = ""
+        target_name.selectedOptions = []
     }
     get_all = document.getElementById('get_all')
     all_checkbox = document.getElementsByName('get')
@@ -940,8 +940,7 @@ function validation_value_for_add(name_i, date, amount, target_name){
         'add_date_transaction': 'Дата',
         'add_amount_transaction': 'Сумма'
     }
-    
-    if(name_i.value == ''){
+    if(name_i.text == ''){
         alert('Поле не должно быть пустым: '+ map_name[name_i.id])
         return false
     }
@@ -953,7 +952,7 @@ function validation_value_for_add(name_i, date, amount, target_name){
         alert('Поле не должно быть пустым: '+ map_name[amount.id])
         return false
     }
-    if(target_name.value == ''){
+    if(target_name.text == ''){
         alert('Поле не должно быть пустым: '+ map_name[target_name.id])
         return false
     }

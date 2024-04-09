@@ -6,4 +6,5 @@ urlpatterns = [
     path('get_income', views.get_income),
     path('get_expense', views.get_expense),
     path('get_transaction', views.get_transaction),
+    path('by_group/get_income', views.get_grouping_income),
 ]

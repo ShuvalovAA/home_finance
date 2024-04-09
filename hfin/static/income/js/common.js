@@ -674,6 +674,69 @@ function create_dashbord(data) {
   });
 }
 
+//группировка доходов
+function set_dashboard_grouping(){
+    $.ajax({
+        url: '/reporter/by_group/get_income',
+        method: 'POST',
+        dataType: 'json',
+        headers: {
+            'X-CSRFToken': get_token()
+        },
+        data: {
+            "user_id": get_user_id()
+        },
+        success: function(data) {
+            create_dashbord_grouping(data)
+        }
+    });
+
+}
+function create_dashbord_grouping(data) {
+
+    canvas_el = document.getElementById('chart_report_group')
+    canvas_el.remove()
+    canvas_el_new = document.createElement('canvas')
+    canvas_el_new.style.width = '600px'
+    canvas_el_new.style.height = '300px'
+    canvas_el_new.id = 'chart_report_group'
+  
+    conteiner_chart = document.getElementById('conteiner_chart__report_group')
+    conteiner_chart.append(canvas_el_new)
+  
+    const ctx = canvas_el_new.getContext('2d');
+    incomes = data
+  
+  
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: dts,
+            datasets: [{
+                label: 'Доходы',
+                backgroundColor: '#324512',
+                borderColor: 'rgb(47, 128, 237)',
+                data: incomes_amount_list,
+            }, {
+                label: 'Расходы',
+                backgroundColor: '#deb99b',
+                borderColor: 'rgb(47, 128, 237)',
+                data: expenses_amount_list,
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                    }
+                }]
+            }
+        },
+    });
+  }
+//
+
 
 function _any_checkbox_checked(checkboxes) {
   for (i = 0; i < all_checkbox.length; i++) {

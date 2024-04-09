@@ -13,6 +13,12 @@ class GetIncome(GetBase):
     """Сериалайзер для получения всех доходов пользователя."""
 
 
+class GetIncomeGroup(serializers.Serializer):
+    """Сериалайзер для получения всех доходов пользователя сгруппированными."""
+
+    user_id = serializers.IntegerField()
+
+
 class GetExpense(GetBase):
     """Сериалайзер для получения всех расходов пользователя."""
 
