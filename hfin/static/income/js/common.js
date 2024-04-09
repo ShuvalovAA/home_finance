@@ -65,21 +65,11 @@ function set_page(page, page_link_obj){
     start_period = document.getElementById('start-filter').value
     end_period = document.getElementById('end-filter').value
     name_income = document.getElementById('name-filter').selectedOptions[0].textContent
-    done = document.getElementById('done-filter').selectedOptions[0]
-    if(done='Да'){
-        done = true
-    }
-    if(done='Нет'){
-        done=false
-    }
     if(start_period == ''){
         start_period = '1000-01-01'
     }
     if(end_period == ''){
         end_period = '3000-01-01'
-    }
-    if(done == '...'){
-        done = null
     }
     if(name_income == '...'){
         name_income = null
@@ -91,7 +81,6 @@ function set_page(page, page_link_obj){
         start_date=start_period,
         end_date=end_period,
         name=name_income,
-        done=done,
         pag_need_update=true
     )
 }
@@ -251,21 +240,11 @@ function update_sec_pag(){
     start_period = document.getElementById('start-filter').value
     end_period = document.getElementById('end-filter').value
     name_income = document.getElementById('name-filter').selectedOptions[0].textContent
-    done = document.getElementById('done-filter').selectedOptions[0]
-    if(done='Да'){
-        done = true
-    }
-    if(done='Нет'){
-        done=false
-    }
     if(start_period == ''){
         start_period = '1000-01-01'
     }
     if(end_period == ''){
         end_period = '3000-01-01'
-    }
-    if(done == '...'){
-        done = null
     }
     if(name_income == '...'){
         name_income = null
@@ -280,7 +259,6 @@ function update_sec_pag(){
         'start_date': start_date,
         'end_date': end_date,
         'name': name_income,
-        'done': done,
         'user_id': get_user_id()
       }
     
@@ -295,15 +273,12 @@ function update_sec_pag(){
     get_sec_page(filter_data=request_data)
 }
 
-function filter_table(start_period, end_period, name_income, done) {
+function filter_table(start_period, end_period, name_income) {
     if(start_period == ''){
         start_period = '1000-01-01'
     }
     if(end_period == ''){
         end_period = '3000-01-01'
-    }
-    if(done == '...'){
-        done = null
     }
     if(name_income == '...'){
         name_income = null
@@ -316,7 +291,6 @@ function filter_table(start_period, end_period, name_income, done) {
         start_date=start_period,
         end_date=end_period,
         name=name_income,
-        done=done,
         pag_need_update=true
     )
 
@@ -331,7 +305,6 @@ function filter_table(start_period, end_period, name_income, done) {
         'start_date': start_date,
         'end_date': end_date,
         'name': name_income,
-        'done': done,
         'user_id': get_user_id()
       }
     
@@ -369,13 +342,6 @@ function create_table(incomes, update_all = null) {
       var name = income.name
       var date = income.date
       var amount = income.amount
-      var done = income.done
-      if (done == 0 || done == false) {
-          done = 'Нет'
-      }
-      if (done == 1 || done == true) {
-          done = 'Да'
-      }
       var tr = document.createElement("tr");
       tr.className = 'd-flex'
       tr.id = income_id
@@ -383,7 +349,6 @@ function create_table(incomes, update_all = null) {
           '<td class="col-3 text-left" id="td_text" >' + name + '</td>' +
           '<td class="col-2 text-left" id="td_date" >' + date.split('T')[0] + '</td>' +
           '<td class="col-3 text-left" id="td_number" >' + amount + '</td>' +
-          '<td class="col-1 text-right" id="td_selector" >' + done + '</td>' +
           '<td class="col-2" id="td_get">' +
           '<div class="row">' +
           '<div class="col text-right"><input class="form-check-input" name="get" type="checkbox" ></div>' +
@@ -401,7 +366,6 @@ function get_income_for_table(
     start_date = null,
     end_date = null,
     name = null,
-    done = null,
     pag_need_update = false
     ) {
 
@@ -410,7 +374,6 @@ function get_income_for_table(
     'start_date': start_date,
     'end_date': end_date,
     'name': name,
-    'done': done,
     'user_id': get_user_id()
   }
 
@@ -504,7 +467,7 @@ function get_expenses(incomes, start, end) {
   });
 }
 
-function income_add(name, amount, date, done) {
+function income_add(name, amount, date) {
   $.ajax({
       url: '/income/create/',
       method: 'POST',
@@ -517,7 +480,6 @@ function income_add(name, amount, date, done) {
           'date': date,
           'name': name,
           'amount': amount,
-          'done': done,
       },
       success: function(data) {
           to_add_in_table = {
@@ -571,8 +533,7 @@ function with_preprocess_update(income, update_field, new_value){
     "user_id": get_user_id(),
     "name": income.name,
     "date": income.date,
-    "amount": income.amount,
-    "done": income.done
+    "amount": income.amount
   }
   data[update_field] = new_value
   income_update(income_data=data)
@@ -746,18 +707,10 @@ function set_event_button_filter(){
             start_period = document.getElementById('start-filter').value
             end_period = document.getElementById('end-filter').value
             name_income = document.getElementById('name-filter').selectedOptions[0].textContent
-            done = document.getElementById('done-filter').selectedOptions[0]
-            if(done='Да'){
-                done = true
-            }
-            if(done='Нет'){
-                done=false
-            }
             filter_table(
                 start_period,
                 end_period,
-                name_income,
-                done
+                name_income
             )
         }
     )
@@ -843,9 +796,6 @@ function create_events_on_click() {
                   if(update_field == 'number'){
                     update_field = 'amount'
                   }
-                  if(update_field == 'select-one'){
-                    update_field = 'done'
-                  }
                   if(update_field == 'text'){
                     update_field = 'name'
                   }
@@ -887,9 +837,6 @@ function create_events_on_click() {
                           if(update_field == 'number'){
                             update_field = 'amount'
                           }
-                          if(update_field == 'select-one'){
-                            update_field = 'done'
-                          }
                           if(update_field == 'text'){
                             update_field = 'name'
                           }
@@ -913,20 +860,17 @@ function create_events_on_click() {
       name_i = document.getElementById('add_name_income')
       date = document.getElementById('add_date_income')
       amount = document.getElementById('add_amount_income')
-      done = document.getElementById('add_done_income')
 
       name_value = name_i.value
       date_value = date.value
       amount_value = amount.value
-      done_value = done.selectedOptions[0].value
 
 
       document.getElementById('button_exit').click();
-      income_add(name_value, amount_value, date_value, done_value);
+      income_add(name_value, amount_value, date_value);
       name_i.value = ""
       date.value = ""
       amount.value = ""
-      done.value = ""
       set_data_for_dashboard()
   }
   get_all = document.getElementById('get_all')

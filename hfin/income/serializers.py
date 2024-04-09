@@ -16,7 +16,6 @@ class CreateIncomeSerializer(serializers.ModelSerializer):
             'name',
             'date',
             'amount',
-            'done',
             'user_id'
         ]
 
@@ -37,7 +36,6 @@ class UpdateIncomeSerializer(serializers.ModelSerializer):
             'name',
             'date',
             'amount',
-            'done'
         ]
 
 
@@ -102,7 +100,6 @@ class GetIncomeBulkSerializer(serializers.Serializer):
     start_date = serializers.DateField(required=False)
     end_date = serializers.DateField(required=False)
     name = serializers.CharField(required=False)
-    done = serializers.BooleanField(required=False)
 
 
 class CountIncomeSerializer(serializers.Serializer):
@@ -112,7 +109,6 @@ class CountIncomeSerializer(serializers.Serializer):
     start_date = serializers.DateField(required=False)
     end_date = serializers.DateField(required=False)
     name = serializers.CharField(required=False)
-    done = serializers.BooleanField(required=False)
 
 
 class CopyIncomeSerializer(serializers.ModelSerializer):
