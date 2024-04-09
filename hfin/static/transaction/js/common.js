@@ -1024,7 +1024,39 @@ function filter_funds_table(tbody_children){
 
 }
 //
-  
+//modal funds
+function _set_name_modal_funds(names){
+    selecter = document.getElementById('modal-funds')
+    for(i=selecter.children.length-1; i >= 0; i--){
+        if(selecter.children[i].textContent != '...'){
+            selecter.removeChild(selecter.children[i])
+        }
+    }
+    
+    for(i in names){
+        option_element = document.createElement('option')
+        option_element.textContent = names[i]
+        option_element.setAttribute('value', i)
+        selecter.append(option_element)
+    }
+}
+//modal target
+function _set_name_modal_target(names){
+    selecter = document.getElementById('modal-target')
+    for(i=selecter.children.length-1; i >= 0; i--){
+        if(selecter.children[i].textContent != '...'){
+            selecter.removeChild(selecter.children[i])
+        }
+    }
+    
+    for(i in names){
+        option_element = document.createElement('option')
+        option_element.textContent = names[i]
+        option_element.setAttribute('value', i)
+        selecter.append(option_element)
+    }
+}
+//
 // NEW
 function _set_name_funds_list(names){
     selecter = document.getElementsByClassName('form-multi-select-search')[1]
@@ -1067,6 +1099,8 @@ function _create_table_funds(expense_funds, transaction_funds){
     
     names = Object.keys(expense_funds)
     _set_name_funds_list(names)
+    _set_name_modal_funds(names)
+    _set_name_modal_target(names)
     for(key in expense_funds){
         funds_info = expense_funds[key]
         tr = document.createElement('tr')

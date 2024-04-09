@@ -220,11 +220,17 @@
         <form>
           <div class="mb-3">
             <label for="recipient-name" class="col-form-label" >Списать с фонда:</label>
-            <input type="text" class="form-control" id="add_name_transaction">
+            <select class="form-select" id="modal-funds" aria-label="Default select example">
+              <option selected>...</option>
+            </select>
+            <!--<input type="text" class="form-control" id="add_name_transaction">-->
           </div>
           <div class="mb-3">
             <label for="recipient-name" class="col-form-label" >Цель списания:</label>
-            <input type="text" class="form-control" id="add_target_name_transaction">
+            <!--<input type="text" class="form-control" id="add_target_name_transaction">-->
+            <select class="form-select" id="modal-target" aria-label="Default select example">
+              <option selected>...</option>
+            </select>
           </div>
           <div class="mb-3">
             <label for="recipient-name" class="col-form-label" >Дата:</label>
