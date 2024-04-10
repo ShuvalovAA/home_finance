@@ -992,13 +992,80 @@ function get_user_id() {
         button_copy.style.display = 'none';
     }
   }
+  //группировка доходов
+function set_dashboard_grouping(){
+    $.ajax({
+        url: '/reporter/by_group/get_expense',
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'X-CSRFToken': get_token()
+        },
+        data: {
+            "user_id": get_user_id()
+        },
+        success: function(data) {
+            create_dashbord_grouping(data)
+        }
+    });
+
+}
+function create_dashbord_grouping(data) {
+    canvas_el = document.getElementById('chart_report_group')
+    canvas_el.remove()
+    canvas_el_new = document.createElement('canvas')
+    canvas_el_new.style.width = '600px'
+    canvas_el_new.style.height = '300px'
+    canvas_el_new.id = 'chart_report_group'
   
+    conteiner_chart = document.getElementById('conteiner_chart_report_group')
+    conteiner_chart.append(canvas_el_new)
+  
+    const ctx = canvas_el_new.getContext('2d');
+    amounts = []
+    labels = []
+    colors = []
+    
+    for(i=0;i<data.length; i++){
+        inc_el = data[i]
+        labels.push(inc_el[0])
+        //labels.push('')
+        amounts.push(inc_el[1])
+        colors.push('#deb99b')
+    }
+    const char_data = {
+        labels: labels,
+        datasets:[{
+            axis: 'x',
+            label:'',
+            data: amounts,
+            fill: false,
+            backgroundColor: colors,
+            borderColor: colors,
+            borderWidth: 1
+        }]
+    }
+    const myChart = new Chart(ctx, {
+        type: 'horizontalBar',
+        data: char_data,
+        options: {
+            legend: { display: false },
+            title: {
+                display: true,
+                text: 'Сгруппированные расходы'
+              },
+            indexAxis: 'y',
+          }
+    });
+  }
+//
   /*PUBLIC*/
   window.addEventListener('load', function() {
-      apply_names_for_filter()
-      get_sec_page()
-      create_events_on_click()
-      get_expense_for_table()
-      set_data_for_dashboard()
-      set_event_button_filter()
+    set_dashboard_grouping()
+    apply_names_for_filter()
+    get_sec_page()
+    create_events_on_click()
+    get_expense_for_table()
+    set_data_for_dashboard()
+    set_event_button_filter()
   })

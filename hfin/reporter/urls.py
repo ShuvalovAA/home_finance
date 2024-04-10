@@ -7,4 +7,5 @@ urlpatterns = [
     path('get_expense', views.get_expense),
     path('get_transaction', views.get_transaction),
     path('by_group/get_income', views.get_grouping_income),
+    path('by_group/get_expense', views.get_grouping_expense)
 ]

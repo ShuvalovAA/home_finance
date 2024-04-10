@@ -60,6 +60,7 @@ class Reporter:
 
     def get_grouping_income(self):
         """Получить сгрупиированные данные по доходам."""
+        Income.objects._using_default()
         grouping_incomes = list(Income.objects.filter(
             user_id=self.user_id
         ).values_list(
@@ -68,4 +69,19 @@ class Reporter:
                 amount=Sum('amount')
             ).values_list('name', 'amount')
         )
+
+        return grouping_incomes
+
+    def get_grouping_expense(self):
+        """Получить сгрупиированные данные по расходам."""
+        Expense.objects._using_default()
+        grouping_incomes = list(Expense.objects.filter(
+            user_id=self.user_id
+        ).values_list(
+            'name',
+            ).annotate(
+                amount=Sum('amount')
+            ).values_list('name', 'amount')
+        )
+
         return grouping_incomes

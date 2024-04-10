@@ -2,7 +2,7 @@ from .handlers import Reporter
 from django.forms.models import model_to_dict
 from rest_framework.decorators import api_view
 from root.decorators import check_premission
-from .serializers import GetIncome, GetExpense, GetTransaction, GetIncomeGroup
+from .serializers import GetIncome, GetExpense, GetTransaction, GetIncomeGroup, GetExpenseGroup
 from rest_framework import status
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
@@ -86,9 +86,21 @@ def get_transaction(request):
 @api_view(['GET'])
 @check_premission
 def get_grouping_income(request):
-    """Получить сгрупиированные данные по доходам."""
+    """Получить сгруппированные данные по доходам."""
     reporter = Reporter(
         user_id=request.GET.get('user_id'),
     )
     data = reporter.get_grouping_income()
+    return Response(data, status=status.HTTP_200_OK)
+
+
+@swagger_auto_schema(method='GET', query_serializer=GetExpenseGroup, tags=['Reporter'])
+@api_view(['GET'])
+@check_premission
+def get_grouping_expense(request):
+    """Получить сгруппированные данные по доходам."""
+    reporter = Reporter(
+        user_id=request.GET.get('user_id'),
+    )
+    data = reporter.get_grouping_expense()
     return Response(data, status=status.HTTP_200_OK)
