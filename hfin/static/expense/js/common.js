@@ -631,6 +631,8 @@ function get_user_id() {
   
   
   function create_dashbord(data) {
+
+    create_dashbord_balancing(data)
   
     canvas_el = document.getElementById('chart')
     canvas_el.remove()
@@ -1053,6 +1055,145 @@ function create_dashbord_grouping(data) {
             title: {
                 display: true,
                 text: 'Сгруппированные расходы'
+              },
+            indexAxis: 'y',
+          }
+    });
+  }
+//
+  //группировка доходов
+  function set_dashboard_grouping(){
+    $.ajax({
+        url: '/reporter/by_group/get_expense',
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'X-CSRFToken': get_token()
+        },
+        data: {
+            "user_id": get_user_id()
+        },
+        success: function(data) {
+            create_dashbord_grouping(data)
+        }
+    });
+
+}
+function create_dashbord_balancing(data) {
+
+    function __sort_data(data){
+        new_data =[]
+
+        for(i=0; i < data.length; i++){
+            
+        }
+
+        return new_data
+
+    }
+
+    function __get_income_on_date(incomes, date){
+        for(q=0; q<incomes.length; q++){
+            inc = incomes[q]
+            inc_date = inc[0]
+            inc_amount = inc[1]
+            if(date == inc_date){
+                result = {
+                    'date':inc_date,
+                    'amount': inc_amount
+                }
+                return result
+            }
+        }
+        return null
+    }
+    canvas_el = document.getElementById('chart_balancing')
+    canvas_el.remove()
+    canvas_el_new = document.createElement('canvas')
+    canvas_el_new.style.width = '600px'
+    canvas_el_new.style.height = '300px'
+    canvas_el_new.id = 'chart_balancing'
+  
+    conteiner_chart = document.getElementById('conteiner_chart_balancing')
+    conteiner_chart.append(canvas_el_new)
+
+    
+    
+    expenses = data.expense.expenses
+    incomes = data.incomes.incomes
+    
+    _data = []
+
+    for(z=0; z < expenses.length; z++){
+        balance = []
+        ex = expenses[z]
+        date = ex[0]
+        amount = ex[1]
+        inc = __get_income_on_date(incomes, date)
+        balance.push(date)
+        if(inc){
+            balancing_amount = inc.amount - amount
+        }else{
+            balancing_amount = amount * (-1)
+        }
+        
+        balance.push(balancing_amount)
+        _data.push(balance)
+    }
+
+    dts = []
+    for(i=0; i<_data.length;i++){
+        el = _data[i]
+        dts.push(el[0])
+    }
+
+    for(z=0; z < incomes.length; z++){
+        inc = incomes[z]
+        date = inc[0]
+        amount = inc[1]
+        if(!dts.includes(date)){
+            
+            _data.push([date, amount])
+        }
+    }
+    
+    var a = _data;
+    _data = a.sort((a, b) => a[0].localeCompare(b[0]));
+    const ctx = canvas_el_new.getContext('2d');
+    amounts = []
+    labels = []
+    colors = []
+    
+    for(i=0;i<_data.length; i++){
+        inc_el = _data[i]
+        labels.push(inc_el[0])
+        //labels.push('')
+        amounts.push(inc_el[1])
+        if(inc_el[1] >= 0){colors.push('#deb99b')}else{
+            colors.push('#e71b05d6')
+        }
+        
+    }
+    const char_data = {
+        labels: labels,
+        datasets:[{
+            axis: 'x',
+            label:'',
+            data: amounts,
+            fill: false,
+            backgroundColor: colors,
+            borderColor: colors,
+            borderWidth: 1
+        }]
+    }
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: char_data,
+        options: {
+            legend: { display: false },
+            title: {
+                display: true,
+                text: 'Сальдо на каждый день расхода или дохода'
               },
             indexAxis: 'y',
           }
