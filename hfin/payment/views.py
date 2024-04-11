@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from root.decorators import check_premission
-from .serializers import SendSerializer, GetSerializer
+from .serializers import SendSerializer, GetSerializer, GetByUserSerializer
 from clients.payment_handler import payment_handler
 from user.models import User
 from .models import Tariff, UsersPayments
@@ -12,8 +12,7 @@ import json
 from datetime import datetime
 
 
-
-@swagger_auto_schema(method='get', query_serializer=SendSerializer, tags=['Payments'])
+@swagger_auto_schema(method='GET', query_serializer=SendSerializer, tags=['Payments'])
 @api_view(['GET'])
 @check_premission
 def send(request):
@@ -34,6 +33,31 @@ def send(request):
 
     target_url = payment_handler.send_payment(user=user, product=tariff, amount=tariff.price)
     return redirect(target_url)
+
+@swagger_auto_schema(method='get', query_serializer=GetByUserSerializer, tags=['Payments'])
+@api_view(['GET'])
+@check_premission
+def get(request):
+    """Получить выборку по платежам пользователя."""
+    if not request.method == 'GET':
+        return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    user_id = request.GET.get('user_id')
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist as error:
+        return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
+
+    UsersPayments.objects._using_default()
+    payments = UsersPayments.objects.filter(user_id=user.id, done=True).order_by('date').values_list(
+        'date__date',
+        'tariff__price',
+        'tariff__period_months'
+    )
+    if not payments:
+        return Response(UsersPayments.DoesNotExist.__str__, status=status.HTTP_404_NOT_FOUND)
+
+    return Response(payments, status=status.HTTP_200_OK)
 
 
 @swagger_auto_schema(method='get', query_serializer=GetSerializer, tags=['Payments'])

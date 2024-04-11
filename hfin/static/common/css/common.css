@@ -106,3 +106,8 @@ button#v-pills-profile-tab.nav-link.active{
 button#v-pills-profile-tab.nav-link{
     color: black;
 }
+
+.divcrl{
+    height: 350px;
+    overflow-y: scroll;
+}

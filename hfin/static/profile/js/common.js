@@ -226,10 +226,77 @@ function set_event_on_personal_change_button(){
 }
 //
 
+//формирование таблицы платажей за попдиску
+function clear_table(table_body){
+    children = table_body.children
+        steps = children.length
+        if(children.length>0){
+          for (i = steps-1; i >=0 ; i--){
+              table_body.removeChild(children[i])
+          }
+        }
+        
+}
+function create_payments_table(data){
+    
+    table_body = document.getElementById('table_body_payments')
+    footer = document.getElementById('payments_tfoot')
+    clear_table(table_body)
+    clear_table(footer)
+    total_amount = 0
+    total_months = 0
+    for(i=0; i<data.length;i++ ){
+        tr = document.createElement('tr')
+        tr.id = i
+        row = data[i]
+        for(z=0; z < row.length; z++){
+            td = document.createElement('td')
+            
+            td_value = row[z]
+            td.textContent = td_value
+            if(z==1){
+                total_amount += Number(td_value)
+            }
+            if(z==2){
+                total_months += Number(td_value)
+            }
+            tr.append(td)
+        }
+        table_body.append(tr)
+    }
 
+    tr_f = document.createElement('tr')
+    td0 = document.createElement('td')
+    td0.textContent = ''
+    td1 = document.createElement('td')
+    td1.textContent = total_amount
+    td2 = document.createElement('td')
+    td2.textContent = total_months
+    tr_f.append(td0)
+    tr_f.append(td1)
+    tr_f.append(td2)
+    footer.append(tr_f)
+
+}
+function get_payments(){
+    $.ajax({
+        url: '/payment/get/',
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'X-CSRFToken': get_token()
+        },
+        data: {'user_id': get_user_id()},
+        success: function(data) {
+            create_payments_table(data)
+        }
+    });
+}
+//
 
 /*PUBLIC*/
 window.addEventListener('load', function() {
+    get_payments()
     set_event_on_personal_change_button()
     set_data_for_dashboard()
 })

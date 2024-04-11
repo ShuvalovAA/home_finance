@@ -9,6 +9,12 @@ class SendSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
 
 
+class GetByUserSerializer(serializers.Serializer):
+    """Сериалайзер для выборки данных по платежам у пользователя."""
+
+    user_id = serializers.IntegerField()
+
+
 class GetSerializer(serializers.Serializer):
     """Сериалайзер для получения платежа."""
 
