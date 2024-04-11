@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from .forms import ConfirmSMS, LoginForm, RegisterForm
 from .handlers import confirm_login, confirm_phone, create_email_confirm, create_sms_confirm
 from .models import User
-from .serialazers import GetUserSerializer, UpdateUserSerializer
+from .serialazers import GetUserSerializer, UpdateUserSerializer, UpdateUserLightSerializer
 from root.decorators import is_authenticated_and_is_active
 
 @is_authenticated_and_is_active
@@ -22,11 +22,28 @@ def render_profile_page(request):
     return render(request, 'profile.html')
 
 
-@swagger_auto_schema(method='PATCH', query_serializer=UpdateUserSerializer, tags=['User'])
+@swagger_auto_schema(method='PATCH', query_serializer=UpdateUserLightSerializer, tags=['User'])
 @api_view(['PATCH'])
 def update(request):
     """Обновить данные пользователя."""
-    pass
+    params = request.data
+    predata = [{k: v} for k, v in params.items() if len(v) != 0]
+    data = {}
+    for param in predata:
+        for k, v in param.items():
+            data[k] = v
+    try:
+        user = User.objects.get(pk=data['user_id'])
+    except User.DoesNotExist as error:
+        return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
+
+    for k, v in data.items():
+        if k == 'user_id':
+            continue
+        user.__setattr__(k, v)
+
+    user.save()
+    return Response('', status=status.HTTP_200_OK)
 
 
 @swagger_auto_schema(method='GET', query_serializer=GetUserSerializer, tags=['User'])

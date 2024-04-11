@@ -171,9 +171,65 @@ function set_data_for_dashboard(start = null, end = null) {
   
   }
 /*Дашборд */
+//Изменить персональные данные
+function change_personal_data(
+    first_name, last_name, middle_name, birth_date
+){
+    data = {}
+    if(first_name){
+        data['first_name'] = first_name
+    }
+    if(first_name){
+        data['last_name'] = last_name
+    }
+    if(first_name){
+        data['middle_name'] = middle_name
+    }
+    if(first_name){
+        data['birth_date'] = birth_date
+    }
+
+    if(Object.keys(data).length === 0){
+        return
+    }
+
+    data['user_id'] = get_user_id()
+
+    $.ajax({
+        url: '/user/update/',
+        method: 'PATCH',
+        dataType: 'json',
+        headers: {
+            'X-CSRFToken': get_token()
+        },
+        data: data,
+        success: function(data) {
+            location.reload();
+        }
+    });
+}
+//
+//Изменить персональные данные(повесить событие на кнопку)
+function set_event_on_personal_change_button(){
+    button = document.getElementById('change_personal_data')
+    button.addEventListener('click',function(e){
+        first_name = document.getElementById('PersonalDataFirstName').value
+        last_name = document.getElementById('PersonalDataLastName').value
+        middle_name = document.getElementById('PersonalDataMiddleName').value
+        birth_date = document.getElementById('PersonalDataBirthdate').value
+        empty_all = first_name == '' && last_name == '' && middle_name == '' && birth_date == ''
+        if(empty_all){
+            return
+        }
+        change_personal_data(first_name, last_name, middle_name, birth_date)
+    })
+}
+//
+
 
 
 /*PUBLIC*/
 window.addEventListener('load', function() {
+    set_event_on_personal_change_button()
     set_data_for_dashboard()
 })

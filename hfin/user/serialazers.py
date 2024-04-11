@@ -45,3 +45,13 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'is_phone_confirm',
             'is_email_confirm'
         ]
+
+
+class UpdateUserLightSerializer(serializers.Serializer):
+    """Сериалайзер для обновления пользовательских данных лёгкий."""
+
+    user_id = serializers.IntegerField()
+    first_name = serializers.CharField(max_length=124)
+    last_name = serializers.CharField(max_length=124)
+    middle_name = serializers.CharField(max_length=124)
+    birth_date = serializers.DateTimeField()

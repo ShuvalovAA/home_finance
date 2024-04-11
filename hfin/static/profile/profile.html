@@ -91,12 +91,12 @@
               <li class="list-group-item">Фамилия:{{request.user.first_name}}</li>
               <li class="list-group-item">Имя:{{request.user.last_name}}</li>
               <li class="list-group-item">Отчество:{{request.user.middle_name}}</li>
-              <li class="list-group-item">Дата рождения:{{request.user.birth_date}}</li>
+              <li class="list-group-item">Дата рождения:{{request.user.birth_date.date}}</li>
               <li class="list-group-item">Телефон:{{request.user.phone}}</li>
               <li class="list-group-item">E-mail:{{request.user.email}}</li>
-              <li class="list-group-item">Дата рождения:</li>
               <li class="list-group-item"><button type="button" class="btn btn-warning">Подписать на e-mail рассылку</button></li>
-              <li class="list-group-item"><button type="button" class="btn btn-warning">Изменить пользовательские данные</button></li>
+              <li class="list-group-item"><button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#personalDataForm">Изменить пользовательские данные</button>
+                </li>
             </ul>
           </div>
         </div>
@@ -299,6 +299,43 @@
   </div>
 </div>
 
+<!---->
+
+<!--изменение персональных данных-->
+<div class="modal fade" id="personalDataForm" tabindex="-1" aria-labelledby="personalDataFormLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="personalDataFormLabel">Изменить пользовательские данные</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >Фамилия:</label>
+            <input type="text" class="form-control" id="PersonalDataFirstName">
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >Имя:</label>
+            <input type="text" class="form-control" id="PersonalDataLastName">
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >Отчество:</label>
+            <input type="text" class="form-control" id="PersonalDataMiddleName">
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >День рождения:</label>
+            <input type="date" class="form-control" id="PersonalDataBirthdate">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="button_exit" data-bs-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-primary" id="change_personal_data">Изменить</button>
+      </div>
+    </div>
+  </div>
+</div>
 <!---->
   </body>
 </html>
