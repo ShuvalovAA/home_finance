@@ -1,5 +1,6 @@
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
+from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from root.decorators import check_premission
@@ -62,28 +63,33 @@ def get(request):
 
 @swagger_auto_schema(method='get', query_serializer=GetSerializer, tags=['Payments'])
 @api_view(['GET'])
-@check_premission
 def webhook_get_pay(request):
     """Получить платёж."""
-    if not request.method == 'GET':
-        return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    # ТРЕБУЕТСЯ ПЕРЕДЕЛАТЬ
+    # if not request.method == 'GET':
+    #     return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    # # data = json.loads(request.GET.get('data'))
+    # data = request.GET
 
-    data = json.loads(request.GET.get('data'))
-    try:
-        user = User.objects.get(pk=data.get('user_id'))
-    except User.DoesNotExist as error:
-        return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
-
-    tariff = Tariff.objects.filter(period_months=data.get('product_name')).last()
-    params = {
-        'user': user,
-        'date': datetime.now(),
-        'tariff': tariff,
-        'done': True
-        }
-    try:
-        payment_handler.webhook_get_pay(params=params)
-    except UsersPayments.DoesNotExist as error:
-        return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
+    # try:
+    #     user_id = data.get('user_id')
+    #     user = User.objects.get(pk=user_id)
+    #     # user = User.objects.get(pk=data.get('user_id'))
+    # except User.DoesNotExist as error:
+    #     return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
+    # name = data.get('good')
+    # Tariff.objects._using_default()
+    # tariff = Tariff.objects.filter(name=name).last()
+    # # tariff = Tariff.objects.filter(period_months=data.get('product_name')).last()
+    # params = {
+    #     'user': user,
+    #     'date': datetime.now(),
+    #     'tariff': tariff,
+    #     'done': True
+    #     }
+    # try:
+    #     payment_handler.webhook_get_pay(params=params)
+    # except UsersPayments.DoesNotExist as error:
+    #     return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 
     return Response('', status=status.HTTP_200_OK)

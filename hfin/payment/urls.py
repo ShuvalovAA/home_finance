@@ -21,5 +21,5 @@ from payment import views
 urlpatterns = [
     path('send/', views.send),
     path('webhook_get_pay/', views.webhook_get_pay),
-    path('get/', views.get),
+    path('get/', views.get)
 ]

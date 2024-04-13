@@ -28,4 +28,6 @@ urlpatterns = [
     path('signup/', views.sign_up, name='register'),
     path('update/', views.update),
     path('get/', views.get),
+    #заглушка для теста сервиса банка
+    path('fixtures/bank_source', views.bank_source)
 ]

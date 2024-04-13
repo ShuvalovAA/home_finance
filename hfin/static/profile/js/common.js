@@ -294,9 +294,67 @@ function get_payments(){
 }
 //
 
+//Перейти на сервис банка для оплаты
+function send_pay_on_webhook(data){
+    $.ajax({
+        url: 'http://127.0.0.1:9393/payment/webhook_get_pay',
+        method: 'GET',
+        dataType: 'json',
+        headers: {
+            'X-CSRFToken': get_token()
+        },
+        data: data,
+        success: function(data) {
+            url = 'http://127.0.0.1:9393/user/'
+            window.location.replace(url);
+        }
+    });
+}
+function set_event_fixutre_pay_ok(){
+    id = 'fixutre_pay_ok'
+    button = document.getElementById(id)
+    button.addEventListener('click', function(e){
+        data = {}
+        data['sum'] = document.getElementById('sum').textContent
+        data['good']= document.getElementById('good').textContent
+        data['done'] = true
+        data['user_id'] = document.getElementById('user_id').textContent
+       
+        send_pay_on_webhook(data)
+       
+    })
+}
+
+function set_event_click_for_pay(){
+    button = document.getElementById('BuyGoToBank')
+    url = "fixtures/bank_source?"
+    cart_number = document.getElementById('BankCartNumber').value
+    cvc = document.getElementById('CartCVC').value
+    actvie_date = document.getElementById('ACtiveDate').value
+    sum = document.getElementById('AmountPay').textContent
+    good = document.getElementById('PeriodPay').value
+
+    url += 'cart_number=' + cart_number + '&'
+    url += 'cvc=' + cvc + '&' 
+    url += 'actvie_date=' + actvie_date + '&' 
+    url += 'sum=' + sum + '&' 
+    url += 'good=' + good + '&' 
+    button.addEventListener('click', function(e){
+        window.location.replace(url);
+    })
+}
+//
+
+
+
 /*PUBLIC*/
 window.addEventListener('load', function() {
-    get_payments()
-    set_event_on_personal_change_button()
-    set_data_for_dashboard()
+    if(window.location.href == 'http://127.0.0.1:9393/user/fixtures/bank_source?'){
+        set_event_fixutre_pay_ok()
+    }else{
+        set_event_click_for_pay()
+        get_payments()
+        set_event_on_personal_change_button()
+        set_data_for_dashboard()
+    }
 })

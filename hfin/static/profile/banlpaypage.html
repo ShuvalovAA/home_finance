@@ -1,0 +1,51 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="ru" dir="ltr" class="h-100">
+  <head>
+    <div style="display: none;" id="csrf_token">{{ csrf_token }}</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!--для построения графиков-->
+  <!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cdbootstrap/css/bootstrap.min.css" />
+  <link re1l="stylesheet" href="https://cdn.jsdelivr.net/npm/cdbootstrap/css/cdb.min.css" />-->
+  <script src="https://cdn.jsdelivr.net/npm/cdbootstrap/js/cdb.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cdbootstrap/js/bootstrap.min.js"></script>
+  <script src="https://kit.fontawesome.com/9d1d9a82d2.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+  <!--для построения графиков-->
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  
+  <script src="{% static 'profile/js/common.js' %}"></script>
+  <script src="{% static 'common/js/common.js' %}"></script>
+  
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>SigIn Form | Home Finance</title> 
+    <link href="https://getbootstrap.com/docs/5.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="{% static 'common/css/common.css' %}"/>
+	<link rel="shortcut icon" href="{% static 'common/images/favicon.ico' %}">
+</head>
+<body class="d-flex flex-column min-vh-100" style="padding: 20px;">
+    <form>
+        <div class="form-group">
+          <label for="exampleInputEmail1">Введите код из смс</label>
+          <input type="text" class="form-control" id="code" aria-describedby="">
+        </div>
+        <button type="submit" class="btn btn-primary" id="fixutre_pay_ok">OK</button>
+      </form>
+</body>
+    <span id='cart_number'>{{ context}}</span>
+    <span id='cvc'>{{ context.cvc }}</span>
+    <span id='actvie_date'>{{ context.actvie_date }}</span>
+    <span id='sum'>{{ context.sum }}</span>
+    <span id='good'>{{ context.good }}</span>
+    <span id='user_id'>{{ context.user_id }}</span>
+</html>

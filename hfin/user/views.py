@@ -167,3 +167,19 @@ def sign_out(request):
     """Провести деавторизацию пользователя."""
     logout(request)
     return redirect('/user/signin/')
+
+
+def bank_source(request):
+    """Заглушка для сервиса банка."""
+    if request.user.is_authenticated:
+        data = {}
+        data['cart_number'] = request.GET.get('cart_number')
+        data['cvc'] = request.GET.get('cvc')
+        data['actvie_date'] = request.GET.get('actvie_date')
+        data['sum'] = request.GET.get('sum')
+        data['good'] = request.GET.get('good')
+        data['user_id'] = request.user.id
+        return render(request, 'banlpaypage.html', context=data)
+
+    return Response('Зарегистрируйтесь или авторизуйтесь', status.HTTP_403_FORBIDDEN)
+   

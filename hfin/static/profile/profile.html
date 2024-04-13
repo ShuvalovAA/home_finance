@@ -131,7 +131,7 @@
               </table>
             </li>
             <li class="list-group-item">
-              <button type="button" class="btn btn-warning">Оплатить</button>
+              <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#SubscribePayForm">Оплатить</button>
             </li>
           </ul>
         </div>
@@ -317,6 +317,66 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" id="button_exit" data-bs-dismiss="modal">Закрыть</button>
         <button type="button" class="btn btn-primary" id="change_personal_data">Изменить</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!---->
+<!--Оплатить подписку-->
+<div class="modal fade" id="SubscribePayForm" tabindex="-1" aria-labelledby="SubscribePay" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" >Выберите опции подписки</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >Период подписки:</label>
+            <input type="text" class="form-control" id="PeriodPay">
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >Стоимость:</label>
+            <span id="AmountPay"></span>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="button_exit" data-bs-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#BuySubscribeForm">Продолжить</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!---->
+<!--Ввести данные банковской карты-->
+<div class="modal fade" id="BuySubscribeForm" tabindex="-1" aria-labelledby="BuySubscribe" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" >Введите данные банковской карты</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >Номер банковской карты:</label>
+            <input type="text" max="12" class="form-control" id="BankCartNumber">
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >Срок действия до:</label>
+            <input type="text" max="5" class="form-control" id="ACtiveDate">
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >CVC:</label>
+            <input type="text" max="3" class="form-control" id="CartCVC">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="button_exit" data-bs-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-warning" id="BuyGoToBank">Продолжить</button>
       </div>
     </div>
   </div>
