@@ -26,95 +26,113 @@ function get_first_laste_date_this_month() {
   }
 
 function create_dashbord(data) {
+    //перейти на это
 
-    canvas_el = document.getElementById('chart')
-    canvas_el.remove()
-    canvas_el_new = document.createElement('canvas')
-    canvas_el_new.style.width = '600px'
-    canvas_el_new.style.height = '300px'
-    canvas_el_new.id = 'chart'
+    tipsData = []
+    //expaple tipsData = [['row', 'total_bill', 'tip', 'sex', 'smoker', 'day', 'time', 'size']['1', 16.99, 1.01, 'Female', 'No', 'Sun', 'Dinner', 2]['2', 10.34, 1.66, 'Male', 'No', 'Sun', 'Dinner', 3]]
+    //need [['row','type','amount','date','name']['1','expense',100,2024-14-01,'связь']['2','income',90, 2024-14-01,'зп артём']]
+    $("#output").pivotUI(
+        $.pivotUtilities.tipsData, {
+          rows: ["sex"],
+          cols: ["smoker"],
+          vals: ["tip", "total_bill"],
+          aggregatorName: "Sum over Sum",
+          rendererName: "Bar Chart",
+          renderers: $.extend(
+              $.pivotUtilities.renderers, 
+            $.pivotUtilities.plotly_renderers
+          )
+        });
+    //
+
+    // canvas_el = document.getElementById('chart')
+    // canvas_el.remove()
+    // canvas_el_new = document.createElement('canvas')
+    // canvas_el_new.style.width = '600px'
+    // canvas_el_new.style.height = '300px'
+    // canvas_el_new.id = 'chart'
   
-    conteiner_chart = document.getElementById('conteiner_chart')
-    conteiner_chart.append(canvas_el_new)
+    // conteiner_chart = document.getElementById('conteiner_chart')
+    // conteiner_chart.append(canvas_el_new)
   
-    const ctx = canvas_el_new.getContext('2d');
-    incomes = data.incomes.incomes
-    expense = data.expense.expenses
-    incomes_dict = {}
-    for(i in incomes){
-      incomes_dict[incomes[i][0]] = incomes[i][1]
-    }
+    // const ctx = canvas_el_new.getContext('2d');
+    // incomes = data.incomes.incomes
+    // expense = data.expense.expenses
+    // incomes_dict = {}
+    // for(i in incomes){
+    //   incomes_dict[incomes[i][0]] = incomes[i][1]
+    // }
   
-    expense_dict = {}
-    for(i in expense){
-      expense_dict[expense[i][0]] = expense[i][1]
-    }
+    // expense_dict = {}
+    // for(i in expense){
+    //   expense_dict[expense[i][0]] = expense[i][1]
+    // }
   
-    for(i in incomes_dict){
-      expense_on_date = expense_dict[i]
-      if(!expense_on_date){
-          expense_dict[i] = 0
-      }
-    }
-    for(i in expense_dict){
-      income_on_date = incomes_dict[i]
-      if(!income_on_date){
-          incomes_dict[i] = 0
-      }
-    }
+    // for(i in incomes_dict){
+    //   expense_on_date = expense_dict[i]
+    //   if(!expense_on_date){
+    //       expense_dict[i] = 0
+    //   }
+    // }
+    // for(i in expense_dict){
+    //   income_on_date = incomes_dict[i]
+    //   if(!income_on_date){
+    //       incomes_dict[i] = 0
+    //   }
+    // }
   
-    sorted_keys_income = Object.keys(incomes_dict).sort()
-    income_dict_result = {}
-    for(i in sorted_keys_income){
-      income_dict_result[sorted_keys_income[i]] = incomes_dict[sorted_keys_income[i]]
-    }
+    // sorted_keys_income = Object.keys(incomes_dict).sort()
+    // income_dict_result = {}
+    // for(i in sorted_keys_income){
+    //   income_dict_result[sorted_keys_income[i]] = incomes_dict[sorted_keys_income[i]]
+    // }
   
-    sorted_keys_expense = Object.keys(expense_dict).sort()
-    expense_dict_result = {}
-    for(i in sorted_keys_expense){
-      expense_dict_result[sorted_keys_expense[i]] = expense_dict[sorted_keys_expense[i]]
-    }
+    // sorted_keys_expense = Object.keys(expense_dict).sort()
+    // expense_dict_result = {}
+    // for(i in sorted_keys_expense){
+    //   expense_dict_result[sorted_keys_expense[i]] = expense_dict[sorted_keys_expense[i]]
+    // }
   
-    dts = sorted_keys_expense
-    incomes_amount_list = Object.values(income_dict_result)
-    expenses_amount_list = Object.values(expense_dict_result)
+    // dts = sorted_keys_expense
+    // incomes_amount_list = Object.values(income_dict_result)
+    // expenses_amount_list = Object.values(expense_dict_result)
   
   
-    const myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: dts,
-            datasets: [{
-                label: 'Доходы',
-                backgroundColor: '#324512',
-                borderColor: 'rgb(47, 128, 237)',
-                data: incomes_amount_list,
-            }, {
-                label: 'Расходы',
-                backgroundColor: '#deb99b',
-                borderColor: 'rgb(47, 128, 237)',
-                data: expenses_amount_list,
-            }]
-        },
-        options: {
-                title: {
-                    display: true,
-                    text: 'Информация на текущий месяц', 
-                    color: 'dark',
-                    font: {
-                        weight: 'bold',
-                        size: 24
-                    }
-                },
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true,
-                    }
-                }]
-            }
-        },
-    });
+    // const myChart = new Chart(ctx, {
+    //     type: 'bar',
+    //     data: {
+    //         labels: dts,
+    //         datasets: [{
+    //             label: 'Доходы',
+    //             backgroundColor: '#324512',
+    //             borderColor: 'rgb(47, 128, 237)',
+    //             data: incomes_amount_list,
+    //         }, {
+    //             label: 'Расходы',
+    //             backgroundColor: '#deb99b',
+    //             borderColor: 'rgb(47, 128, 237)',
+    //             data: expenses_amount_list,
+    //         }]
+    //     },
+    //     options: {
+    //             title: {
+    //                 display: true,
+    //                 text: 'Информация на текущий месяц', 
+    //                 color: 'dark',
+    //                 font: {
+    //                     weight: 'bold',
+    //                     size: 24
+    //                 }
+    //             },
+    //         scales: {
+    //             yAxes: [{
+    //                 ticks: {
+    //                     beginAtZero: true,
+    //                 }
+    //             }]
+    //         }
+    //     },
+    // });
   }
 
 function get_expenses(incomes, start, end) {
