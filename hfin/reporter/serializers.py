@@ -25,6 +25,19 @@ class GetExpenseGroup(serializers.Serializer):
     user_id = serializers.IntegerField()
 
 
+class GetYearsList(serializers.Serializer):
+    """Сериалайзер для получения списка всех годов, которые есть в доходах или расходах."""
+
+    user_id = serializers.IntegerField()
+
+
+class GetYearsDataset(serializers.Serializer):
+    """Сериалайзер для получения получения датасета за указанный год."""
+
+    user_id = serializers.IntegerField()
+    year = serializers.IntegerField()
+
+
 class GetExpense(GetBase):
     """Сериалайзер для получения всех расходов пользователя."""
 

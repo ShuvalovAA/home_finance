@@ -97,17 +97,29 @@
       <div class="tab-content" id="v-pills-tabContent">
         <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
           <div class="conteiner">
-            дашборд отчёта на год
+            
             <div class="conteiner">
+              <label>Выберите год:</label>
+              <div class="row">
+                <div class="col-md-4">
+                  <select class="form-select" id='year_for_report' aria-label="">
+                    <option selected>Выберите год для отчёта</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <button type="button" class="btn btn-warning" id='prepare_dataset'>Сформировать</button>
+                </div>
+              </div>
+              
             <div id="output"></div>
-              <div class="container" name="report">
+              <!-- <div class="container" name="report">
                 <div class="text-center">
                     <div class="card chart-container" id="conteiner_chart">
                       <canvas id="chart" style="width:600px;height:300px"></canvas>
                     </div>
                   
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>

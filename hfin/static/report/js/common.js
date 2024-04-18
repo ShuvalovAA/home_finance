@@ -28,11 +28,11 @@ function get_first_laste_date_this_month() {
 function create_dashbord(data) {
     //перейти на это
 
-    tipsData = []
     //expaple tipsData = [['row', 'total_bill', 'tip', 'sex', 'smoker', 'day', 'time', 'size']['1', 16.99, 1.01, 'Female', 'No', 'Sun', 'Dinner', 2]['2', 10.34, 1.66, 'Male', 'No', 'Sun', 'Dinner', 3]]
     //need [['row','type','amount','date','name']['1','expense',100,2024-14-01,'связь']['2','income',90, 2024-14-01,'зп артём']]
+    //$.pivotUtilities.tipsData
     $("#output").pivotUI(
-        $.pivotUtilities.tipsData, {
+        data , {
           rows: ["sex"],
           cols: ["smoker"],
           vals: ["tip", "total_bill"],
@@ -192,11 +192,12 @@ function set_data_for_dashboard(start = null, end = null) {
 
 function set_year_list(years){
   //установить список годов в кнопку
-  div_options = document.getElementById('')
-  for(i=0; i < years.lenth; i++){
+  div_options = document.getElementById('year_for_report')
+  for(i=0; i < years.length; i++){
     year = years[i]
-    opt = document.createElement('options')
+    opt = document.createElement('option')
     opt.textContent = year
+    opt.value = year
     div_options.append(opt)
   }  
 }
@@ -210,7 +211,7 @@ function get_years_list(){
     headers: {
         'X-CSRFToken': get_token()
     },
-    data: {},
+    data: {'user_id': get_user_id()},
     success: function(years) {
       set_year_list(years)
     }
@@ -219,8 +220,8 @@ function get_years_list(){
 
 function get_year_from_button(){
   //забрать год из кнопки
-  button = document.getElementById('')
-  value = button.value
+  button = document.getElementById('year_for_report')
+  value = button.selectedOptions[0].value
   return value
 }
 function prepare_for_years_report(){
@@ -233,7 +234,7 @@ function prepare_for_years_report(){
 }
 function set_event_by_get_inc_exp_data(){
   //повесить событие клика на кнопку формирирования датасета
-  button = document.getElementById('')
+  button = document.getElementById('prepare_dataset')
   button.addEventListener('click', function(e){
     prepare_for_years_report()
   })
@@ -260,6 +261,8 @@ function get_dataset(year){
 
 /*PUBLIC*/
 window.addEventListener('load', function() {
-    set_data_for_dashboard()
-    set_event_by_get_inc_exp_data()
+  get_years_list()
+  // set_data_for_dashboard()
+  get_dataset(new Date().getFullYear())
+  set_event_by_get_inc_exp_data()
 })

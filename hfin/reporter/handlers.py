@@ -3,7 +3,7 @@ from datetime import datetime
 from income.models import Income
 from expense.models import Expense
 from transaction.models import Transaction
-from django.db.models import Sum
+from django.db.models import Sum, Value, CharField
 
 
 class Reporter:
@@ -13,6 +13,25 @@ class Reporter:
         self.user_id = user_id
         self.start_period = start_period
         self.end_period = end_period
+
+    def get_years_list(self):
+        """Получить список всех годов, которые есть в доходах или расходах."""
+        Income.objects._using_default()
+        incomes_years_list = list(Income.objects.filter(
+            user_id=self.user_id
+        ).values_list(
+            'date__year', flat=True
+            ).distinct()
+        )
+        Expense.objects._using_default()
+        expense_years_list = list(Expense.objects.filter(
+            user_id=self.user_id
+        ).values_list(
+            'date__year', flat=True
+            ).distinct()
+        )
+
+        return set(incomes_years_list + expense_years_list)
 
     def get_income(self):
         "Получить словарь значений доходов."
@@ -85,3 +104,39 @@ class Reporter:
         )
 
         return grouping_incomes
+
+    def get_years_dataset(self):
+        """Получит датасет за указанный год."""
+        col_names = ['name', 'date', 'amount', 'type']
+        Income.objects._using_default()
+        incomes_years_list = list(
+            Income.objects.filter(
+                user_id=self.user_id,
+                date__gte=self.start_period,
+                date__lte=self.end_period
+            ).annotate(
+                type=Value('доход', output_field=CharField())
+            ).values_list(
+                'name', 'date__date', 'amount', 'type'
+            )
+        )
+
+        Expense.objects._using_default()
+        expense_years_list = list(
+            Expense.objects.filter(
+                user_id=self.user_id,
+                date__gte=self.start_period,
+                date__lte=self.end_period
+            ).annotate(
+                type=Value('расход', output_field=CharField())
+            ).values_list(
+                'name', 'date__date', 'amount', 'type'
+            )
+        )
+
+        dataset = []
+        dataset += [col_names]
+        dataset += [list(i) for i in incomes_years_list]
+        dataset += [list(i) for i in expense_years_list]
+
+        return dataset

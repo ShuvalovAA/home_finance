@@ -1,8 +1,16 @@
 from .handlers import Reporter
+import datetime
 from django.forms.models import model_to_dict
 from rest_framework.decorators import api_view
 from root.decorators import check_premission
-from .serializers import GetIncome, GetExpense, GetTransaction, GetIncomeGroup, GetExpenseGroup
+from .serializers import (
+    GetIncome,
+    GetExpense,
+    GetTransaction,
+    GetIncomeGroup,
+    GetExpenseGroup,
+    GetYearsList
+)
 from rest_framework import status
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
@@ -104,3 +112,34 @@ def get_grouping_expense(request):
     )
     data = reporter.get_grouping_expense()
     return Response(data, status=status.HTTP_200_OK)
+
+
+@swagger_auto_schema(method='GET', query_serializer=GetYearsList, tags=['Reporter'])
+@api_view(['GET'])
+@check_premission
+def get_years_list(request):
+    """Получить список всех годов, которые есть в доходах или расходах."""
+    reporter = Reporter(
+        user_id=request.GET.get('user_id'),
+    )
+    data = reporter.get_years_list()
+
+    return Response(list(data), status=status.HTTP_200_OK)
+
+
+@swagger_auto_schema(method='GET', query_serializer=GetYearsList, tags=['Reporter'])
+@api_view(['GET'])
+@check_premission
+def get_years_dataset(request):
+    """Получит датасет за указанный год."""
+    year = int(request.GET.get('year'))
+    start_period = datetime.datetime(year=year, month=1, day=1)
+    end_period = datetime.datetime(year=year, month=12, day=31)
+    reporter = Reporter(
+        user_id=request.GET.get('user_id'),
+        start_period=start_period,
+        end_period=end_period
+    )
+    data = reporter.get_years_dataset()
+
+    return Response(list(data), status=status.HTTP_200_OK)
