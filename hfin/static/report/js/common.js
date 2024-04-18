@@ -190,8 +190,76 @@ function set_data_for_dashboard(start = null, end = null) {
   }
 /*Дашборд */
 
+function set_year_list(years){
+  //установить список годов в кнопку
+  div_options = document.getElementById('')
+  for(i=0; i < years.lenth; i++){
+    year = years[i]
+    opt = document.createElement('options')
+    opt.textContent = year
+    div_options.append(opt)
+  }  
+}
+
+function get_years_list(){
+//получилить список годов, которые есть в доходах и расходах
+  $.ajax({
+    url: '/reporter/get_years_list',
+    method: 'GET',
+    dataType: 'json',
+    headers: {
+        'X-CSRFToken': get_token()
+    },
+    data: {},
+    success: function(years) {
+      set_year_list(years)
+    }
+  });  
+}
+
+function get_year_from_button(){
+  //забрать год из кнопки
+  button = document.getElementById('')
+  value = button.value
+  return value
+}
+function prepare_for_years_report(){
+//подготовить всё для работы с отчётом за год
+  year = get_year_from_button()
+  if(!year){
+    return
+  }
+  get_dataset(year)
+}
+function set_event_by_get_inc_exp_data(){
+  //повесить событие клика на кнопку формирирования датасета
+  button = document.getElementById('')
+  button.addEventListener('click', function(e){
+    prepare_for_years_report()
+  })
+
+}
+function get_dataset(year){
+  //получить набор данных по расходам и доходам за соответствующий год
+  $.ajax({
+      url: '/reporter/get_years_dataset',
+      method: 'GET',
+      dataType: 'json',
+      headers: {
+          'X-CSRFToken': get_token()
+      },
+      data: {
+          'user_id': get_user_id(),
+          'year': year
+      },
+      success: function(data) {
+        create_dashbord(data)
+      }
+  });
+}
 
 /*PUBLIC*/
 window.addEventListener('load', function() {
     set_data_for_dashboard()
+    set_event_by_get_inc_exp_data()
 })
