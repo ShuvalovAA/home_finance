@@ -132,13 +132,9 @@ def get_years_list(request):
 @check_premission
 def get_years_dataset(request):
     """Получит датасет за указанный год."""
-    year = int(request.GET.get('year'))
-    start_period = datetime.datetime(year=year, month=1, day=1)
-    end_period = datetime.datetime(year=year, month=12, day=31)
+
     reporter = Reporter(
         user_id=request.GET.get('user_id'),
-        start_period=start_period,
-        end_period=end_period
     )
     data = reporter.get_years_dataset()
 

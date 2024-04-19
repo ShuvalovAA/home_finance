@@ -240,7 +240,7 @@ function set_event_by_get_inc_exp_data(){
   })
 
 }
-function get_dataset(year){
+function get_dataset(){
   //получить набор данных по расходам и доходам за соответствующий год
   $.ajax({
       url: '/reporter/get_years_dataset',
@@ -250,8 +250,7 @@ function get_dataset(year){
           'X-CSRFToken': get_token()
       },
       data: {
-          'user_id': get_user_id(),
-          'year': year
+          'user_id': get_user_id()
       },
       success: function(data) {
         create_dashbord(data)
@@ -263,6 +262,6 @@ function get_dataset(year){
 window.addEventListener('load', function() {
   get_years_list()
   // set_data_for_dashboard()
-  get_dataset(new Date().getFullYear())
+  get_dataset()
   set_event_by_get_inc_exp_data()
 })

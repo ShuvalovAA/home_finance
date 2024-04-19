@@ -35,7 +35,6 @@ class GetYearsDataset(serializers.Serializer):
     """Сериалайзер для получения получения датасета за указанный год."""
 
     user_id = serializers.IntegerField()
-    year = serializers.IntegerField()
 
 
 class GetExpense(GetBase):

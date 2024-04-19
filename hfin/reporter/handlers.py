@@ -107,30 +107,26 @@ class Reporter:
 
     def get_years_dataset(self):
         """Получит датасет за указанный год."""
-        col_names = ['name', 'date', 'amount', 'type']
+        col_names = ['name', 'year', 'month', 'day' 'amount', 'type']
         Income.objects._using_default()
         incomes_years_list = list(
             Income.objects.filter(
                 user_id=self.user_id,
-                date__gte=self.start_period,
-                date__lte=self.end_period
             ).annotate(
                 type=Value('доход', output_field=CharField())
             ).values_list(
-                'name', 'date__date', 'amount', 'type'
+                'name', 'date__year', 'date__month', 'date__day', 'amount', 'type'
             )
         )
 
         Expense.objects._using_default()
         expense_years_list = list(
             Expense.objects.filter(
-                user_id=self.user_id,
-                date__gte=self.start_period,
-                date__lte=self.end_period
+                user_id=self.user_id
             ).annotate(
                 type=Value('расход', output_field=CharField())
             ).values_list(
-                'name', 'date__date', 'amount', 'type'
+                'name', 'date__year', 'date__month', 'date__day', 'amount', 'type'
             )
         )
 
