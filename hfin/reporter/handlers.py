@@ -107,7 +107,7 @@ class Reporter:
 
     def get_years_dataset(self):
         """Получит датасет за указанный год."""
-        col_names = ['name', 'year', 'month', 'day' 'amount', 'type']
+        col_names = ['name', 'year', 'month', 'day', 'amount', 'type']
         Income.objects._using_default()
         incomes_years_list = list(
             Income.objects.filter(
