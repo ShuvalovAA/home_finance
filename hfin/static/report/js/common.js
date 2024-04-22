@@ -260,8 +260,9 @@ function get_dataset(){
 
 /*PUBLIC*/
 window.addEventListener('load', function() {
-  get_years_list()
+  // get_years_list()
   // set_data_for_dashboard()
+  // set_event_by_get_inc_exp_data()
   get_dataset()
-  set_event_by_get_inc_exp_data()
+  
 })
