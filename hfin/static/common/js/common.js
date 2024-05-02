@@ -11,6 +11,23 @@ function __set_event_click_for_info(){
         )
     }
 }
+
+
+function get_russian_inflation(){
+    var country = 'Russia'
+    $.ajax({
+        method: 'GET',
+        url: 'https://api.api-ninjas.com/v1/inflation?country=' + country,
+        headers: { 'X-Api-Key': 'quHHBru6EJ6N+dBiL/cmCQ==eMqzk4Tp3TKJCjG0'},
+        contentType: 'application/json',
+        success: function(result) {
+            console.log(result);
+        },
+        error: function ajaxError(jqXHR) {
+            console.error('Error: ', jqXHR.responseText);
+        }
+    });
+}
   
 /*PUBLIC*/
 window.addEventListener('load', function() {

@@ -9,7 +9,10 @@ from .serializers import (
     GetTransaction,
     GetIncomeGroup,
     GetExpenseGroup,
-    GetYearsList
+    GetYearsList,
+    GetYearsDatasetTransaction,
+    GetYearsDataset,
+    GetYearsPredictExpense
 )
 from rest_framework import status
 from rest_framework.response import Response
@@ -127,15 +130,43 @@ def get_years_list(request):
     return Response(list(data), status=status.HTTP_200_OK)
 
 
-@swagger_auto_schema(method='GET', query_serializer=GetYearsList, tags=['Reporter'])
+@swagger_auto_schema(method='GET', query_serializer=GetYearsDataset, tags=['Reporter'])
 @api_view(['GET'])
 @check_premission
 def get_years_dataset(request):
-    """Получит датасет за указанный год."""
+    """Получит датасет по доходам и расходам."""
 
     reporter = Reporter(
         user_id=request.GET.get('user_id'),
     )
     data = reporter.get_years_dataset()
+
+    return Response(list(data), status=status.HTTP_200_OK)
+
+
+@swagger_auto_schema(method='GET', query_serializer=GetYearsDatasetTransaction, tags=['Reporter'])
+@api_view(['GET'])
+@check_premission
+def get_years_dataset_transaction(request):
+    """Получит датасет по транзакциям."""
+
+    reporter = Reporter(
+        user_id=request.GET.get('user_id'),
+    )
+    data = reporter.get_years_dataset_transaction()
+
+    return Response(list(data), status=status.HTTP_200_OK)
+
+
+@swagger_auto_schema(method='GET', query_serializer=GetYearsPredictExpense, tags=['Reporter'])
+@api_view(['GET'])
+@check_premission
+def get_predict_day_of_year(request):
+    """Получит датасет по транзакциям."""
+
+    reporter = Reporter(
+        user_id=request.GET.get('user_id'),
+    )
+    data = reporter.get_predict_day_of_year()
 
     return Response(list(data), status=status.HTTP_200_OK)

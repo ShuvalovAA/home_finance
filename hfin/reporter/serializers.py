@@ -31,8 +31,20 @@ class GetYearsList(serializers.Serializer):
     user_id = serializers.IntegerField()
 
 
+class GetYearsDatasetTransaction(serializers.Serializer):
+    """Сериалайзер для получения получения датасета по транзакциям."""
+
+    user_id = serializers.IntegerField()
+
+
+class GetYearsPredictExpense(serializers.Serializer):
+    """Сериалайзер для получения предсказаний на два года."""
+
+    user_id = serializers.IntegerField()
+
+
 class GetYearsDataset(serializers.Serializer):
-    """Сериалайзер для получения получения датасета за указанный год."""
+    """Сериалайзер для получения получения датасета по доходам и расходам."""
 
     user_id = serializers.IntegerField()
 

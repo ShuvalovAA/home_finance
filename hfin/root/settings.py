@@ -255,3 +255,6 @@ TECH_TABLES = [
     'django_session',
     'django_content_type',
 ]
+
+INFLATION_LOCATION = 'Russia'
+INFLATION_API_KEY = 'quHHBru6EJ6N+dBiL/cmCQ==eMqzk4Tp3TKJCjG0'

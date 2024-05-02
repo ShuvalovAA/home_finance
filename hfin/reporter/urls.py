@@ -10,4 +10,6 @@ urlpatterns = [
     path('by_group/get_expense', views.get_grouping_expense),
     path('get_years_list/', views.get_years_list),
     path('get_years_dataset/', views.get_years_dataset),
+    path('get_years_dataset_transaction/', views.get_years_dataset_transaction),
+    path('get_predict_day_of_year/', views.get_predict_day_of_year),
 ]
