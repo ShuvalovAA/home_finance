@@ -1,6 +1,8 @@
 import json
 import datetime
 import math
+import csv
+import os
 from django.forms.models import model_to_dict
 from drf_yasg.utils import swagger_auto_schema
 from transaction.models import Transaction
@@ -10,8 +12,10 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from root.decorators import check_premission, is_authenticated_and_is_active
+from root.settings import MEDIA_URL
 from django.shortcuts import render
 from user.models import User
+from transaction.handlers import DownloadDirector
 
 
 from .serializers import (
@@ -25,6 +29,8 @@ from .serializers import (
     GetTransactionSerializer,
     UpdateTransactionBulkSerializer,
     UpdateTransactionSerializer,
+    DownloadFileSerializer,
+    TransactionDataSerializer
 )
 
 
@@ -360,3 +366,27 @@ def copy_bulk(request):
     transactions = Transaction.objects.filter(user_id=user_id).order_by('date')[offset:offset + limit]
     items = [model_to_dict(obj) for obj in transactions]
     return Response({'items': items}, status=status.HTTP_201_CREATED)
+
+
+@swagger_auto_schema(method='POST', request_body=DownloadFileSerializer, tags=['transaction'])
+@api_view(['POST'])
+@check_premission
+def download_file(request):
+    """Скачать файл"""
+    if not request.method == 'POST':
+        return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    user_id = int(request.data['user_id'])
+    start_date = request.data['start_date']
+    end_date = request.data['end_date']
+    separator = int(request.data['separator'])
+    file_type = int(request.data['file_type'])
+
+    data = Transaction.objects.filter(user_id=user_id, date__lte=end_date, date__gte=start_date)
+    if not data:
+        return Response({'Error': 'transactions not found.'}, status=status.HTTP_404_NOT_FOUND)
+    headers = ['name', 'target_name', 'date', 'amount']
+    data_list = data.values_list('name', 'target_name', 'date', 'amount')
+    download_director = DownloadDirector(separator_type=separator, file_type=file_type, data=data_list, headers=headers)
+    name_file = download_director.download()
+    return Response({'path': f'{MEDIA_URL}temp_files/{name_file}'}, status=status.HTTP_201_CREATED)

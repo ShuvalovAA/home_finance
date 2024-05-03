@@ -1210,9 +1210,56 @@ function __set_size_filters_menu_window(){
     }
 }
 
+function sent_signal_for_donwload(separator, file_type, start_date, end_date){
+    // отправка запроса на скачивание файла
+    data = {
+        'file_type':file_type,
+        'separator': separator,
+        'start_date': start_date,
+        'end_date': end_date,
+        'user_id': get_user_id()
+    }
 
-  /*PUBLIC*/
-  window.addEventListener('load', function() {
+    $.ajax({
+        url: '/transaction/download_file/',
+        method: 'POST',
+        dataType: 'json',
+        headers: {
+            'X-CSRFToken': get_token()
+        },
+        data: data,
+        success: function(data) {
+            protocol = 'http://'
+            url = window.location.host + '/'+ data['path']
+            exit_button = document.getElementById('DownloadExportExit')
+            exit_button.click()
+
+            window.open(protocol + url)
+            
+        }
+    });
+}
+
+
+function set_event_button_export(){
+    // Метода установки события на кнопку скачивания
+    button = document.getElementById('DownloadExport')
+    button.addEventListener('click',function(e){
+        separator = document.getElementById('SepChar').selectedOptions[0].value
+        file_type = document.getElementById('FormatFile').selectedOptions[0].value
+        start_date = document.getElementById('StartDateExport').value
+        end_date = document.getElementById('EndDateExport').value
+        sent_signal_for_donwload(
+            separator,
+            file_type,
+            start_date,
+            end_date
+        )
+
+    }) 
+}
+/*PUBLIC*/
+window.addEventListener('load', function() {
         __set_size_filters_menu_window()
         get_funds()
         apply_names_for_filter()
@@ -1221,6 +1268,7 @@ function __set_size_filters_menu_window(){
         get_transaction_for_table()
         set_event_button_filter()
         set_event_filter_table_funds()
+        set_event_button_export()
   })
 
 

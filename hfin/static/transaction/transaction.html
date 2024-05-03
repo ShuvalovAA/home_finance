@@ -120,7 +120,8 @@
           </div>
           <div class="col-md-2 btn-group float-end">
             <button type="button" class="btn btn-outline-warning" style="display: none;">Импорт</button>
-            <button type="button" class="btn btn-outline-warning">Экспорт</button>
+            <button type="button" class="btn btn-outline-warning"></button>
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#ExportModal" data-bs-whatever="@mdo">Экспорт</button>
           </div>
 
         </div>
@@ -208,7 +209,50 @@
   </footer>
 </div>
 
-
+<!-- экспорт -->
+<div class="modal fade" id="ExportModal" tabindex="-1" aria-labelledby="ExportModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ExportModalLabel">"Экспорт данных"</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >Формат файла:</label>
+            <select class="form-select" id="FormatFile" aria-label="Default select example">
+              <option value="0" >xlsx</option>
+              <option value="1" >csv</option>
+            </select>
+            <!--<input type="text" class="form-control" id="add_name_transaction">-->
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >Разделитель:</label>
+            <select class="form-select" id="SepChar" aria-label="Default select example">
+              <option value="0" >;</option>
+              <option value="1" >,</option>
+            </select>
+            <!--<input type="text" class="form-control" id="add_name_transaction">-->
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >Дата начала периода:</label>
+            <input type="date" class="form-control" id="StartDateExport">
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label" >Дата окончания периода:</label>
+            <input type="date" class="form-control" id="EndDateExport">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="DownloadExportExit" data-bs-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-primary" id="DownloadExport">Скачать</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--  -->
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">

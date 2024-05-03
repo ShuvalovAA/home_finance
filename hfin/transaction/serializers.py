@@ -125,3 +125,27 @@ class CopyTransactionBulkSerializer(serializers.Serializer):
         max_length=50
     )
     user_id = serializers.IntegerField()
+
+
+class DownloadFileSerializer(serializers.Serializer):
+    """Сериалайзер для скачивания файла."""
+
+    user_id = serializers.IntegerField()
+    file_type = serializers.CharField()
+    separator = serializers.CharField()
+    start_date = serializers.DateField()
+    end_date = serializers.DateField()
+
+
+class TransactionDataSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Transaction
+        fields = ['name', 'user_id']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        
+
+        return data

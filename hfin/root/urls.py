@@ -20,6 +20,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from django.conf.urls.static import static
+
 from django.conf import settings
 from .handlers import favicon_view
 from . import views
@@ -58,4 +59,7 @@ urlpatterns = [
     path('funds_director/', include('funds_director.urls')),
     path('payment/', include('payment.urls')),
     path('assistant/', include('assistant.urls')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) if settings.DEBUG else []
