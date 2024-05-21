@@ -50,10 +50,10 @@
     
 
     <ul class="nav col-9 col-md-auto mb-2 justify-content-center mb-md-0">
-      <li><a href="/income/" class="nav-link px-2 link-dark">Доходы</a></li>
-      <li><a href="/expense/" class="nav-link px-2 link-dark">Расходы</a></li>
-      <li><a href="/transaction/" class="nav-link px-2 link-dark">Транзакции</a></li>
-      <li><a href="" class="nav-link px-2 link-secondary alert-warning">Аналитика</a></li>
+      <li><a href="" class="nav-link px-2 link-dark"></a></li>
+      <li><a href="" class="nav-link px-2 link-dark"></a></li>
+      <li><a href="" class="nav-link px-2 link-dark"></a></li>
+      <li><a href="" class="nav-link px-2 link-dark"></a></li>
     </ul>
 
     <div class="col-md-3 text-end">
@@ -61,11 +61,11 @@
         <button class="btn btn-primary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
           <div id="user_id" style="display: none;">{{ request.user.id }}</div>
           {{ request.user.first_name }} {{ request.user.last_name }}
+          <img src="{% static 'common/images/a_r.png' %}" width="30" height="30" >
         </button>
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="/user/">Профиль</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="/user/signout">Выйти</a></li>
+          <li><a class="dropdown-item" href="user/signin/">Авторизоваться</a></li>
+          <li><a class="dropdown-item" href="/user/signup/">Зарегистрироваться</a></li>
         </ul>
       </div>
     </div>
@@ -76,11 +76,80 @@
 
 
 <div class="row">
-  Нужно описание
-  предложение авторизоваться/зарегистрироваться
-  карусель с оплатой
+  <div class="row">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+      <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+          <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="{% static 'common/images/car_inc.png' %}" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Планируйте бюджет доходов</h5>
+              <p>Вы можете указать свои доходы и они будут отражены на балансе для контроля финансовых потоков.</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="{% static 'common/images/car_exp.png' %}" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Планируйте бюджет расходов</h5>
+              <p>Вы можете сформировать бюджет расходов и поддерживать платёжную дисциплину на основе ваших доходов.</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="{% static 'common/images/car_funds.png' %}" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>Формируйте фонды по финансовые планы</h5>
+              <p>Вы можете формировать финансовые фонды, исполняя свои расходы, а затем списывать денежные средства с фондов.</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </div>
+    <div class="col-md-4"></div>
+  </div>
 </div>
+<div class="row">
+   
+</div>
+<div class="row">
+  <div class="col-4"></div>
+  <div class="col-6">
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a class="nav-link btn-warning" aria-current="page" href="/user/signin/">Авторизоваться</a>
+      </li>
+      <div class="col-md-1"></div>
+      <li class="nav-item">
+        <a class="nav-link btn-warning" href="/user/signup/">Зарегистрироваться</a>
+      </li>
+    </ul>
+  </div>
 
+
+  
+  <!-- <div class="col-md-4"></div>
+  <div class="col-md-2">
+    <a href="/user/signin/" class="btn btn-warning">Авторизоваться</button>
+  </div>
+  <div class="col-md-1"></div>
+  <div class="col-md-2">
+    <a href="/user/signup/"  class="btn btn-warning">Зарегистрироваться</button>
+  </div>
+  <div class="col-md-3"></div> -->
+</div>
 
 
 
