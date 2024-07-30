@@ -27,6 +27,9 @@ helm install <namespace> <project dir> -n <namespace> -f <values config file pat
 echo '<ingress address> <ingress host>' | sudo tee -a /etc/hosts
 `echo '192.168.49.2 dev.hfin.local' | sudo tee -a /etc/hosts`
 
+### Завести tunnel
+`minikube tunel`
+
 ### Проверить порт для LoadBalancer(ожидается 80:80/TCP,443:443/TCP)
 `kubectl -n ingress-nginx get svc | grep 'LoadBalancer'`
 

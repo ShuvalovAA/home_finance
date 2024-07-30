@@ -21,3 +21,14 @@ export HFIN_CLICKHOUSE_USER=default
 #Для Redis и Celery
 export HFIN_REDIS_PORT=6379
 export HFIN_REDIS_HOST=localhost
+
+
+# Deploy
+## Local
+    ```
+    >> minikube start
+    >> helm install hfin ./helm -n hfin -f ./helm/values.staging.yaml --create-namespace
+
+    >> helm uninstall hfin
+    >> helm upgrade hfin ./helm -n hfin -f ./helm/values.staging.yaml
+    ```
