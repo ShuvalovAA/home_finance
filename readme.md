@@ -24,7 +24,15 @@ export HFIN_REDIS_HOST=localhost
 
 
 # Deploy
-## Local
+
+## Docker
+### Build
+    ```
+    docker build . -t 838375350179/hf:latest
+    docker push 838375350179/hf:latest
+    ```
+## K8S
+### Local
     ```
     >> minikube start
     >> helm install hfin ./helm -n hfin -f ./helm/values.staging.yaml --create-namespace
