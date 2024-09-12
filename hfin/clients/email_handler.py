@@ -13,16 +13,13 @@ class EmailHandler():
 
     def send_email(self, user, text):
         """Отправить email"""
-        params = {
-            'phone': user.email,
-            'text': text
+        data = {
+            'email': user.email,
+            'text': text,
+            'login': self.login,
+            'password': self.password
         }
-        requests.post(
-            url=self.url,
-            login=self.login,
-            password=self.password,
-            data=params
-        )
+        requests.post(url=self.url, data=data)
 
 
 email_handler = EmailHandler()
