@@ -1,14 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: {{ include "service.fullname" . }}-kibana
   labels:
-    app: kib-manual
-  name: kibana-service
+    {{- include "service.labels" . | nindent 4 }}
 spec:
+  {{- if eq .Values.deployment "local" }}
+  type: NodePort
+  {{- else}}
+  type: ClusterIP
+  {{- end }}
   ports:
   - port: 5601
     protocol: TCP
     targetPort: 5601
   selector:
-    app: kib-manual
-  type: NodePort
+    {{- include "service.selectorLabels" . | nindent 4 }}

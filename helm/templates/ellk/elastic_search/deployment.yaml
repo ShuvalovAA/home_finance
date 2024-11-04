@@ -3,14 +3,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: es-logging
-  name: es-logging
+    {{- include "service.labels" . | nindent 4 }}
+  name: {{ include "service.fullname" . }}-elastic-search
   namespace: hfin
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: es-logging
+      app.kubernetes.io/name: {{ include "service.name" . }}-elastic-search
+      app.kubernetes.io/instance: {{ .Release.Name }}
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -19,7 +20,8 @@ spec:
   template:
     metadata:
       labels:
-        app: es-logging
+          app.kubernetes.io/name: {{ include "service.name" . }}-elastic-search
+          app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       containers:
       - image: elasticsearch:7.8.0

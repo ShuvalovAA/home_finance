@@ -99,3 +99,7 @@ sentry:
 
 statsd:
   enabled: false
+
+elastic-search:
+  host: hfin-elastic-search
+  port: 9200
