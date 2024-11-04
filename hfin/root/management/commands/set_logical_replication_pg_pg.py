@@ -7,8 +7,10 @@ from root.management.tools_bar.clickhouse.match_pg_ch_types import MATTCHING_FIE
 CREATE PUBLICATION my_publication FOR ALL TABLES;
 
 на реплике
-CREATE SUBSCRIPTION my_subscription  CONNECTION 'host=hfin-postgresql-master port=5432 dbname=postgres password=postgres' PUBLICATION publication_for_slaves;
+CREATE SUBSCRIPTION my_subscription  CONNECTION 'host=hfin-postgresql-master port=6432 dbname=postgres password=postgres' PUBLICATION publication_for_slaves;
 '''
+
+
 class Command(BaseCommand):
     """Команда настраивает логическую репликацию между инстансами PostgreSQL.
 

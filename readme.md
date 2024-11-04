@@ -5,7 +5,7 @@
 
 #Для PostgreSQL
 export HFIN_POSTGRESQL_DATABASE=postgres
-export HFIN_POSTGRESQL_PORT=5432
+export HFIN_POSTGRESQL_PORT=6432
 export HFIN_POSTGRESQL_HOST=localhost
 export HFIN_POSTGRESQL_USER=postgres
 export HFIN_POSTGRESQL_PASSWORD=postgres
