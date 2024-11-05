@@ -41,7 +41,11 @@ data:
       if [fileset][module] == "nginx" {
         if [fileset][name] == "access" {
           grok {
-            match => { "message" => ["%{IPORHOST:[nginx][access][remote_ip]} - %{DATA:[nginx][access][user_name]} \[%{HTTPDATE:[nginx][access][time]}\] \"%{WORD:[nginx][access][method]} %{DATA:[nginx][access][url]} HTTP/%{NUMBER:[nginx][access][http_version]}\" %{NUMBER:[nginx][access][response_code]} %{NUMBER:[nginx][access][body_sent][bytes]} \"%{DATA:[nginx][access][referrer]}\" \"%{DATA:[nginx][access][agent]}\""] }
+            match => { 
+            "message" => ["%{IPORHOST:[nginx][access][remote_ip]} - %{DATA:[nginx][access][user_name]} \[%{HTTPDATE:[nginx][access][time]}\] \"%{WORD:[nginx][access][method]} %{DATA:[nginx][access][url]} HTTP/%{NUMBER:[nginx][access][http_version]}\" %{NUMBER:[nginx][access][response_code]} %{NUMBER:[nginx][access][body_sent][bytes]} \"%{DATA:[nginx][access][referrer]}\" \"%{DATA:[nginx][access][agent]}\""] 
+            "response.time" => ["%{NUMBER:duration}"]
+            "request.url" => ["%{URIPATHPARAM:request}"]
+            }
             remove_field => "message"
           }
           mutate {
@@ -79,11 +83,10 @@ data:
 
     output {
         stdout {
-            codec => rubydebug
+            codec => json
         }
         elasticsearch {
             hosts => ["http://{{ .Values.elastic_search.host }}:{{ .Values.elastic_search.port }}"]
-            index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
         }
     }
 
@@ -111,7 +114,14 @@ spec:
         image: logstash:7.17.25
         volumeMounts:
           - name: logstash-configmap
-            mountPath: /usr/share/logstash/config
+            mountPath: /usr/share/logstash/config/logstash.yml
+            subPath: logstash.yml
+          - name: logstash-configmap
+            mountPath: /usr/share/logstash/config/logstash.conf
+            subPath: logstash.conf
+          - name: logstash-configmap
+            mountPath: /usr/share/logstash/pipeline/logstash.conf
+            subPath: logstash.conf
       volumes:
       - name: logstash-configmap
         configMap:

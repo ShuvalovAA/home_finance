@@ -9,5 +9,6 @@ data:
   kibana.yml: |-
     server.name: kibana
     server.host: "0"
-    monitoring.enabled: false
+    xpack.monitoring.ui.container.elasticsearch.enabled: false
+    elasticsearch.requestTimeout: 90000
     elasticsearch.hosts: [ "http://{{ .Values.elastic_search.host }}:{{ .Values.elastic_search.port }}" ]
