@@ -1,0 +1,125 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: hfin
+  labels:
+    app: logstash
+  name: logstash
+spec:
+  ports:
+    - name: "25826"
+      port: 25826
+      targetPort: 25826
+    - name: "5044"
+      port: 5044
+      targetPort: 5044
+  selector:
+    app: logstash
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: hfin
+  name: logstash-configmap
+data:
+  logstash.yml: |
+    http.host: "0.0.0.0"
+    path.config: /usr/share/logstash/pipeline
+  logstash.conf: |
+    input {
+      beats {
+        port => 5044
+        host => "0.0.0.0"
+      }
+    }
+
+    filter {
+      if [fileset][module] == "nginx" {
+        if [fileset][name] == "access" {
+          grok {
+            match => { "message" => ["%{IPORHOST:[nginx][access][remote_ip]} - %{DATA:[nginx][access][user_name]} \[%{HTTPDATE:[nginx][access][time]}\] \"%{WORD:[nginx][access][method]} %{DATA:[nginx][access][url]} HTTP/%{NUMBER:[nginx][access][http_version]}\" %{NUMBER:[nginx][access][response_code]} %{NUMBER:[nginx][access][body_sent][bytes]} \"%{DATA:[nginx][access][referrer]}\" \"%{DATA:[nginx][access][agent]}\""] }
+            remove_field => "message"
+          }
+          mutate {
+            add_field => { "read_timestamp" => "%{@timestamp}" }
+          }
+          date {
+            match => [ "[nginx][access][time]", "dd/MMM/YYYY:H:m:s Z" ]
+            remove_field => "[nginx][access][time]"
+          }
+          useragent {
+            source => "[nginx][access][agent]"
+            target => "[nginx][access][user_agent]"
+            remove_field => "[nginx][access][agent]"
+          }
+          geoip {
+            source => "[nginx][access][remote_ip]"
+            target => "[nginx][access][geoip]"
+          }
+        }
+        else if [fileset][name] == "error" {
+          grok {
+            match => { "message" => ["%{DATA:[nginx][error][time]} \[%{DATA:[nginx][error][level]}\] %{NUMBER:[nginx][error][pid]}#%{NUMBER:[nginx][error][tid]}: (\*%{NUMBER:[nginx][error][connection_id]} )?%{GREEDYDATA:[nginx][error][message]}"] }
+            remove_field => "message"
+          }
+          mutate {
+            rename => { "@timestamp" => "read_timestamp" }
+          }
+          date {
+            match => [ "[nginx][error][time]", "YYYY/MM/dd H:m:s" ]
+            remove_field => "[nginx][error][time]"
+          }
+        }
+      }
+    }
+
+    output {
+        stdout { codec => rubydebug }
+    }
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-nginx-to-gcs
+  namespace: hfin
+spec:
+  serviceName: "logstash"
+  selector:
+    matchLabels:
+      app: logstash
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: logstash
+    spec:
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: logstash-service-account-credentials
+        secret:
+          secretName: logstash-credentials
+      containers:
+      - name: logstash
+        image: docker.elastic.co/logstash/logstash:7.10.0
+        volumeMounts:
+        - name: logstash-service-account-credentials
+          mountPath: /secrets/logstash
+          readOnly: true
+        resources:
+          limits:
+            memory: 2Gi
+  volumeClaimTemplates:
+  - metadata:
+      name: logstash-nginx-to-gcs-pvc
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Ki

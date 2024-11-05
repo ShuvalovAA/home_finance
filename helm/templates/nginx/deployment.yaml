@@ -26,7 +26,12 @@ spec:
         volumeMounts:
           - name: {{ include "service.fullname" . }}-nginx-conf
             mountPath: /etc/nginx/conf.d/
+          - name: nginx-logs
+            mountPath: /var/log/nginx
       volumes:
       - name: {{ include "service.fullname" . }}-nginx-conf
         configMap:
           name: {{ include "service.fullname" . }}-nginx-conf
+      - name: nginx-logs
+        persistentVolumeClaim:
+          claimName: {{ include "service.fullname" . }}-nginx-pvc

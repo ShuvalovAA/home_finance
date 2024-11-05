@@ -3,15 +3,14 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    {{- include "service.labels" . | nindent 4 }}
+    app: es-logging
   name: {{ include "service.fullname" . }}-elastic-search
   namespace: hfin
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "service.name" . }}-elastic-search
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      app: es-logging
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -20,8 +19,7 @@ spec:
   template:
     metadata:
       labels:
-          app.kubernetes.io/name: {{ include "service.name" . }}-elastic-search
-          app.kubernetes.io/instance: {{ .Release.Name }}
+        app: es-logging
     spec:
       containers:
       - image: elasticsearch:7.8.0
@@ -40,6 +38,8 @@ spec:
         volumeMounts:
         - name: elasticsearch-logging
           mountPath: /data
+        - name: nginx-logs
+          mountPath: /var/log/nginx
         livenessProbe:
           httpGet:
             port: http
@@ -55,3 +55,6 @@ spec:
       volumes:
       - name: elasticsearch-logging
         emptyDir: {}
+      - name: nginx-logs
+        persistentVolumeClaim:
+          claimName: {{ include "service.fullname" . }}-nginx-pvc

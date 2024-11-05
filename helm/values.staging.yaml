@@ -102,4 +102,14 @@ statsd:
 
 elastic-search:
   host: hfin-elastic-search
-  port: 9200
+  port: 21645
+
+kibana:
+  host: hfin-kibana
+
+logstash:
+  host: hfin-logstash
+  port: 21646
+
+filebeat:
+  host: hfin-filebeat
