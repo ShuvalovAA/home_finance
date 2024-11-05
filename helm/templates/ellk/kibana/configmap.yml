@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-configmap
+  namespace: hfin
+  labels:
+    k8s-app: kibana
+data:
+  kibana.yml: |-
+    server.name: kibana
+    server.host: "0"
+    monitoring.enabled: false
+    elasticsearch.hosts: [ "http://{{ .Values.elastic_search.host }}:{{ .Values.elastic_search.port }}" ]
