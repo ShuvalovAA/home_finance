@@ -25,12 +25,6 @@ spec:
       - image: elasticsearch:7.8.0
         imagePullPolicy: IfNotPresent
         name: elasticsearch
-        env:
-        - name: XPACK_SECURITY_ENABLED
-          value: "false"
-        env:
-        - name: DEMO_GREETING
-          value: "Hello from the environment"
         ports:
         - containerPort: 9200
           name: http
@@ -44,11 +38,12 @@ spec:
         volumeMounts:
         - name: elasticsearch-logging
           mountPath: /data
-        # - name: elastic-search-configmap
-        #   mountPath: /usr/share/elasticsearch/config
+        - name: elastic-search-configmap
+          mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+          subPath: elasticsearch.yml
       volumes:
       - name: elasticsearch-logging
         emptyDir: {}
-      # - name: elastic-search-configmap
-      #   configMap:
-      #     name: elastic-search-configmap
+      - name: elastic-search-configmap
+        configMap:
+          name: elastic-search-configmap
