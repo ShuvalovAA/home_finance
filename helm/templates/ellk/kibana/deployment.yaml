@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kib-manual
+  name: {{ include "service.fullname" . }}-kibana
+  namespace: hfin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kib-manual
+  template:
+    metadata:
+      labels:
+        app: kib-manual
+    spec:
+      containers:
+      - image: kibana:7.8.0
+        name: kibana
+        ports:
+        - containerPort: 5601
+          name: ui
+          protocol: TCP

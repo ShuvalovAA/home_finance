@@ -100,7 +100,7 @@ sentry:
 statsd:
   enabled: false
 
-elastic-search:
+elastic_search:
   host: hfin-elastic-search
   port: 21645
 
@@ -109,7 +109,7 @@ kibana:
 
 logstash:
   host: hfin-logstash
-  port: 21646
+  port: 5044
 
 filebeat:
   host: hfin-filebeat

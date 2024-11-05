@@ -5,7 +5,7 @@ metadata:
   namespace: hfin
   labels:
     app: logstash
-  name: logstash
+  name: {{ include "service.fullname" . }}-logstash
 spec:
   ports:
     - name: "25826"
@@ -78,14 +78,20 @@ data:
     }
 
     output {
-        stdout { codec => rubydebug }
+        stdout {
+            codec => rubydebug
+        }
+        elasticsearch {
+            hosts => ["http://{{ .Values.elastic_search.host }}:{{ .Values.elastic_search.port }}"]
+            index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+        }
     }
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: logstash-nginx-to-gcs
+  name: {{ include "service.fullname" . }}-logstash-nginx-to-gcs
   namespace: hfin
 spec:
   serviceName: "logstash"
@@ -100,26 +106,7 @@ spec:
         app: logstash
     spec:
       terminationGracePeriodSeconds: 10
-      volumes:
-      - name: logstash-service-account-credentials
-        secret:
-          secretName: logstash-credentials
       containers:
       - name: logstash
-        image: docker.elastic.co/logstash/logstash:7.10.0
-        volumeMounts:
-        - name: logstash-service-account-credentials
-          mountPath: /secrets/logstash
-          readOnly: true
-        resources:
-          limits:
-            memory: 2Gi
-  volumeClaimTemplates:
-  - metadata:
-      name: logstash-nginx-to-gcs-pvc
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      resources:
-        requests:
-          storage: 1Ki
+        image: logstash:7.17.25
+        
