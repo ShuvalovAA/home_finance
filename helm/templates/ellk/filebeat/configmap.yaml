@@ -7,35 +7,12 @@ metadata:
     k8s-app: filebeat
 data:
   filebeat.yml: |-
-    filebeat.autodiscover:
-      providers:
-        - type: kubernetes
-          host: ${NODE_NAME}
-          hints.enabled: true
-          templates:
-            - condition.contains:
-                kubernetes.namespace: hfin
-              config:
-                - module: nginx
-                  access:
-                    enabled: true
-                    var.paths: ["/var/log/nginx/access.log*"]
-                    subPath: access.log
-                    tags: ["access"]
-                  error:
-                    enabled: true
-                    var.paths: ["/var/log/nginx/error.log*"]
-                    subPath: error.log
-                    tags: ["error"]
-
-    processors:
-      - add_cloud_metadata:
-      - add_host_metadata:
-
-    cloud.id: ${ELASTIC_CLOUD_ID}
-    cloud.auth: ${ELASTIC_CLOUD_AUTH}
-
-    output.logstash:
-      hosts: ["{{ .Values.logstash.host }}:{{ .Values.logstash.port }}"]
-      loadbalance: true
-      index: filebeat
+    filebeat.inputs:
+     - type: log
+       paths:
+        - /var/log/nginx/*.log
+    
+    output:
+      logstash:
+        hosts: ["{{ .Values.logstash.host }}:{{ .Values.logstash.port }}"]
+        index: filebeat
