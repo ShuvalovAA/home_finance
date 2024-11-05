@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elastic-search-configmap
+  namespace: hfin
+  labels:
+    k8s-app: {{ include "service.fullname" . }}-elastic-search
+data:
+  elasticsearch.yml: |-
+    cluster.name: "docker-cluster"
+    network.host: 0.0.0.0
+    xpack

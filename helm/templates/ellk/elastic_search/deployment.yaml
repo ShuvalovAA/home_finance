@@ -25,6 +25,12 @@ spec:
       - image: elasticsearch:7.8.0
         imagePullPolicy: IfNotPresent
         name: elasticsearch
+        env:
+        - name: XPACK_SECURITY_ENABLED
+          value: "false"
+        env:
+        - name: DEMO_GREETING
+          value: "Hello from the environment"
         ports:
         - containerPort: 9200
           name: http
@@ -38,23 +44,11 @@ spec:
         volumeMounts:
         - name: elasticsearch-logging
           mountPath: /data
-        - name: nginx-logs
-          mountPath: /var/log/nginx
-        livenessProbe:
-          httpGet:
-            port: http
-            path: /_cluster/health
-          initialDelaySeconds: 40
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /_cluster/health
-            port: http
-          initialDelaySeconds: 30
-          periodSeconds: 10
+        # - name: elastic-search-configmap
+        #   mountPath: /usr/share/elasticsearch/config
       volumes:
       - name: elasticsearch-logging
         emptyDir: {}
-      - name: nginx-logs
-        persistentVolumeClaim:
-          claimName: {{ include "service.fullname" . }}-nginx-pvc
+      # - name: elastic-search-configmap
+      #   configMap:
+      #     name: elastic-search-configmap
