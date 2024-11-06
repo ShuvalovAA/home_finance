@@ -264,3 +264,4 @@ TECH_TABLES = [
 INFLATION_LOCATION = 'Russia'
 INFLATION_API_KEY = 'quHHBru6EJ6N+dBiL/cmCQ==eMqzk4Tp3TKJCjG0'
 SENTRY_DSN = 'http://5f0b4065930637b912d9ac956cab0129@localhost:9000/1'
+SENTR_SE = '%qmqdn@@^vhkzs-^cw^=fvpt-@52fky7knkbcj9!204l9b4ri_'
