@@ -168,3 +168,5 @@ docker build {dir} -t {host}/{project}:{tag}
 `poetry shell`
 3. Запустить тестирование
 `poetry run pytest .`
+4. Запустить тестирование с отчётом покрытия тестами
+`poetry run pytest . --cov=. --cov-report=term --cov-report term-missing --cov-config=.coveragerc`
