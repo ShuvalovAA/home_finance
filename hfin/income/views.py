@@ -4,6 +4,7 @@ import math
 from django.forms.models import model_to_dict
 from drf_yasg.utils import swagger_auto_schema
 from income.models import Income
+from income.handlers import get_object
 from rest_framework import parsers, renderers, status
 from rest_framework.decorators import api_view
 from rest_framework.generics import GenericAPIView
@@ -238,12 +239,9 @@ def get(request):
     -  id: идентификатор дохода.
     """
     if not request.method == 'GET':
-        return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    id_income = request.GET.get('id')
-    user_id = request.GET.get('user_id')
+        return Response({'Error': 'Invalid request type'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)   
     try:
-        income = Income.objects.get(pk=id_income, user_id=user_id)
+        income = get_object(request)
     except Income.DoesNotExist as error:
         return Response(error.__str__(), status=status.HTTP_404_NOT_FOUND)
 

@@ -161,3 +161,10 @@ docker build {dir} -t {host}/{project}:{tag}
 18.4 нажать `Run queries`
 18.5 нажать `Save dashboard`
 
+# Запуск автотестов
+1. Перейти в директорию проекта
+`cd home_finance/hfin`
+2. Активировать виртуальную среду
+`poetry shell`
+3. Запустить тестирование
+`poetry run pytest .`
