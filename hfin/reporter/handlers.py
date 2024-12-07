@@ -158,7 +158,7 @@ class Reporter:
         return dataset
 
     def get_years_dataset_transaction(self):
-        """Получит датасет за указанный год."""
+        """Получит датасет по транзакциям."""
         col_names = ['name', 'target_name', 'year', 'month', 'day', 'amount']
         Transaction.objects._using_default()
         transaction_years_list = list(

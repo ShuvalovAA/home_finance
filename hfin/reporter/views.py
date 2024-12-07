@@ -109,7 +109,7 @@ def get_grouping_income(request):
 @api_view(['GET'])
 @check_premission
 def get_grouping_expense(request):
-    """Получить сгруппированные данные по доходам."""
+    """Получить сгруппированные данные по расходам."""
     reporter = Reporter(
         user_id=request.GET.get('user_id'),
     )
@@ -162,7 +162,7 @@ def get_years_dataset_transaction(request):
 @api_view(['GET'])
 @check_premission
 def get_predict_day_of_year(request):
-    """Получит датасет по транзакциям."""
+    """Вернуть предсказение расходов с учётом инфляции на два года вперёд."""
 
     reporter = Reporter(
         user_id=request.GET.get('user_id'),

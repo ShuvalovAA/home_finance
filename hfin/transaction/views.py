@@ -36,7 +36,7 @@ from .serializers import (
 
 @is_authenticated_and_is_active
 def render_transaction_page(request):
-    """Рендер на страницу расходов."""
+    """Рендер на страницу транзакций."""
     return render(request, 'transaction.html')
 
 
@@ -75,7 +75,7 @@ def get_count_for_paggination(request):
 @api_view(['POST'])
 @check_premission
 def create(request):
-    """Создать запись о расходе.
+    """Создать запись о транзакции.
 
     Входные параметры:
     ---
@@ -113,7 +113,7 @@ def create(request):
 @api_view(['PATCH'])
 @check_premission
 def update(request):
-    """Обновить запись о расходе.
+    """Обновить запись о транзакции.
 
     Входные параметры:
     ---
@@ -142,7 +142,7 @@ def update(request):
 @api_view(['PATCH'])
 @check_premission
 def update_bulk(request):
-    """Массово обновить запись о расходе.
+    """Массово обновить запись о транзакции.
 
     Входные параметры:
     ---
@@ -165,7 +165,7 @@ def update_bulk(request):
 @api_view(['DELETE'])
 @check_premission
 def delete(request):
-    """Удалить запись о расходе.
+    """Удалить запись о транзакции.
 
     Входные параметры:
     ---
@@ -189,7 +189,7 @@ def delete(request):
 @api_view(['DELETE'])
 @check_premission
 def delete_bulk(request):
-    """Массово удалить запись о расходе.
+    """Массово удалить запись о транзакции.
 
     Входные параметры:
     ---
@@ -232,7 +232,7 @@ def delete_bulk(request):
 @api_view(['GET'])
 @check_premission
 def get(request):
-    """Получить запись о расходе.
+    """Получить запись о транзакции.
 
     Входные параметры:
     ---
@@ -255,7 +255,7 @@ def get(request):
 @api_view(['GET'])
 @check_premission
 def get_bulk(request):
-    """Массово получить запись о расходе.
+    """Массово получить запись о транзакции.
 
     Входные параметры:
     ---
@@ -299,7 +299,7 @@ def get_bulk(request):
 @api_view(['POST'])
 @check_premission
 def copy(request):
-    """Копировать запись о расходе.
+    """Копировать запись о транзакции.
 
     Входные параметры:
     ---
@@ -325,7 +325,7 @@ def copy(request):
 @api_view(['POST'])
 @check_premission
 def copy_bulk(request):
-    """Массово копировать запись о расходе.
+    """Массово копировать запись о транзакции.
 
     Входные параметры:
     ---
