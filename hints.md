@@ -103,6 +103,8 @@ docker build {dir} -t {host}/{project}:{tag}
 
 
 # Установка мониторинга для демонстрации
+## ELK
+* Адрес Kibana - {minikube ip}:{elk.kibana.service.spec.nodePort}
 ## Sentry
  * руководство инсталяции: https://develop.sentry.dev/self-hosted/
  * у проекта требуется получить DSN и прописать его в settings.SENTRY_DSN (потребуется перезагрузка проекта, если он запущен)

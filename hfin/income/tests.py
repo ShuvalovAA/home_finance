@@ -27,7 +27,7 @@ class TestIncomeHandlersMethods:
         income_objects_mock.objects.get.assert_called_once_with(pk=mock_value, user_id=mock_value)
 
     def test_get_error(self, mocker):
-        """Тестируем возбуждения исключени при получении объекта объекта."""
+        """Тестируем возбуждения исключения при получении объекта объекта."""
         request_mock = mocker.Mock()
         request_mock.method = 'GET'
         request_mock.GET.get('id').return_value = 1
