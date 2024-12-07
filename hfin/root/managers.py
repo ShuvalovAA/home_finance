@@ -34,7 +34,6 @@ class RotedQuerySet(QuerySet):
         for db in db_queue:
             print(db)
             result = self._filter(*args, **kwargs).using(db)
-            #а если ответ не пустой, но там нет нового значения?
             if result:
                 return result
         return result

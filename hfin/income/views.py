@@ -40,6 +40,7 @@ def render_income_page(request):
 @api_view(['GET'])
 @check_premission
 def get_name_list(request):
+    """Получить наименование всех доходов."""
     user_id = request.GET.get('user_id')
     manager = Income.objects
     manager._using_default()
