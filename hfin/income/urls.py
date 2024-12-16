@@ -31,5 +31,6 @@ urlpatterns = [
     path('copy/bulk/', views.copy_bulk),
     path('update/bulk/', views.update_bulk),
     path('get_count_for_paggination/', views.get_count_for_paggination),
-    path('get_name_list/', views.get_name_list)
+    path('get_name_list/', views.get_name_list),
+    path('import/', views.import_elements)
 ]

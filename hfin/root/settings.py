@@ -114,7 +114,7 @@ DATABASES = {
         'USER': os.environ.get('HFIN_POSTGRESQL_USER', 'postgres'),
         'PASSWORD': os.environ.get('HFIN_POSTGRESQL_PASSWORD', 'postgres'),
         'HOST': os.environ.get('HFIN_POSTGRESQL_HOST', 'localhost'),
-        'PORT': os.environ.get('HFIN_POSTGRESQL_PORT', '5432'),
+        'PORT': os.environ.get('HFIN_POSTGRESQL_PORT', '6432'),
         'priority': 1
     },
     'postgresql_replica_2': {
@@ -123,7 +123,7 @@ DATABASES = {
         'USER': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_USER', 'postgres'),
         'PASSWORD': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_PASSWORD', 'postgres'),
         'HOST': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_HOST', 'localhost'),
-        'PORT': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_PORT', '5432'),
+        'PORT': os.environ.get('HFIN_POSTGRESQL_REPLICA_2_PORT', '6432'),
         'priority': 3
     },
     'postgresql_replica_1': {
@@ -132,7 +132,7 @@ DATABASES = {
         'USER': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_USER', 'postgres'),
         'PASSWORD': os.environ.get('HFIN_POSTGRESQ_REPLICA_1L_PASSWORD', 'postgres'),
         'HOST': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_HOST', 'localhost'),
-        'PORT': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_PORT', '5432'),
+        'PORT': os.environ.get('HFIN_POSTGRESQL_REPLICA_1_PORT', '6432'),
         'priority': 2
     },
     'clickhouse_replica': {

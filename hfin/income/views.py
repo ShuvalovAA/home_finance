@@ -1,6 +1,7 @@
 import json
 import datetime
 import math
+from decimal import Decimal
 from django.forms.models import model_to_dict
 from drf_yasg.utils import swagger_auto_schema
 from income.models import Income
@@ -364,6 +365,25 @@ def copy_bulk(request):
     incomes = Income.objects.filter(user_id=user_id).order_by('date')[offset:offset + limit]
     items = [model_to_dict(obj) for obj in incomes]
     return Response({'items': items}, status=status.HTTP_201_CREATED)
+
+
+#@swagger_auto_schema(method='POST', request_body=CopyIncomeBulkSerializer, tags=['Income'])
+@api_view(['POST'])
+# @check_premission
+def import_elements(request):
+    """Импорт элементов из файла.
+
+    valid_list_column = ['date', 'name', 'amount']  # 'done'
+    """
+    file = request.FILES['file']
+    lines = file.readlines()
+    for line in lines[1:]:
+        line = line.decode('utf-8').replace('\n', '').split(';')
+        date = datetime.datetime.strptime(line[0], "%Y.%m.%d")
+        name = line[1]
+        amount = Decimal(line[2])
+        Income.objects.create(user_id=request.user.id, date=date, name=name, amount=amount)
+    return Response(status=status.HTTP_201_CREATED)
 
 
 class CreateBulkIncomeView(GenericAPIView):

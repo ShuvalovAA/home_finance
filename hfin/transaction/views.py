@@ -284,9 +284,12 @@ def get_bulk(request):
         if k == 'end_date':
             filter_data['date__lte'] = datetime.datetime.strptime(v, '%Y-%m-%d') + datetime.timedelta(days=1)
         if k == 'names':
-            filter_data['name__in'] = json.loads(v)
+            value = json.loads(v)
+            if (value and len(value) > 1) or (len(value) == 1 and value[0] != ''):
+                filter_data['name__in'] = json.loads(v)
     limit = 20
     offset = (page * limit)-20 if (page > 1) else 0
+    
     transactions = Transaction.objects.filter(**filter_data).order_by('date')[offset:offset + limit]
     if not transactions:
         return Response({'Error': 'transactions not found.'}, status=status.HTTP_404_NOT_FOUND)

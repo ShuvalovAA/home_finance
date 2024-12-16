@@ -25,17 +25,26 @@ function get_first_laste_date_this_month() {
     return [firstDay, lastDay]
   }
 
+// this is your saved/serialized config in a string
+var serializedConfig = '{"rows":["name"], "cols":["month"],'+
+                '"vals":["amount"],"aggregatorName":"Sum"}';
+
+// deserialized it into an object
+var deserializedConfig = JSON.parse(serializedConfig)
+
 function create_dashbord(data) {
     $("#output").pivotUI(
-        data , {
-          rows: ["sex"],
-          cols: ["smoker"],
-          vals: ["tip", "total_bill"],
-          aggregatorName: "Sum over Sum",
+        data,  {
+          rows: ["name"],
+          cols: ["year", 'month'],
+          vals: ["amount"],
+          aggregatorName: "Sum",
           rendererName: "Bar Chart",
+          inclusions: {'type': ['расход']},
           renderers: $.extend(
-              $.pivotUtilities.renderers, 
-            $.pivotUtilities.plotly_renderers
+            $.pivotUtilities.renderers, 
+            $.pivotUtilities.plotly_renderers,
+            deserializedConfig
           )
         });
   }
@@ -43,10 +52,10 @@ function create_dashbord(data) {
 function create_dashbord_transaction(data) {
     $("#output_transation").pivotUI(
         data , {
-          rows: ["sex"],
-          cols: ["smoker"],
-          vals: ["tip", "total_bill"],
-          aggregatorName: "Sum over Sum",
+          rows: ["name"],
+          cols: ["year", 'month'],
+          vals: ["amount"],
+          aggregatorName: "Sum",
           rendererName: "Bar Chart",
           renderers: $.extend(
               $.pivotUtilities.renderers, 
@@ -58,10 +67,10 @@ function create_dashbord_transaction(data) {
   function create_dashbord_predict_day_of_year(data) {
     $("#output_predict_day_of_year").pivotUI(
         data , {
-          rows: ["sex"],
-          cols: ["smoker"],
-          vals: ["tip", "total_bill"],
-          aggregatorName: "Sum over Sum",
+          rows: ["name"],
+          cols: ["year", 'month'],
+          vals: ["amount"],
+          aggregatorName: "Sum",
           rendererName: "Bar Chart",
           renderers: $.extend(
               $.pivotUtilities.renderers, 

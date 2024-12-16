@@ -22,7 +22,6 @@ def get_inflation():
         print(response.text)
     else:
         print("Error:", response.status_code, response.text)
-
     return json.loads(response.text)[0]
 
 
@@ -182,7 +181,7 @@ class Reporter:
         user = User.objects.get(pk=self.user_id)
         now_year = datetime.now().year
         years = [now_year + year for year in range(1, 3, 1)]
-        inflation_prct = get_inflation()
+        #inflation_prct = get_inflation()
         col_names = ['year', 'month', 'amount', 'name']
 
         dataset = []

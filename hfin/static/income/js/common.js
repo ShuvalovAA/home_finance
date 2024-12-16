@@ -922,6 +922,32 @@ function create_events_on_click() {
           });
       })
   }
+  var fileInput = document.getElementById('fileInput')
+  fileInput.onchange = function(e) {
+    file = fileInput.files[0]
+    console.log(fileInput.files[0])
+    var data = new FormData($('form').get(0));
+    data.append('file', file)
+    $.ajax({
+        url: '/income/import/',
+        type: 'POST',
+        data: data,
+        cache: false,
+        headers: {
+            'X-CSRFToken': get_token()
+        },
+        processData: false,
+        contentType: false,
+        success: function(data) {
+            alert('Файл загружается.');
+
+        }
+    });
+  }
+
+  document.getElementById('import').onclick = function(e) {
+    fileInput.click()
+  }
 
   document.getElementById('button_add').onclick = function(e) {
       name_i = document.getElementById('add_name_income')
