@@ -1,10 +1,12 @@
 #  Локальная разработка
 ## Справка
-* может быть что нехватает места из-за докер образов на машине. Используйте `docker system prune -f` для очистки пространства.
+* может быть что нехватает места из-за докер образов на машине. Используйте `docker system prune -f` и `minikube ssh docker system prune` для очистки пространства.
+* приложение может быть не доступно из браузера, потому что они по-умочанию запрещают посещать сайты с протоколом http без сертификации
 ## развёртывание
-
+### Версия minkube
+`minikube v1.23.2`
 ### Поднять кластер minikube
-`minikube start --extra-config=apiserver.service-node-port-range=80-30000`
+`minikube start --extra-config=apiserver.service-node-port-range=80-30000 --cpus 4 --memory 8192`
 
 ### Подключить в кластер ingress-nginx/controller
 `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/baremetal/deploy.yaml`
