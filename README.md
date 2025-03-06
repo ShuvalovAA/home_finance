@@ -99,8 +99,6 @@
 
 ## !Установка!
 
-## Клонируйте репозиторий командой:
-`git clone https://vcs.uni-dubna.ru/ShAA.21D/2025-financeplanner.git` 
 ##  Локальная разработка
 ### Справка
 * может быть что нехватает места из-за докер образов на машине. Используйте `docker system prune -f` и `minikube ssh docker system prune` для очистки пространства.
