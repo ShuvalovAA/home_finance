@@ -215,7 +215,7 @@ echo '<ingress address> <ingress host>' | sudo tee -a /etc/hosts
 
 ## Лицензия, коммерческая тайна, права третьих лиц
 
-GNU AGPL
+Copyright (c) 2024 Shuvalov Artemiy. All rights reserved.
 
 ## Контакты
 
