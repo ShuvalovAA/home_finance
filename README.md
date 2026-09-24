@@ -2,8 +2,8 @@
 
 Авторское право подтверждено государственным университетом "Дубна".
 
-версия ПО 1 - https://github.com/ShuvalovAA/home_finance
-версия ПО 2 - https://github.com/ShuvalovAA/fp-back
+версия ПО 1 - https://github.com/ShuvalovAA/home_finance;
+версия ПО 2 - https://github.com/ShuvalovAA/fp-back, https://github.com/ShuvalovAA/fp-front
 
 ## Краткое описание проекта
 
